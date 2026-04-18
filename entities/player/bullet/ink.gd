@@ -11,6 +11,8 @@ extends CharacterBody2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var lifetime_timer: Timer = Timer.new()
+@onready var disapear_voice: AudioStreamPlayer = $disapear
+
 
 # 状态变量
 var is_active: bool = true  # 子弹是否活跃
@@ -71,7 +73,7 @@ func _handle_collision(collision: KinematicCollision2D):
 	
 	# 标记已发生碰撞
 	has_collided = true
-	
+	disapear_voice.play()
 	# 停止移动
 	velocity = Vector2.ZERO
 	
@@ -88,7 +90,7 @@ func _handle_collision(collision: KinematicCollision2D):
 		animation_player.play("left_shoot_disapear")
 	
 	# 播放音效（如果有）
-	# play_collision_sound()
+	
 	
 	# 显示击中效果（如果有）
 	# show_hit_effect(collision.get_position())

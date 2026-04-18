@@ -1,0 +1,120 @@
+2026-04-19 02:53:12,803 - ERROR - 缺少必要的依赖库:
+2026-04-19 02:53:12,804 - ERROR -   - pydub
+2026-04-19 02:53:12,804 - INFO - 
+请使用以下命令安装依赖:
+2026-04-19 02:53:12,804 - INFO -   pip install pydub
+2026-04-19 02:53:12,804 - INFO - 
+注意: pydub 需要 ffmpeg 支持
+2026-04-19 02:53:12,804 - INFO - Windows: 从 https://ffmpeg.org/download.html 下载并添加到PATH
+2026-04-19 02:53:12,804 - INFO - macOS: brew install ffmpeg
+2026-04-19 02:53:12,804 - INFO - Ubuntu/Debian: sudo apt-get install ffmpeg
+2026-04-19 02:53:19,848 - INFO - 正在安装 pydub...
+2026-04-19 02:53:21,334 - INFO - ✓ pydub 安装成功
+2026-04-19 02:53:21,348 - INFO - ✓ pydub 已安装
+2026-04-19 02:53:21,350 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:53:21,350 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:53:21,350 - INFO - 采样率: 44100 Hz
+2026-04-19 02:53:21,350 - INFO - 声道数: 2
+2026-04-19 02:53:21,351 - WARNING - 在 D:\items\godot\hell_joke_2\文字地狱重制版 中未找到支持的音频文件
+2026-04-19 02:53:21,351 - INFO - 支持的格式: .3gp, .aac, .aif, .aiff, .amr, .flac, .m4a, .m4b, .m4r, .mp3, .mp4, .ogg, .opus, .wav, .webm, .wma
+2026-04-19 02:53:21,352 - ERROR - 程序运行出错: 'skipped'
+2026-04-19 02:53:21,362 - ERROR - Traceback (most recent call last):
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 398, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 386, in main
+    print(f"跳过文件: {stats['skipped']}")
+                       ~~~~~^^^^^^^^^^^
+KeyError: 'skipped'
+
+2026-04-19 02:54:01,236 - INFO - ✓ pydub 已安装
+2026-04-19 02:54:01,237 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:54:01,237 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:54:01,238 - INFO - 采样率: 44100 Hz
+2026-04-19 02:54:01,238 - INFO - 声道数: 2
+2026-04-19 02:54:01,239 - WARNING - 在 D:\items\godot\hell_joke_2\文字地狱重制版 中未找到支持的音频文件
+2026-04-19 02:54:01,239 - INFO - 支持的格式: .3gp, .aac, .aif, .aiff, .amr, .flac, .m4a, .m4b, .m4r, .mp3, .mp4, .ogg, .opus, .wav, .webm, .wma
+2026-04-19 02:54:01,239 - ERROR - 程序运行出错: 'skipped'
+2026-04-19 02:54:01,243 - ERROR - Traceback (most recent call last):
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 398, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 386, in main
+    print(f"跳过文件: {stats['skipped']}")
+                       ~~~~~^^^^^^^^^^^
+KeyError: 'skipped'
+
+2026-04-19 02:54:30,954 - INFO - ✓ pydub 已安装
+2026-04-19 02:54:30,955 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:54:30,955 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:54:30,955 - INFO - 采样率: 44100 Hz
+2026-04-19 02:54:30,955 - INFO - 声道数: 2
+2026-04-19 02:54:30,956 - WARNING - 在 D:\items\godot\hell_joke_2\文字地狱重制版 中未找到支持的音频文件
+2026-04-19 02:54:30,956 - INFO - 支持的格式: .3gp, .aac, .aif, .aiff, .amr, .flac, .m4a, .m4b, .m4r, .mp3, .mp4, .ogg, .opus, .wav, .webm, .wma
+2026-04-19 02:54:30,957 - ERROR - 程序运行出错: 'skipped'
+2026-04-19 02:54:30,960 - ERROR - Traceback (most recent call last):
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 398, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 386, in main
+    print(f"跳过文件: {stats['skipped']}")
+                       ~~~~~^^^^^^^^^^^
+KeyError: 'skipped'
+
+2026-04-19 02:55:30,102 - INFO - ✓ pydub 已安装
+2026-04-19 02:55:30,103 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:55:30,103 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:55:30,103 - INFO - 采样率: 44100 Hz
+2026-04-19 02:55:30,104 - INFO - 声道数: 2
+2026-04-19 02:55:30,104 - WARNING - 在 D:\items\godot\hell_joke_2\文字地狱重制版 中未找到支持的音频文件
+2026-04-19 02:55:30,104 - INFO - 支持的格式: .3gp, .aac, .aif, .aiff, .amr, .flac, .m4a, .m4b, .m4r, .mp3, .mp4, .ogg, .opus, .wav, .webm, .wma
+2026-04-19 02:55:30,105 - ERROR - 程序运行出错: 'skipped'
+2026-04-19 02:55:30,108 - ERROR - Traceback (most recent call last):
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 398, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 386, in main
+    print(f"跳过文件: {stats['skipped']}")
+                       ~~~~~^^^^^^^^^^^
+KeyError: 'skipped'
+
+2026-04-19 02:55:52,945 - INFO - ✓ pydub 已安装
+2026-04-19 02:55:52,946 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:55:52,946 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:55:52,946 - INFO - 采样率: 44100 Hz
+2026-04-19 02:55:52,947 - INFO - 声道数: 2
+2026-04-19 02:55:52,947 - WARNING - 在 D:\items\godot\hell_joke_2\文字地狱重制版 中未找到支持的音频文件
+2026-04-19 02:55:52,947 - INFO - 支持的格式: .3gp, .aac, .aif, .aiff, .amr, .flac, .m4a, .m4b, .m4r, .mp3, .mp4, .ogg, .opus, .wav, .webm, .wma
+2026-04-19 02:55:52,948 - ERROR - 程序运行出错: 'skipped'
+2026-04-19 02:55:52,951 - ERROR - Traceback (most recent call last):
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 398, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "d:\items\godot\hell_joke_2\文字地狱重制版\assets\audio_changer.py", line 386, in main
+    print(f"跳过文件: {stats['skipped']}")
+                       ~~~~~^^^^^^^^^^^
+KeyError: 'skipped'
+
+2026-04-19 02:56:10,868 - INFO - ✓ pydub 已安装
+2026-04-19 02:56:10,868 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:56:10,868 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:56:10,869 - INFO - 采样率: 44100 Hz
+2026-04-19 02:56:10,869 - INFO - 声道数: 2
+2026-04-19 02:56:10,869 - INFO - 找到 2 个音频文件
+2026-04-19 02:56:10,870 - INFO - [1/2] 处理: 水滴.mp3
+2026-04-19 02:56:10,873 - ERROR -   转换失败: [WinError 2] 系统找不到指定的文件。
+2026-04-19 02:56:10,873 - INFO - [2/2] 处理: 破空.mp3
+2026-04-19 02:56:10,879 - ERROR -   转换失败: [WinError 2] 系统找不到指定的文件。
+2026-04-19 02:59:27,788 - INFO - ✓ pydub 已安装
+2026-04-19 02:59:27,799 - INFO - ✓ ffmpeg 已安装并可用
+2026-04-19 02:59:27,800 - INFO - 输入目录: D:\items\godot\hell_joke_2\文字地狱重制版
+2026-04-19 02:59:27,800 - INFO - 输出目录: D:\items\godot\hell_joke_2\文字地狱重制版\16bit
+2026-04-19 02:59:27,800 - INFO - 采样率: 44100 Hz
+2026-04-19 02:59:27,800 - INFO - 声道数: 2
+2026-04-19 02:59:27,801 - INFO - 找到 2 个音频文件
+2026-04-19 02:59:27,801 - INFO - [1/2] 处理: 水滴.mp3
+2026-04-19 02:59:27,804 - WARNING - 无法获取文件信息 水滴.mp3: [WinError 2] 系统找不到指定的文件。
+2026-04-19 02:59:27,807 - ERROR -   转换失败: [WinError 2] 系统找不到指定的文件。
+2026-04-19 02:59:27,810 - INFO - [2/2] 处理: 破空.mp3
+2026-04-19 02:59:27,812 - WARNING - 无法获取文件信息 破空.mp3: [WinError 2] 系统找不到指定的文件。
+2026-04-19 02:59:27,815 - ERROR -   转换失败: [WinError 2] 系统找不到指定的文件。

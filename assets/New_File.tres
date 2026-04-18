@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DialogicStyle" format=3 uid="uid://ccr7hagp5jrom"]
+
+[ext_resource type="Script" uid="uid://bwg6yncmh2cml" path="res://addons/dialogic/Resources/dialogic_style_layer.gd" id="1_h4gro"]
+[ext_resource type="Script" uid="uid://dv08k6ljua6fm" path="res://addons/dialogic/Resources/dialogic_style.gd" id="2_t37gw"]
+
+[sub_resource type="Resource" id="Resource_wgqyu"]
+script = ExtResource("1_h4gro")
+
+[resource]
+script = ExtResource("2_t37gw")
+name = "New_File"
+layer_info = {
+"": SubResource("Resource_wgqyu")
+}
+metadata/_latest_layer = ""

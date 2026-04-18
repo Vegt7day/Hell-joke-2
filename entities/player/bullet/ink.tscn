@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://chi0256t86ms6" path="res://entities/player/bullet/ink.gd" id="1_wl7rs"]
 [ext_resource type="Texture2D" uid="uid://b3hq0h5siucuv" path="res://entities/player/bullet/墨.png" id="2_4treb"]
+[ext_resource type="AudioStream" uid="uid://dno0gg0tgvoce" path="res://assets/水滴.mp3" id="3_4treb"]
 
 [sub_resource type="Animation" id="Animation_788oy"]
 length = 0.001
@@ -194,3 +195,6 @@ libraries/ = SubResource("AnimationLibrary_fteom")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1809581232]
 shape = SubResource("RectangleShape2D_gbeba")
+
+[node name="disapear" type="AudioStreamPlayer" parent="." unique_id=87936297]
+stream = ExtResource("3_4treb")

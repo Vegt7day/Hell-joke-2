@@ -4,9 +4,13 @@
 [ext_resource type="Script" uid="uid://dse5wkqqyvx6n" path="res://entities/player/student/student.gd" id="1_l16gt"]
 [ext_resource type="Texture2D" uid="uid://busvwhnpvqcxf" path="res://entities/player/student/student_upper-sheet.png" id="1_mv0yr"]
 [ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="2_cwgbi"]
+[ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="5_dsjed"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ihx7a"]
-size = Vector2(98, 126)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dsjed"]
+size = Vector2(97, 31)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uvoxf"]
+size = Vector2(28, 94)
 
 [sub_resource type="Animation" id="Animation_l16gt"]
 length = 0.001
@@ -470,12 +474,17 @@ _data = {
 }
 
 [node name="Student" type="CharacterBody2D" unique_id=396663958]
+collision_layer = 2
 script = ExtResource("1_l16gt")
 ink_bullet_scene = ExtResource("2_cwgbi")
 
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="." unique_id=169298327]
+position = Vector2(1, -16)
+shape = SubResource("RectangleShape2D_dsjed")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=969579881]
-position = Vector2(0, -63)
-shape = SubResource("RectangleShape2D_ihx7a")
+position = Vector2(1, -78)
+shape = SubResource("RectangleShape2D_uvoxf")
 
 [node name="downer" type="Sprite2D" parent="." unique_id=224194038]
 position = Vector2(-48, -80)
@@ -510,3 +519,18 @@ position = Vector2(72, -76)
 
 [node name="Marker2D2" type="Marker2D" parent="." unique_id=160409663]
 position = Vector2(-73, -75)
+
+[node name="Marker2D3" type="Marker2D" parent="." unique_id=228996419]
+position = Vector2(10, -106)
+
+[node name="jump" type="AudioStreamPlayer" parent="." unique_id=538191384]
+stream = ExtResource("5_dsjed")
+
+[node name="walk" type="AudioStreamPlayer" parent="." unique_id=215325866]
+
+[node name="attack" type="AudioStreamPlayer" parent="." unique_id=1491403653]
+stream = ExtResource("5_dsjed")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=576155334]
+position = Vector2(1.5, -76.5)
+shape = SubResource("RectangleShape2D_dsjed")

@@ -27,6 +27,11 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 # 发射位置
 @onready var shoot_position_right: Marker2D = $Marker2D
 @onready var shoot_position_left: Marker2D = $Marker2D2
+@onready var jump: AudioStreamPlayer=$jump
+@onready var walk: AudioStreamPlayer = $walk
+@onready var attack: AudioStreamPlayer = $attack
+
+@onready var dialogic: Marker2D = $Marker2D3
 
 # 状态变量
 var is_attacking: bool = false
@@ -50,6 +55,7 @@ var jump_delay_remaining: float = 0.0
 var is_attack_delayed: bool = false
 var is_shoot_requested: bool = false
 var attack_delay_remaining: float = 0.0
+var last_shoot_facing_right=false
 
 func _ready():
 	# 初始化角色朝向
@@ -60,7 +66,8 @@ func _ready():
 	jump_timer.one_shot = true
 	jump_timer.timeout.connect(_on_jump_timer_timeout)
 	jump_timer.wait_time = jump_delay
-	
+	#var layout=Dialogic.start("timeline")
+	#layout.register_character("res://assets/Dialogic/中学生.dch",$Marker2D3)
 	# 初始化攻击计时器
 	add_child(attack_timer)
 	attack_timer.one_shot = true
@@ -166,6 +173,7 @@ func _physics_process(delta):
 
 func _on_jump_timer_timeout():
 	# 计时器超时，执行跳跃位移
+	jump.play()
 	if is_jump_requested and is_jump_delayed:
 		# 检查是否仍然可以跳跃
 		if is_on_floor() or coyote_time > 0:
@@ -235,10 +243,10 @@ func start_attack():
 		animation_player_up.play("upper_shoot_right")
 	else:
 		animation_player_up.play("upper_shoot_left")
-	
+	last_shoot_facing_right=facing_right
 	# 启动攻击计时器
 	attack_timer.start()
-	
+	attack.play()
 	# 启动攻击延迟计时器，0.3秒后发射子弹
 	attack_delay_timer.start()
 
@@ -263,10 +271,10 @@ func shoot():
 	var bullet = ink_bullet_scene.instantiate()
 	
 	# 根据朝向选择发射位置
-	if not facing_right:
-		bullet.initialize(shoot_position_left.global_position, facing_right)
+	if not last_shoot_facing_right:
+		bullet.initialize(shoot_position_left.global_position, last_shoot_facing_right)
 	else:
-		bullet.initialize(shoot_position_right.global_position, facing_right)
+		bullet.initialize(shoot_position_right.global_position, last_shoot_facing_right)
 	
 	# 将子弹添加到场景中
 	get_parent().add_child(bullet)
