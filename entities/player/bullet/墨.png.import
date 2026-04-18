@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://busvwhnpvqcxf"
-path="res://.godot/imported/student_upper-sheet.png-5c4a3dbed428cd3c1914dc3001b9edf8.ctex"
+uid="uid://b3hq0h5siucuv"
+path="res://.godot/imported/墨.png-4617aa7f06b3cb19f72d8e45270a5626.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://entities/player/student_upper-sheet.png"
-dest_files=["res://.godot/imported/student_upper-sheet.png-5c4a3dbed428cd3c1914dc3001b9edf8.ctex"]
+source_file="res://entities/player/bullet/墨.png"
+dest_files=["res://.godot/imported/墨.png-4617aa7f06b3cb19f72d8e45270a5626.ctex"]
 
 [params]
 

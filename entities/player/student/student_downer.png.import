@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dobx3pp8402av"
-path="res://.godot/imported/鞋_选择手_右-sheet.png-841ec17e40602e51013c503b47962475.ctex"
+uid="uid://ca5hqvkbk7g1m"
+path="res://.godot/imported/student_downer.png-1474684263b46f242884b2641c8f5426.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://entities/player/鞋_选择手_右-sheet.png"
-dest_files=["res://.godot/imported/鞋_选择手_右-sheet.png-841ec17e40602e51013c503b47962475.ctex"]
+source_file="res://entities/player/student/student_downer.png"
+dest_files=["res://.godot/imported/student_downer.png-1474684263b46f242884b2641c8f5426.ctex"]
 
 [params]
 

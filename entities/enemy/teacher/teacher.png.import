@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ca5hqvkbk7g1m"
-path="res://.godot/imported/student_downer.png-107434f8dffe99746a28f1647ef7348c.ctex"
+uid="uid://bq8j6q2svbfyc"
+path="res://.godot/imported/teacher.png-3621d7d05c89ff5a99b6a8a06a999f17.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://entities/player/student_downer.png"
-dest_files=["res://.godot/imported/student_downer.png-107434f8dffe99746a28f1647ef7348c.ctex"]
+source_file="res://entities/enemy/teacher/teacher.png"
+dest_files=["res://.godot/imported/teacher.png-3621d7d05c89ff5a99b6a8a06a999f17.ctex"]
 
 [params]
 
