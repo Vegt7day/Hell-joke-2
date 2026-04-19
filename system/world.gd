@@ -2,8 +2,6 @@ extends Node2D
 
 # 场景参数
 @export var level_duration: float = 30  # 关卡持续时间（秒）
-@export var teacher_path: CharacterBody2D  # 教师节点路径
-@export var player_path: CharacterBody2D  # 玩家节点路径
 @export var teacher_intro_timeline: String = "teacher_intro"  # 教师介绍时间线
 @export var student_escape_timeline: String = "student_intro"  # 学生逃跑时间线
 @export var door_area_path: NodePath  # 门区域路径
@@ -70,7 +68,12 @@ func _ready():
 func receive(sig:String):
 	if sig=="attack_start":
 		start_level()
-
+	if sig=="允许移动":
+		player.enable_action("move_left")
+		player.enable_action("move_right")
+	if sig=="禁止移动":
+		player.disable_action("move_left")
+		player.disable_action("move_right")
 func _physics_process(delta):
 	# 更新关卡时间
 	if is_level_active and not level_completed and not level_failed:
@@ -276,9 +279,11 @@ func _on_level_timer_timeout():
 func check_player_health():
 	"""检查玩家血量"""
 	if player and player.has_method("get_health"):
+		
 		var health = player.get_health()
 		if health <= 0:
 			on_player_death()
+		print(health)
 
 func on_player_death():
 	"""玩家死亡"""
@@ -324,10 +329,6 @@ func play_ending_dialogue(is_victory: bool):
 		if player:
 			dialog.register_character("res://assets/Dialogic/中学生.dch", player)
 	
-	# 解锁移动键
-	if player and player.has_method("enable_action"):
-		player.enable_action("move_left")
-		player.enable_action("move_right")
 
 func end_level():
 	"""关卡结束"""

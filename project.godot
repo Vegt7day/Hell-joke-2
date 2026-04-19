@@ -29,7 +29,9 @@ directories/dtl_directory={
 "student_intro": "res://assets/student_intro.dtl",
 "teacher_intro": "res://assets/teacher_intro.dtl",
 "timeline": "res://assets/timeline.dtl",
-"tip_开关与门1": "res://assets/tip_开关与门1.dtl"
+"tip_开关与门1": "res://assets/tip_开关与门1.dtl",
+"什么？！": "res://assets/什么？！.dtl",
+"哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl"
 }
 layout/style_directory={
 "": "res://assets/bubble.tres",

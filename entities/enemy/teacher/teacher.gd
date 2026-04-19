@@ -231,10 +231,10 @@ func _on_shoot_timer_timeout():
 
 func take_damage(damage_amount: float):
 	"""受到伤害"""
-	print("敌人受到子弹伤害: ", 0.5)
+	print("敌人受到子弹伤害: ", damage_amount)
 	
 	# 应用伤害
-	apply_damage(0.5)
+	apply_damage(damage_amount)
 
 func apply_damage(damage_amount: float):
 	"""应用伤害"""

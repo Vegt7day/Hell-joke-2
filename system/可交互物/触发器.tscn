@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://b814penuao5ry"]
+
+[ext_resource type="Script" uid="uid://dhrasl762exyc" path="res://system/可交互物/触发器.gd" id="1_1vt5f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s4jgj"]
+size = Vector2(96, 96)
+
+[node name="触发器" type="Area2D" unique_id=1732432861]
+collision_layer = 32
+collision_mask = 2
+script = ExtResource("1_1vt5f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=860967814]
+position = Vector2(0, -48)
+shape = SubResource("RectangleShape2D_s4jgj")
+
+[node name="DebugLabel" type="Label" parent="." unique_id=793176197]
+offset_left = -48.0
+offset_top = -119.0
+offset_right = 49.0
+offset_bottom = -96.0

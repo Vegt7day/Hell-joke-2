@@ -51,6 +51,7 @@ var is_jump_delayed: bool = false
 var is_jump_requested: bool = false
 var jump_timer_started: bool = false
 var jump_delay_remaining: float = 0.0
+var can_use_coyote_time: bool = false  # 新增：是否可以使用coyote time
 
 # 攻击相关变量
 var is_attack_delayed: bool = false
@@ -121,8 +122,18 @@ func _physics_process(delta):
 	# 处理coyote时间
 	if is_on_floor():
 		coyote_time = coyote_duration
+		# 在地面上时，重置跳跃状态
+		if is_jumping and is_on_floor_last_frame == false:
+			is_jumping = false
+			is_jump_delayed = false
+			can_use_coyote_time = true
+		elif not is_jumping and not is_jump_delayed:
+			can_use_coyote_time = true
 	else:
 		coyote_time -= delta
+		# 离开地面后，只有在没有跳跃的情况下才能使用coyote time
+		if not is_jumping and not is_jump_delayed:
+			can_use_coyote_time = true
 	
 	# 处理跳跃延迟剩余时间
 	if jump_delay_remaining > 0:
@@ -143,21 +154,34 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and not is_attacking:
 		start_attack()
 	
-	# 跳跃输入检测 - 修复：只有在地面上或coyote时间内，并且没有处于跳跃延迟中才能跳跃
-	if Input.is_action_just_pressed("jump") and not is_jump_delayed and (is_on_floor() or coyote_time > 0):
-		# 立即播放跳跃动画
-		animation_player_down.play("jump")
-		is_jumping = true
+	# 跳跃输入检测 - 彻底修复：只有在地面上或coyote时间内，并且可以使用coyote time，并且没有处于跳跃延迟中才能跳跃
+	if Input.is_action_just_pressed("jump") and not is_jump_delayed:
+		var can_jump = false
 		
-		# 设置跳跃延迟状态
-		is_jump_delayed = true
-		is_jump_requested = true
-		jump_delay_remaining = jump_delay
-		jump_buffer_time = jump_buffer_duration
+		# 检查是否在地面上
+		if is_on_floor():
+			can_jump = true
+		# 检查是否可以使用coyote time并且coyote_time大于0
+		elif can_use_coyote_time and coyote_time > 0:
+			can_jump = true
 		
-		# 启动跳跃延迟计时器
-		jump_timer.start()
-		jump_timer_started = true
+		if can_jump:
+			# 立即播放跳跃动画
+			animation_player_down.play("jump")
+			is_jumping = true
+			
+			# 设置跳跃延迟状态
+			is_jump_delayed = true
+			is_jump_requested = true
+			jump_delay_remaining = jump_delay
+			jump_buffer_time = jump_buffer_duration
+			
+			# 启动跳跃延迟计时器
+			jump_timer.start()
+			jump_timer_started = true
+			
+			# 禁用coyote time，防止在空中再次使用
+			can_use_coyote_time = false
 	
 	# 移动逻辑
 	if input_direction != 0:
@@ -201,12 +225,21 @@ func _on_jump_timer_timeout():
 	jump.play()
 	if is_jump_requested and is_jump_delayed:
 		# 检查是否仍然可以跳跃
-		if is_on_floor() or coyote_time > 0:
+		var can_jump = false
+		
+		# 检查是否在地面上
+		if is_on_floor():
+			can_jump = true
+		# 检查是否可以使用coyote time并且coyote_time大于0
+		elif can_use_coyote_time and coyote_time > 0:
+			can_jump = true
+		
+		if can_jump:
 			# 执行跳跃位移
 			velocity.y = jump_velocity
 			is_jumping = true
-			# 重要：跳跃执行后，重置coyote_time，防止在空中再次利用coyote time跳跃
-			coyote_time = 0.0
+			# 重要：跳跃执行后，禁用coyote_time，防止在空中再次跳跃
+			can_use_coyote_time = false
 		else:
 			# 不能跳跃，回到闲置或移动状态
 			is_jumping = false
@@ -320,12 +353,10 @@ func shoot():
 	# bullet.speed = 500.0
 
 func take_damage(damage_amount: float):
-	print("角色受到伤害: ", damage_amount)
 	stats.health-=damage_amount
-	print("角色health: ", stats.health)
-	if stats.health <=0:
-		print("die")
 
+func get_health():
+	return stats.health
 
 # 添加以下代码到角色脚本中
 
