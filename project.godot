@@ -70,6 +70,9 @@ glossary/default_case_sensitive=true
 layout/style_list=["res://assets/bubble.tres"]
 layout/default_style="res://assets/bubble.tres"
 variables={}
+text/autocolor_names=false
+text/autoadvance_enabled=true
+text/autoadvance_fixed_delay=1.0
 
 [display]
 
