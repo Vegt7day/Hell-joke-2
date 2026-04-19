@@ -6,8 +6,9 @@
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_1kfbk"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_l68gm"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_23k3x"]
-size = Vector2(97, 136)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l68gm"]
+radius = 24.5
+height = 104.0
 
 [sub_resource type="Animation" id="Animation_5a30s"]
 length = 0.001
@@ -144,8 +145,8 @@ collision_layer = 4
 script = ExtResource("1_8cnmc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1818641182]
-position = Vector2(-0.5, -68)
-shape = SubResource("RectangleShape2D_23k3x")
+position = Vector2(-1, -71)
+shape = SubResource("CapsuleShape2D_l68gm")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1129088073]
 libraries/ = SubResource("AnimationLibrary_l68gm")

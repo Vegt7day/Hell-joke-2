@@ -138,7 +138,7 @@ _data = {
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_7bjq7"]
-radius = 24.020824
+radius = 25.0
 
 [node name="开关" type="StaticBody2D" unique_id=1076644298]
 collision_layer = 16
@@ -149,12 +149,12 @@ script = ExtResource("1_7bjq7")
 material = SubResource("CanvasItemMaterial_jmglv")
 use_parent_material = true
 offset_left = -16.0
-offset_top = -16.0
+offset_top = -32.0
 offset_right = 16.0
-offset_bottom = 16.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=84480690]
+position = Vector2(0, -16)
 texture = SubResource("AtlasTexture_8rnna")
 hframes = 8
 region_enabled = true
@@ -164,4 +164,5 @@ region_rect = Rect2(0, 1, 512, 63)
 libraries/ = SubResource("AnimationLibrary_5um43")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=865360964]
+position = Vector2(-1, -16)
 shape = SubResource("CircleShape2D_7bjq7")

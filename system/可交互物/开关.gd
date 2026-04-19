@@ -22,9 +22,9 @@ func _ready():
 	
 	# 初始化开关状态
 	if is_on:
-		sprite_2d.frame = 3  # 开的状态
+		sprite_2d.frame = 0  # 开的状态
 	else:
-		sprite_2d.frame = 0  # 关的状态
+		sprite_2d.frame = 3  # 关的状态
 	# 根据颜色字符串设置ColorRect的颜色
 	match current_color:
 		"红":
