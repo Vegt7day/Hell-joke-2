@@ -93,14 +93,6 @@ func start_dialogue():
 		# 将对话添加到场景
 		add_child(dialog)
 		current_dialog = dialog
-		await get_tree().create_timer(30.0).timeout
-		if not dialogue_ended and is_instance_valid(dialog):
-			print("警告：对话超时未结束，强制开始关卡")
-			dialogic_check_timer.stop()
-			_on_intro_dialogue_ended()
-	else:
-		print("警告：Dialogic插件未找到，将跳过对话直接开始关卡")
-		_on_intro_dialogue_ended()
 
 
 func get_teacher_dialog_marker():

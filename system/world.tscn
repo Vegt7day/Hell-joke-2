@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
 [ext_resource type="PackedScene" uid="uid://ytj6dqiqemb5" path="res://entities/enemy/bullet/蚊子.tscn" id="5_2u1fa"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="7_b258r"]
+[ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="8_y8eji"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4yksg"]
 texture = ExtResource("1_4oalq")
@@ -65,7 +66,7 @@ bullet_scene = ExtResource("5_2u1fa")
 position = Vector2(27, -109)
 
 [node name="Student" parent="." unique_id=396663958 instance=ExtResource("3_bdba8")]
-position = Vector2(461, 615)
+position = Vector2(468, 608)
 move_speed = 300.0
 acceleration = 30.0
 
@@ -125,9 +126,13 @@ position = Vector2(577, 316)
 texture = SubResource("AtlasTexture_25x0f")
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward" unique_id=308698223]
-offset_left = -576.0
-offset_top = 83.0
-offset_right = 576.0
-offset_bottom = 583.0
+offset_left = -561.0
+offset_top = 84.0
+offset_right = 591.0
+offset_bottom = 584.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
+
+[node name="开关" parent="." unique_id=1755846247 instance=ExtResource("8_y8eji")]
+position = Vector2(208, 528)
+is_on = true

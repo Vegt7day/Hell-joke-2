@@ -27,7 +27,7 @@ region = Rect2(0, 53, 96, 4)
 atlas = ExtResource("3_otet3")
 region = Rect2(97, 54, 94, 2)
 
-[node name="Node2D" type="Node2D" unique_id=437079611]
+[node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1742936706]

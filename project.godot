@@ -130,6 +130,7 @@ dialogic_default_action={
 2d_physics/layer_2="Player"
 2d_physics/layer_3="Enemy"
 2d_physics/layer_4="player_bullet"
+2d_physics/layer_5="机关"
 
 [physics]
 
