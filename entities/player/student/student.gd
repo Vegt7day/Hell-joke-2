@@ -14,6 +14,7 @@ extends CharacterBody2D
 
 # 重力（从项目设置中获取）
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+@onready var stats: Stats = $Stats
 
 # 获取节点
 @onready var animation_down: Sprite2D = $downer
@@ -281,3 +282,10 @@ func shoot():
 	
 	# 可以调整子弹速度等参数
 	# bullet.speed = 500.0
+
+func take_damage(damage_amount: float):
+	print("角色受到伤害: ", damage_amount)
+	stats.health-=damage_amount
+	print("角色health: ", stats.health)
+	if stats.health <=0:
+		print("die")

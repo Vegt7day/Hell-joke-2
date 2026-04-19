@@ -181,6 +181,8 @@ _data = {
 size = Vector2(33, 31)
 
 [node name="Ink" type="CharacterBody2D" unique_id=1325919166]
+collision_layer = 8
+collision_mask = 5
 script = ExtResource("1_wl7rs")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=580844677]

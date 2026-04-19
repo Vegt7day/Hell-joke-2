@@ -4,7 +4,7 @@ extends CharacterBody2D
 @export var bullet_speed: float = 300.0  # 子弹速度
 @export var bullet_scene: PackedScene  # 子弹场景
 @export var face_direction: int = 1  # 1=向右, -1=向左
-@export var damage: int = 10  # 造成的伤害
+@export var damage: float = 0.05  # 造成的伤害
 
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D
@@ -20,6 +20,9 @@ var can_shoot: bool = true
 var shoot_interval: float = 2.0  # 发射间隔（秒），由世界场景控制
 var shoot_timer: Timer = Timer.new()  # 射击计时器
 var is_attacking_enabled: bool = false  # 是否允许攻击
+
+@onready var stats: Node = $Stats
+
 
 func _ready():
 	# 检查是否已设置发射点
@@ -142,9 +145,14 @@ func _on_shoot_timer_timeout():
 	if not is_dead and can_shoot and is_attacking_enabled:
 		shoot()
 
-func take_damage(damage_amount: int):
+func take_damage(damage_amount: float):
 	# 敌人受到伤害
 	print("敌人受到伤害: ", damage_amount)
+	
+	stats.health-=damage_amount
+	print("敌人health: ", stats.health)
+	if stats.health <=0:
+		die()
 	# 这里可以添加受伤动画、扣血逻辑等
 
 func die():

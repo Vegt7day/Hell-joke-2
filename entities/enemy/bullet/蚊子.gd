@@ -3,7 +3,7 @@ extends CharacterBody2D
 # 子弹参数
 @export var speed: float = 300.0
 @export var facing_right: bool = true
-@export var damage: int = 10
+@export var damage: float = 0.05
 @export var lifetime: float = 5.0
 @export var stick_to_target: bool = true  # 是否附着在目标上
 @export var stick_duration: float = 5  # 附着持续时间
@@ -32,7 +32,7 @@ var original_parent: Node
 var initial_position: Vector2 = Vector2.ZERO
 var initial_direction: bool = true
 var initial_speed: float = 300.0
-var initial_damage: int = 10
+var initial_damage: float = 0.05
 var needs_initialization: bool = false
 
 func _ready():
@@ -85,6 +85,11 @@ func _physics_process(delta):
 	if is_sticking and stick_target and is_instance_valid(stick_target):
 		# 更新位置，保持相对偏移
 		global_position = stick_target.global_position + relative_offset
+			# 对目标造成伤害
+		if stick_target.has_method("take_damage"):
+				stick_target.take_damage(damage)
+		
+		
 		return
 	
 	# 如果已经发生碰撞但未附着，不移动
@@ -102,7 +107,7 @@ func _physics_process(delta):
 		handle_collision(collision)
 
 func initialize(spawn_position: Vector2, shoot_direction: bool, bullet_speed: float = 300.0, 
-				bullet_damage: int = 10):
+				bullet_damage: float = 0.05):
 	"""
 	初始化子弹
 	"""
@@ -158,7 +163,13 @@ func handle_collision(collision: KinematicCollision2D):
 	# 如果开启附着功能且碰撞体有效
 	if stick_to_target and collider and is_instance_valid(collider):
 		# 附着到目标
-		stick_to_collider(collider)
+		var body_layers = collider.collision_layer
+			# 判断碰撞对象属于哪个层
+		if body_layers & 2:  # 检查第1层
+			stick_to_collider(collider)
+		if body_layers & 8:  #
+			print("player_bullet")
+			destroy()
 	else:
 		# 不附着，直接销毁
 		destroy()
@@ -186,9 +197,7 @@ func stick_to_collider(target: Node2D):
 	lifetime_timer.stop()
 	stick_timer.start()
 	
-	# 对目标造成伤害
-	if stick_target and stick_target.has_method("take_damage"):
-		stick_target.take_damage(damage)
+
 
 func _on_stick_timer_timeout():
 	"""附着时间到期，销毁子弹"""

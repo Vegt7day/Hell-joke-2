@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_bdba8"]
 [ext_resource type="PackedScene" uid="uid://dl5n0chjc58pd" path="res://entities/player/student/student.tscn" id="3_bdba8"]
 [ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
+[ext_resource type="PackedScene" uid="uid://ytj6dqiqemb5" path="res://entities/enemy/bullet/蚊子.tscn" id="5_2u1fa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4yksg"]
 texture = ExtResource("1_4oalq")
@@ -45,7 +46,7 @@ tile_set = SubResource("TileSet_2u1fa")
 
 [node name="teacher" parent="." unique_id=1927343229 instance=ExtResource("4_4yksg")]
 position = Vector2(771, 579)
-bullet_speed = 250.0
+bullet_scene = ExtResource("5_2u1fa")
 
 [node name="Marker2D3" type="Marker2D" parent="teacher" unique_id=425901930]
 position = Vector2(27, -109)

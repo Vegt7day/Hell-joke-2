@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://busvwhnpvqcxf" path="res://entities/player/student/student_upper-sheet.png" id="1_mv0yr"]
 [ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="2_cwgbi"]
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="5_dsjed"]
+[ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="6_uvoxf"]
+[ext_resource type="PackedScene" uid="uid://lmhmviqigfpb" path="res://system/ui/status_panel.tscn" id="7_r2ghn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dsjed"]
 size = Vector2(97, 31)
@@ -534,3 +536,15 @@ stream = ExtResource("5_dsjed")
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="." unique_id=576155334]
 position = Vector2(1.5, -76.5)
 shape = SubResource("RectangleShape2D_dsjed")
+
+[node name="Stats" parent="." unique_id=1279137 instance=ExtResource("6_uvoxf")]
+max_health = 1000
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=298142384]
+
+[node name="status panel" parent="CanvasLayer" unique_id=43131948 node_paths=PackedStringArray("stats") instance=ExtResource("7_r2ghn")]
+offset_left = 25.0
+offset_top = 23.0
+offset_right = 163.0
+offset_bottom = 61.0
+stats = NodePath("../../Stats")

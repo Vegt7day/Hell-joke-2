@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://1colpcddw04k"]
 
+[ext_resource type="Script" uid="uid://b1hskmrin7r7h" path="res://system/class/stats.gd" id="1_1kfbk"]
 [ext_resource type="Script" uid="uid://4s12inoufkdc" path="res://entities/enemy/teacher/teacher.gd" id="1_8cnmc"]
 [ext_resource type="Texture2D" uid="uid://bq8j6q2svbfyc" path="res://entities/enemy/teacher/teacher.png" id="1_23k3x"]
-[ext_resource type="PackedScene" uid="uid://ytj6dqiqemb5" path="res://entities/enemy/bullet/蚊子.tscn" id="2_1kfbk"]
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_1kfbk"]
+[ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_l68gm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_23k3x"]
 size = Vector2(97, 136)
@@ -139,8 +140,8 @@ _data = {
 }
 
 [node name="teacher" type="CharacterBody2D" unique_id=1927343229]
+collision_layer = 4
 script = ExtResource("1_8cnmc")
-bullet_scene = ExtResource("2_1kfbk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1818641182]
 position = Vector2(-0.5, -68)
@@ -164,3 +165,7 @@ position = Vector2(-114, -78)
 
 [node name="Marker2D2" type="Marker2D" parent="." unique_id=273930953]
 position = Vector2(25, -111)
+script = ExtResource("1_1kfbk")
+
+[node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_l68gm")]
+max_health = 1000

@@ -1,7 +1,7 @@
 extends Node2D
 
 # 场景参数
-@export var level_duration: float = 5  # 关卡持续时间（秒）
+@export var level_duration: float = 10  # 关卡持续时间（秒）
 @export var teacher_path: CharacterBody2D  # 教师节点路径
 @export var player_path: CharacterBody2D  # 玩家节点路径
 @export var teacher_intro_timeline: String = "teacher_intro"  # 教师介绍时间线
@@ -179,7 +179,7 @@ func start_level():
 	print("=== 开始关卡 ===")
 	is_level_active = true
 	level_start_time = Time.get_ticks_msec() / 1000.0
-	
+	start_teacher_attack()
 	# 启动关卡计时器
 	level_timer.start()
 	print("关卡计时器已启动，持续时间:", level_duration, "秒")
