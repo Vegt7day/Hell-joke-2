@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_bdba8"]
 [ext_resource type="PackedScene" uid="uid://dl5n0chjc58pd" path="res://entities/player/student/student.tscn" id="3_bdba8"]
 [ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
-[ext_resource type="PackedScene" uid="uid://ytj6dqiqemb5" path="res://entities/enemy/bullet/蚊子.tscn" id="5_2u1fa"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="7_b258r"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="8_y8eji"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="9_25x0f"]
+[ext_resource type="PackedScene" uid="uid://c3lidg7114ml" path="res://system/dialogic/到区域触发对话.tscn" id="10_ytupi"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4yksg"]
 texture = ExtResource("1_4oalq")
@@ -61,13 +61,12 @@ tile_set = SubResource("TileSet_2u1fa")
 
 [node name="teacher" parent="." unique_id=1927343229 instance=ExtResource("4_4yksg")]
 position = Vector2(771, 579)
-bullet_scene = ExtResource("5_2u1fa")
 
 [node name="Marker2D3" type="Marker2D" parent="teacher" unique_id=425901930]
 position = Vector2(27, -109)
 
 [node name="Student" parent="." unique_id=396663958 instance=ExtResource("3_bdba8")]
-position = Vector2(468, 608)
+position = Vector2(276, 607)
 move_speed = 300.0
 acceleration = 30.0
 
@@ -144,7 +143,7 @@ color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
 [node name="开关" parent="." unique_id=1755846247 instance=ExtResource("8_y8eji")]
-position = Vector2(-336, 512)
+position = Vector2(-592, 512)
 
 [node name="door" parent="." unique_id=1915584955 instance=ExtResource("9_25x0f")]
 position = Vector2(-752, 608)
@@ -158,9 +157,12 @@ position = Vector2(0, -32)
 [node name="door2" parent="door/door2/door" unique_id=467058907 instance=ExtResource("9_25x0f")]
 position = Vector2(0, -32)
 
-[node name="tip_开" type="Area2D" parent="." unique_id=1385665335]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="tip_开" unique_id=728947154]
+[node name="到区域触发对话" parent="." unique_id=865012812 instance=ExtResource("10_ytupi")]
+position = Vector2(-240, 576)
+dialogue_timeline = "res://assets/tip_开关与门1.dtl"
+debug_enabled = false
+debug_color = Color(0, 0.6096668, 0.62, 1)
+debug_collision_width = 100.365
 
 [connection signal="switch_state_changed" from="开关" to="door" method="_on_开关_switch_state_changed"]
 [connection signal="switch_state_changed" from="开关" to="door/door2" method="_on_开关_switch_state_changed"]

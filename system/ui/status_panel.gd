@@ -7,6 +7,7 @@ extends Node2D
 
 func _ready() -> void:
 	stats.health_changed.connect(update_heath)
+	update_heath()
 
 func update_heath() -> void :
 	var percentage :=stats.health / float(stats.max_health)

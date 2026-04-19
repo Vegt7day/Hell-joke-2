@@ -74,6 +74,20 @@ func _ready():
 	attack_timer.one_shot = true
 	attack_timer.timeout.connect(_on_attack_timer_timeout)
 	attack_timer.wait_time = attack_duration
+	# 禁用跳跃键
+	disable_action("jump")
+
+	# 禁用移动键
+	disable_action("move_left")
+	disable_action("move_right")
+
+	# 禁用攻击键
+	disable_action("attack")
+
+	# 解锁跳跃键
+	enable_action("jump")
+	
+	
 	
 	# 初始化攻击延迟计时器
 	add_child(attack_delay_timer)
@@ -84,8 +98,18 @@ func _ready():
 	# 检查子弹场景是否已设置
 	if not ink_bullet_scene:
 		push_warning("ink_bullet_scene 未设置！请在编辑器中分配子弹场景。")
-
+	_init_input_control()
+	print("输入控制系统初始化完成")
+	
+	
 func _physics_process(delta):
+	if enable_input_control:
+		# 检查被禁用的动作，确保它们没有被处理
+		for action in disabled_actions:
+			if disabled_actions[action] and Input.is_action_pressed(action):
+				# 确保动作被释放
+				if Input.is_action_pressed(action):
+					Input.action_release(action)
 	# 处理冷却时间
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
@@ -119,7 +143,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and not is_attacking:
 		start_attack()
 	
-	# 跳跃输入检测
+	# 跳跃输入检测 - 修复：只有在地面上或coyote时间内，并且没有处于跳跃延迟中才能跳跃
 	if Input.is_action_just_pressed("jump") and not is_jump_delayed and (is_on_floor() or coyote_time > 0):
 		# 立即播放跳跃动画
 		animation_player_down.play("jump")
@@ -181,6 +205,8 @@ func _on_jump_timer_timeout():
 			# 执行跳跃位移
 			velocity.y = jump_velocity
 			is_jumping = true
+			# 重要：跳跃执行后，重置coyote_time，防止在空中再次利用coyote time跳跃
+			coyote_time = 0.0
 		else:
 			# 不能跳跃，回到闲置或移动状态
 			is_jumping = false
@@ -226,6 +252,16 @@ func _on_attack_delay_timer_timeout():
 
 func _input(event):
 	# 为攻击键添加键盘映射
+	if enable_input_control:
+		_process_controlled_input(event)
+	
+	# 现有的攻击键键盘映射代码
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_J:
+			Input.action_press("attack")
+		elif not event.pressed and event.keycode == KEY_J:
+			Input.action_release("attack")
+	
 	if event is InputEventKey:
 		if event.pressed and event.keycode == KEY_J:
 			Input.action_press("attack")
@@ -289,3 +325,159 @@ func take_damage(damage_amount: float):
 	print("角色health: ", stats.health)
 	if stats.health <=0:
 		print("die")
+
+
+# 添加以下代码到角色脚本中
+
+# ... 在现有的导出变量后面添加 ...
+@export var enable_input_control: bool = true  # 是否启用输入控制
+
+# ... 在现有的变量声明后面添加 ...
+var disabled_actions: Dictionary = {}  # 存储被禁用的动作和它们的原始状态
+var action_callbacks: Dictionary = {}  # 存储动作的回调函数
+var action_presses: Dictionary = {}  # 存储动作的按下状态
+
+
+
+# 初始化输入控制
+func _init_input_control():
+	# 定义要监控的动作
+	var actions_to_monitor = ["move_left", "move_right", "jump", "attack"]
+	
+	for action in actions_to_monitor:
+		# 确保动作存在
+		if InputMap.has_action(action):
+			disabled_actions[action] = false
+			action_callbacks[action] = false
+			action_presses[action] = false
+		else:
+			print("警告：动作 ", action, " 不存在于InputMap中")
+
+
+
+# 处理受控的输入
+func _process_controlled_input(event):
+	# 检查所有被监控的动作
+	for action in disabled_actions.keys():
+		# 如果动作被禁用，阻止其输入事件
+		if disabled_actions[action] and event.is_action(action):
+			# 标记事件为已处理，阻止其传播
+			event.set_echo(false)  # 阻止回声
+			
+			# 记录动作回调状态
+			if event.is_pressed():
+				action_presses[action] = true
+				if action_callbacks[action]:
+					# 如果有回调函数，调用它
+					call(action + "_pressed_callback")
+			else:
+				action_presses[action] = false
+				if action_callbacks[action]:
+					# 如果有回调函数，调用它
+					call(action + "_released_callback")
+			
+			# 阻止事件被默认处理
+			get_viewport().set_input_as_handled()
+			return
+
+# 禁用指定的动作
+func disable_action(action_name: String, add_callback: bool = false, callback_node: Node = null, callback_method: String = ""):
+	if not InputMap.has_action(action_name):
+		print("错误：动作 ", action_name, " 不存在于InputMap中")
+		return
+	
+	if action_name in disabled_actions:
+		disabled_actions[action_name] = true
+		action_callbacks[action_name] = add_callback
+		
+		if add_callback and callback_node and callback_method != "":
+			# 连接回调信号
+			if not callback_node.has_signal(action_name + "_pressed"):
+				callback_node.add_user_signal(action_name + "_pressed")
+			if not callback_node.has_signal(action_name + "_released"):
+				callback_node.add_user_signal(action_name + "_released")
+			
+			# 添加回调方法
+			if not has_method(action_name + "_pressed_callback"):
+				_add_callback_method(action_name, callback_node, callback_method)
+		
+		print("动作 ", action_name, " 已被禁用")
+		
+		# 立即释放当前按下的该动作
+		if Input.is_action_pressed(action_name):
+			Input.action_release(action_name)
+	else:
+		print("警告：动作 ", action_name, " 未被监控")
+
+# 解锁指定的动作
+func enable_action(action_name: String):
+	if not InputMap.has_action(action_name):
+		print("错误：动作 ", action_name, " 不存在于InputMap中")
+		return
+	
+	if action_name in disabled_actions:
+		disabled_actions[action_name] = false
+		action_callbacks[action_name] = false
+		
+		# 移除回调方法
+		if has_method(action_name + "_pressed_callback"):
+			_remove_callback_method(action_name)
+		
+		print("动作 ", action_name, " 已被解锁")
+	else:
+		print("警告：动作 ", action_name, " 未被监控")
+
+# 添加回调方法
+func _add_callback_method(action_name: String, callback_node: Node, callback_method: String):
+	# 创建动态方法
+	var callback_func = func():
+		callback_node.call(callback_method, action_name)
+	
+	# 存储回调函数
+	set(action_name + "_callback_func", callback_func)
+	
+	# 创建按下回调方法
+	var pressed_callback = func():
+		var callback = get(action_name + "_callback_func")
+		if callback:
+			callback.call()
+	
+	# 创建释放回调方法
+	var released_callback = func():
+		var callback = get(action_name + "_callback_func")
+		if callback:
+			callback.call()
+	
+	# 添加方法到对象
+	if not has_method(action_name + "_pressed_callback"):
+		set(action_name + "_pressed_callback", pressed_callback)
+	if not has_method(action_name + "_released_callback"):
+		set(action_name + "_released_callback", released_callback)
+
+# 移除回调方法
+func _remove_callback_method(action_name: String):
+	if has_method(action_name + "_pressed_callback"):
+		# 移除动态方法
+		set(action_name + "_pressed_callback", null)
+	if has_method(action_name + "_released_callback"):
+		set(action_name + "_released_callback", null)
+	if get(action_name + "_callback_func"):
+		set(action_name + "_callback_func", null)
+
+# 检查动作是否被禁用
+func is_action_disabled(action_name: String) -> bool:
+	if action_name in disabled_actions:
+		return disabled_actions[action_name]
+	return false
+
+# 禁用所有动作
+func disable_all_actions():
+	for action in disabled_actions.keys():
+		disable_action(action)
+	print("所有动作已被禁用")
+
+# 解锁所有动作
+func enable_all_actions():
+	for action in disabled_actions.keys():
+		enable_action(action)
+	print("所有动作已被解锁")

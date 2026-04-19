@@ -28,7 +28,8 @@ directories/dch_directory={
 directories/dtl_directory={
 "student_intro": "res://assets/student_intro.dtl",
 "teacher_intro": "res://assets/teacher_intro.dtl",
-"timeline": "res://assets/timeline.dtl"
+"timeline": "res://assets/timeline.dtl",
+"tip_开关与门1": "res://assets/tip_开关与门1.dtl"
 }
 layout/style_directory={
 "": "res://assets/bubble.tres",
@@ -131,6 +132,8 @@ dialogic_default_action={
 2d_physics/layer_3="Enemy"
 2d_physics/layer_4="player_bullet"
 2d_physics/layer_5="机关"
+2d_physics/layer_6="提示"
+2d_physics/layer_7="Enemy_bullet"
 
 [physics]
 

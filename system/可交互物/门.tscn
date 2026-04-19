@@ -138,7 +138,7 @@ _data = {
 atlas = ExtResource("2_vs45f")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vs45f"]
-size = Vector2(35, 35)
+size = Vector2(42, 42)
 
 [node name="door" type="StaticBody2D" unique_id=1915584955]
 collision_mask = 0

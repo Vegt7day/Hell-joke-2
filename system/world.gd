@@ -1,7 +1,7 @@
 extends Node2D
 
 # 场景参数
-@export var level_duration: float = 10  # 关卡持续时间（秒）
+@export var level_duration: float = 30  # 关卡持续时间（秒）
 @export var teacher_path: CharacterBody2D  # 教师节点路径
 @export var player_path: CharacterBody2D  # 玩家节点路径
 @export var teacher_intro_timeline: String = "teacher_intro"  # 教师介绍时间线
@@ -45,13 +45,26 @@ func _ready():
 	dialogic_check_timer.wait_time = 0.5
 	dialogic_check_timer.stop()
 	Dialogic.signal_event.connect(receive)
+	
 	# 连接门区域信号
 	if door_area and door_area is Area2D:
 		door_area.body_entered.connect(_on_door_area_entered)
 	
-	# 延迟后开始对话
-	print("等待1秒后开始对话...")
-	await get_tree().create_timer(1.0).timeout
+	# 等待节点完全初始化
+	await get_tree().process_frame
+	
+	# 检查玩家节点是否有效
+	if player and player.has_method("disable_action"):
+		# 禁用跳跃键
+		player.disable_action("jump")
+		# 禁用移动键
+		player.disable_action("move_left")
+		player.disable_action("move_right")
+		# 禁用攻击键
+		player.disable_action("attack")
+		# 解锁跳跃键
+		player.enable_action("jump")
+	
 	start_dialogue()
 
 func receive(sig:String):
@@ -66,12 +79,12 @@ func _physics_process(delta):
 		# 检查玩家血量
 		check_player_health()
 
-
 func start_dialogue():
 	"""开始对话"""
 	if dialogue_started:
 		return
 	dialogue_started = true
+	
 	# 检查Dialogic是否可用
 	if Dialogic:
 		# 启动教师介绍时间线
@@ -93,7 +106,33 @@ func start_dialogue():
 		# 将对话添加到场景
 		add_child(dialog)
 		current_dialog = dialog
+		
+		# Dialogic 2.0 信号连接方式
+		# 通过事件系统连接信号
+		dialog.connect("event_end", Callable(self, "_on_intro_dialogue_ended"))
+		dialog.connect("signal_event", Callable(self, "receive"))
 
+func _on_intro_dialogue_ended():
+	"""教师介绍对话结束回调"""
+	print("=== 教师介绍对话结束回调被调用 ===")
+	
+	# 防止重复调用
+	if dialogue_ended:
+		return
+	
+	dialogue_ended = true
+	dialogic_check_timer.stop()
+	
+	# 清理Dialogic对话节点
+	if current_dialog and is_instance_valid(current_dialog):
+		current_dialog.queue_free()
+		current_dialog = null
+	
+	# 激活关卡
+	start_level()
+	
+	# 通知玩家关卡开始
+	show_message("关卡开始！坚持5秒！", 3.0)
 
 func get_teacher_dialog_marker():
 	"""获取教师的对话标记点"""
@@ -143,57 +182,75 @@ func get_student_dialog_marker():
 	print("未找到学生对话标记点")
 	return null
 
-func _on_intro_dialogue_ended():
-	"""教师介绍对话结束回调"""
-	print("=== 教师介绍对话结束回调被调用 ===")
-	
-	# 防止重复调用
-	if dialogue_ended:
-		return
-	
-	dialogue_ended = true
-	dialogic_check_timer.stop()
-	
-	# 清理Dialogic对话节点
-	if current_dialog and is_instance_valid(current_dialog):
-		current_dialog.queue_free()
-		current_dialog = null
-	
-	# 激活关卡
-	start_level()
-	
-	# 通知玩家关卡开始
-	show_message("关卡开始！坚持5秒！", 3.0)
-
-
 func start_level():
 	"""开始关卡"""
 	print("=== 开始关卡 ===")
 	is_level_active = true
 	level_start_time = Time.get_ticks_msec() / 1000.0
+	
+	# 连接教师时间结束信号
+	if teacher and teacher.has_signal("teacher_time_out"):
+		teacher.teacher_time_out.connect(_on_teacher_time_out)
+		print("已连接教师teacher_time_out信号")
+	
+	# 启动教师攻击
 	start_teacher_attack()
+	
 	# 启动关卡计时器
 	level_timer.start()
 	print("关卡计时器已启动，持续时间:", level_duration, "秒")
 
+func _on_teacher_time_out():
+	"""教师时间结束信号处理"""
+	print("=== 接收到教师时间结束信号 ===")
+	
+	if not level_completed and not level_failed and not student_escaped:
+		print("教师时间结束！玩家胜利！")
+		level_completed = true
+		
+		# 停止教师攻击
+		#stop_teacher_attack()
+		#
+		# 断开教师信号连接
+		if teacher and teacher.has_signal("teacher_time_out") and teacher.teacher_time_out.is_connected(_on_teacher_time_out):
+			teacher.teacher_time_out.disconnect(_on_teacher_time_out)
+		
+		# 播放胜利对话
+		play_ending_dialogue(true)
+		
+		# 关卡结束
+		end_level()
+
 func start_teacher_attack():
 	"""命令教师开始攻击"""
-	if teacher and teacher.has_method("start_attacking"):
-		teacher.start_attacking(2.0)  # 2秒攻击间隔
-		print("教师开始攻击，间隔2秒")
-	else:
-		print("警告：教师节点未找到或没有start_attacking方法")
-		if teacher:
+	if teacher:
+		# 检查教师是否有自动扣血方法
+		if teacher.has_method("start_auto_damage"):
+			teacher.start_auto_damage()
+			print("教师开始自动扣血")
+		
+		# 检查教师是否有开始攻击方法
+		if teacher.has_method("start_attacking"):
+			teacher.start_attacking(2.0)  # 2秒攻击间隔
+			print("教师开始攻击，间隔2秒")
+		else:
+			print("警告：教师节点没有start_attacking方法")
 			print("教师节点类型:", teacher.get_class())
-			print("教师节点方法列表:")
-			for method in teacher.get_method_list():
-				print("  - ", method["name"])
+	else:
+		print("警告：教师节点未找到")
 
 func stop_teacher_attack():
 	"""命令教师停止攻击"""
-	if teacher and teacher.has_method("stop_attacking"):
-		teacher.stop_attacking()
-		print("教师停止攻击")
+	if teacher:
+		# 停止自动扣血
+		if teacher.has_method("stop_auto_damage"):
+			teacher.stop_auto_damage()
+			print("教师停止自动扣血")
+		
+		# 停止攻击
+		if teacher.has_method("stop_attacking"):
+			teacher.stop_attacking()
+			print("教师停止攻击")
 	else:
 		print("警告：教师节点未找到或没有stop_attacking方法")
 
@@ -204,7 +261,11 @@ func _on_level_timer_timeout():
 		level_completed = true
 		
 		# 停止教师攻击
-		stop_teacher_attack()
+		#stop_teacher_attack()
+		#
+		# 断开教师信号连接
+		if teacher and teacher.has_signal("teacher_time_out") and teacher.teacher_time_out.is_connected(_on_teacher_time_out):
+			teacher.teacher_time_out.disconnect(_on_teacher_time_out)
 		
 		# 播放胜利对话
 		play_ending_dialogue(true)
@@ -225,26 +286,18 @@ func on_player_death():
 		print("玩家血量见底！")
 		level_failed = true
 		
-		# 停止教师攻击
-		stop_teacher_attack()
+		## 停止教师攻击
+		#stop_teacher_attack()
+		#
+		# 断开教师信号连接
+		if teacher and teacher.has_signal("teacher_time_out") and teacher.teacher_time_out.is_connected(_on_teacher_time_out):
+			teacher.teacher_time_out.disconnect(_on_teacher_time_out)
 		
 		# 播放失败对话
 		play_ending_dialogue(false)
 		
 		# 关卡结束
 		end_level()
-
-func on_player_escape():
-	"""玩家触发逃跑"""
-	if not level_failed and not level_completed and not student_escaped:
-		student_escaped = true
-		print("玩家触发逃跑！")
-		
-		# 停止教师攻击
-		stop_teacher_attack()
-		
-		# 播放逃跑对话
-		play_escape_dialogue()
 
 func _on_door_area_entered(body: Node2D):
 	"""玩家进入门区域"""
@@ -254,13 +307,6 @@ func _on_door_area_entered(body: Node2D):
 		
 		# 显示门提示
 		show_message("门关上了！按'J'键射击'开'字开门", 3.0)
-
-func on_door_unlocked():
-	"""门被打开"""
-	print("门被打开了！")
-	
-	# 触发逃跑
-	on_player_escape()
 
 func play_ending_dialogue(is_victory: bool):
 	"""播放结局对话"""
@@ -277,12 +323,11 @@ func play_ending_dialogue(is_victory: bool):
 	else:
 		if player:
 			dialog.register_character("res://assets/Dialogic/中学生.dch", player)
-
-
-func play_escape_dialogue():
-	"""播放逃跑对话"""
-	var dialogue_text = "中学生: 老师，我突然肚子疼，我去上个厕所\n\n老教师: 又想逃跑？门都没有！\n\n中学生: 可恶，门关上了，不过虽然我没有枪，但是我带了笔\n\n提示: 按'J'键射击，射击'开'字有意想不到的效果..."
-	show_message(dialogue_text, 6.0)
+	
+	# 解锁移动键
+	if player and player.has_method("enable_action"):
+		player.enable_action("move_left")
+		player.enable_action("move_right")
 
 func end_level():
 	"""关卡结束"""
