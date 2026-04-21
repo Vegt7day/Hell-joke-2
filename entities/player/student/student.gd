@@ -1,3 +1,5 @@
+class_name Player
+
 extends CharacterBody2D
 
 # 移动参数
@@ -11,6 +13,11 @@ extends CharacterBody2D
 
 # 子弹相关参数
 @export var ink_bullet_scene: PackedScene  # 子弹场景
+
+@onready var interaction_icon: AnimatedSprite2D = $interactionIcon
+
+
+
 
 # 重力（从项目设置中获取）
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -45,7 +52,7 @@ var is_on_floor_last_frame: bool = true
 var jump_buffer_time: float = 0.0
 var jump_buffer_duration: float = 0.3
 var jump_pressed: bool = false
-var coyote_time: float = 0.0
+var coyote_time: float = 0.0 
 var coyote_duration: float = 0.5
 var is_jump_delayed: bool = false
 var is_jump_requested: bool = false
@@ -58,6 +65,9 @@ var is_attack_delayed: bool = false
 var is_shoot_requested: bool = false
 var attack_delay_remaining: float = 0.0
 var last_shoot_facing_right=false
+var interacting_with:Array[Interactable]
+var 接触触发_with:Array[接触触发]
+
 
 func _ready():
 	# 初始化角色朝向
@@ -103,7 +113,30 @@ func _ready():
 	print("输入控制系统初始化完成")
 	
 	
+	
+func register_interactable(v:Interactable):
+	if v in interacting_with:
+		return
+	interacting_with.append(v)
+
+func unregister_interactable(v:Interactable):
+
+	interacting_with.erase(v)
+
+func register_接触触发(v:接触触发):
+	if v in 接触触发_with:
+		return
+	接触触发_with.append(v)
+
+func unregister_接触触发(v:接触触发):
+
+	接触触发_with.erase(v)
+
+
+
 func _physics_process(delta):
+	
+	interaction_icon.visible=not interacting_with.is_empty()
 	if enable_input_control:
 		# 检查被禁用的动作，确保它们没有被处理
 		for action in disabled_actions:
@@ -153,6 +186,11 @@ func _physics_process(delta):
 	# 攻击输入检测
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and not is_attacking:
 		start_attack()
+	
+	if Input.is_action_just_pressed("interact") and interacting_with:
+		interacting_with.back().interact()
+	if 接触触发_with:
+		接触触发_with.back().interact()
 	
 	# 跳跃输入检测 - 彻底修复：只有在地面上或coyote时间内，并且可以使用coyote time，并且没有处于跳跃延迟中才能跳跃
 	if Input.is_action_just_pressed("jump") and not is_jump_delayed:

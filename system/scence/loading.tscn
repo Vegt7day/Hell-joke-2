@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://cqr7e2u51rc0w"]
+
+[ext_resource type="Script" uid="uid://b00oh06vlodqw" path="res://system/scence/loading.gd" id="1_3xipy"]
+[ext_resource type="Texture2D" uid="uid://bv8vwaid5hj5g" path="res://system/scence/加载文件.png" id="1_b5hbu"]
+[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="2_y7ho5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y7ho5"]
+atlas = ExtResource("1_b5hbu")
+
+[sub_resource type="Animation" id="Animation_y7ho5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 432, 54)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_3xipy"]
+resource_name = "new_animation"
+length = 0.6
+loop_mode = 1
+step = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 432, 54)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [1, 2, 3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_i0waq"]
+_data = {
+&"RESET": SubResource("Animation_y7ho5"),
+&"new_animation": SubResource("Animation_3xipy")
+}
+
+[node name="Control" type="Node2D" unique_id=948058200]
+script = ExtResource("1_3xipy")
+metadata/_edit_vertical_guides_ = [640.0]
+metadata/_edit_horizontal_guides_ = [360.0]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=816416424]
+position = Vector2(640, 360)
+scale = Vector2(9, 9)
+texture = SubResource("AtlasTexture_y7ho5")
+hframes = 4
+frame = 1
+region_enabled = true
+region_rect = Rect2(0, 0, 432, 54)
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=24591046]
+z_index = -1
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(1.12, 1.12)
+texture = ExtResource("2_y7ho5")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1454430995]
+libraries/ = SubResource("AnimationLibrary_i0waq")

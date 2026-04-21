@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://coaf3l4q1s1xk"]
+
+[ext_resource type="Script" uid="uid://dmeycnqmlfdgn" path="res://system/可交互物/Teleporter.gd" id="1_bntnf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eitji"]
+size = Vector2(1024, 50)
+
+[node name="Hell" type="Area2D" unique_id=2032551443]
+collision_layer = 128
+collision_mask = 2
+script = ExtResource("1_bntnf")
+metadata/_custom_type_script = "uid://dmeycnqmlfdgn"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2088028490]
+position = Vector2(0, 7)
+shape = SubResource("RectangleShape2D_eitji")

@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://c7dv8iqw4kvvi"]
+
+[ext_resource type="Script" uid="uid://bvuvp1taidrls" path="res://system/可交互物/接触触发.gd" id="1_3kmhm"]
+
+[node name="接触触发" type="Area2D" unique_id=483767925]
+collision_layer = 128
+collision_mask = 2
+script = ExtResource("1_3kmhm")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

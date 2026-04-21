@@ -145,6 +145,7 @@ _data = {
 collision_layer = 4
 script = ExtResource("1_8cnmc")
 bullet_scene = ExtResource("2_1kfbk")
+metadata/_edit_vertical_guides_ = [640.0]
 
 [node name="stats" parent="." unique_id=1279137 instance=ExtResource("4_l68gm")]
 max_health = 30
@@ -175,4 +176,5 @@ position = Vector2(25, -111)
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=521074167]
 
 [node name="boss_health_bar" parent="CanvasLayer" unique_id=862236894 node_paths=PackedStringArray("stats") instance=ExtResource("6_okk1h")]
+position = Vector2(640, 0)
 stats = NodePath("../../stats")

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://2x5jatopou75"]
+
+[ext_resource type="Script" uid="uid://d21je1g8shcha" path="res://system/自动传送.gd" id="1_71ouu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_71ouu"]
+size = Vector2(138, 138)
+
+[node name="地下传送门" type="Area2D" unique_id=922243628]
+collision_layer = 128
+collision_mask = 2
+script = ExtResource("1_71ouu")
+metadata/_custom_type_script = "uid://d21je1g8shcha"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=817951337]
+shape = SubResource("RectangleShape2D_71ouu")

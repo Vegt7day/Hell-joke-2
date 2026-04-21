@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="5_dsjed"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="6_uvoxf"]
 [ext_resource type="PackedScene" uid="uid://lmhmviqigfpb" path="res://system/ui/status_panel.tscn" id="7_r2ghn"]
+[ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://system/ui/按e提示.png" id="8_pkybt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dsjed"]
 size = Vector2(97, 25.5)
@@ -475,6 +476,42 @@ _data = {
 &"run": SubResource("Animation_1hyeh")
 }
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_2xjcy"]
+atlas = ExtResource("8_pkybt")
+region = Rect2(0, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w18fk"]
+atlas = ExtResource("8_pkybt")
+region = Rect2(72, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yfuqh"]
+atlas = ExtResource("8_pkybt")
+region = Rect2(144, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7sivc"]
+atlas = ExtResource("8_pkybt")
+region = Rect2(216, 0, 72, 72)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_022kj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2xjcy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w18fk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yfuqh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7sivc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Student" type="CharacterBody2D" unique_id=396663958]
 collision_layer = 2
 collision_mask = 69
@@ -546,3 +583,9 @@ max_health = 1000
 
 [node name="status panel" parent="CanvasLayer" unique_id=43131948 node_paths=PackedStringArray("stats") instance=ExtResource("7_r2ghn")]
 stats = NodePath("../../Stats")
+
+[node name="interactionIcon" type="AnimatedSprite2D" parent="." unique_id=121447576]
+position = Vector2(1, -157)
+sprite_frames = SubResource("SpriteFrames_022kj")
+autoplay = "default"
+frame_progress = 0.08574191
