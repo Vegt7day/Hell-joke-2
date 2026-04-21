@@ -76,6 +76,10 @@ func _ready():
 	# 启动存活计时器
 	lifetime_timer.start()
 
+
+func take_damage(damage_amount: float):
+	destroy()
+
 func _physics_process(delta):
 	# 如果子弹不活跃或已销毁，不进行物理处理
 	if not is_active or is_destroyed:
@@ -146,7 +150,6 @@ func _enter_tree():
 		apply_initialization()
 
 func handle_collision(collision: KinematicCollision2D):
-	"""处理碰撞事件"""
 	# 如果已经在销毁过程中，直接返回
 	if is_destroyed:
 		return
@@ -167,8 +170,7 @@ func handle_collision(collision: KinematicCollision2D):
 			# 判断碰撞对象属于哪个层
 		if body_layers & 2:  # 检查第1层
 			stick_to_collider(collider)
-		if body_layers & 8:  #
-			print("player_bullet")
+		else:
 			destroy()
 	else:
 		# 不附着，直接销毁

@@ -142,6 +142,7 @@ size = Vector2(42, 42)
 
 [node name="door" type="StaticBody2D" unique_id=1915584955]
 collision_mask = 0
+collision_priority = 0.1
 script = ExtResource("1_gxmog")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1152197087]

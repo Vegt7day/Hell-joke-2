@@ -27,19 +27,7 @@ extends DialogicLayoutLayer
 @export var behaviour_direction: Vector2 = Vector2(1, -1)
 @export var behaviour_mouse_filter: Control.MouseFilter
 
-@export_group('Name Label')
-@export_subgroup("Name Label")
-@export var name_label_enabled: bool = true
-@export var name_label_font_size: int = 15
-@export_file('*.ttf') var name_label_font: String = ""
-@export var name_label_use_character_color: bool = true
-@export var name_label_color: Color = Color.BLACK
-@export_subgroup("Name Label Box")
-@export var name_label_box_modulate: Color = Color.WHITE
-@export var name_label_box_modulate_use_character_color: bool = false
-@export var name_label_padding: Vector2 = Vector2(5,0)
-@export var name_label_offset: Vector2 = Vector2(0,0)
-@export var name_label_alignment := HBoxContainer.ALIGNMENT_BEGIN
+
 
 
 @export_group('Choices')
@@ -67,24 +55,59 @@ var fallback_bubble: TextBubble = null
 
 const textbubble_scene: PackedScene = preload("res://addons/dialogic/Modules/DefaultLayoutParts/Layer_Textbubble/text_bubble.tscn")
 
-
 func add_bubble() -> TextBubble:
 	var new_bubble: TextBubble = textbubble_scene.instantiate()
+	
+	# 修复：检查气泡是否已经有父节点
+	if new_bubble.get_parent():
+		print("警告：气泡已有父节点，正在检查场景树...")
+		print("气泡父节点:", new_bubble.get_parent().name)
+		print("气泡是否在场景树中:", new_bubble.is_inside_tree())
+		
+		# 如果气泡已经在场景树中，先将其从父节点移除
+		if new_bubble.is_inside_tree():
+			print("正在从场景树移除气泡...")
+			new_bubble.get_parent().remove_child(new_bubble)
+	
+	# 修复：确保只添加一次
+	if not is_instance_valid(new_bubble) or not is_instance_valid(self):
+		print("错误：气泡或布局层无效")
+		return null
+	
+	# 再次检查气泡是否还有父节点
+	if new_bubble.get_parent():
+		print("严重错误：气泡仍然有父节点，尝试强制移除")
+		var parent = new_bubble.get_parent()
+		parent.remove_child(new_bubble)
+	
+	# 检查当前布局层是否有效
+	if not is_inside_tree():
+		print("错误：布局层不在场景树中")
+		return null
+	
+	# 添加气泡到布局层
 	add_child(new_bubble)
 	bubbles.append(new_bubble)
+	
+	print("气泡添加成功，当前气泡数量:", bubbles.size())
 	return new_bubble
-
 
 ## Called by dialogic whenever export overrides might change
 func _apply_export_overrides() -> void:
 	pass
 
-
-
 ## Called by the base layer before opening the bubble
 func bubble_apply_overrides(bubble:TextBubble) -> void:
-	## TEXT FONT AND COLOR
+	# TEXT FONT AND COLOR
 	var rtl: RichTextLabel = bubble.text
+	
+	# 修复：添加空值检查
+	if rtl == null or not is_instance_valid(rtl):
+		print("错误：气泡文本节点为 null 或无效，无法应用主题覆盖")
+		# 尝试延迟应用
+		call_deferred("_apply_bubble_overrides_deferred", bubble)
+		return
+		
 	rtl.add_theme_font_size_override(&'normal_font', text_size)
 	rtl.add_theme_font_size_override(&"normal_font_size", text_size)
 	rtl.add_theme_font_size_override(&"bold_font_size", text_size)
@@ -103,56 +126,27 @@ func bubble_apply_overrides(bubble:TextBubble) -> void:
 		rtl.add_theme_font_override(&"bold_italics_font", load(bold_italic_font) as Font)
 	bubble.set(&'max_width', text_max_width)
 
-
-	## BOX & TAIL COLOR
+	# BOX & TAIL COLOR - 只保留Group的颜色设置
 	var tail_and_bg_group := (bubble.get_node("Group") as CanvasGroup)
-	tail_and_bg_group.self_modulate = box_modulate
-	if box_modulate_by_character_color and bubble.current_character != null:
-		tail_and_bg_group.self_modulate = bubble.current_character.color
+	if tail_and_bg_group and is_instance_valid(tail_and_bg_group):
+		tail_and_bg_group.self_modulate = box_modulate
+		if box_modulate_by_character_color and bubble.current_character != null:
+			tail_and_bg_group.self_modulate = bubble.current_character.color
 
-	var background := (bubble.get_node('%Background') as ColorRect)
-	var bg_material: ShaderMaterial = (background.material as ShaderMaterial)
-	bg_material.set_shader_parameter(&'radius', box_corner_radius)
-	bg_material.set_shader_parameter(&'wobble_amount', box_wobble_amount)
-	bg_material.set_shader_parameter(&'wobble_speed', box_wobble_speed)
-	bg_material.set_shader_parameter(&'wobble_detail', box_wobble_detail)
-
+	# 注意：我们已经删除了Background节点，所以移除相关Shader设置
 	bubble.padding = box_padding
 
-
-	## BEHAVIOUR
+	# BEHAVIOUR
 	bubble.safe_zone = behaviour_distance
 	bubble.base_direction = behaviour_direction
-	bubble.change_mouse_filter(behaviour_mouse_filter)
+	
+	# 调用change_mouse_filter，添加空值检查
+	if behaviour_mouse_filter != null:
+		bubble.change_mouse_filter(behaviour_mouse_filter)
 
 
-	## NAME LABEL SETTINGS
-	var nl: DialogicNode_NameLabel = bubble.name_label
-	nl.add_theme_font_size_override(&"font_size", name_label_font_size)
 
-	if !name_label_font.is_empty():
-		nl.add_theme_font_override(&'font', load(name_label_font) as Font)
-
-
-	if name_label_use_character_color and bubble.current_character:
-		nl.add_theme_color_override(&"font_color", bubble.current_character.color)
-	else:
-		nl.add_theme_color_override(&"font_color", name_label_color)
-
-	var nlp: PanelContainer = bubble.name_label_box
-	nlp.self_modulate = name_label_box_modulate
-	if name_label_box_modulate_use_character_color and bubble.current_character:
-		nlp.self_modulate = bubble.current_character.color
-	nlp.get_theme_stylebox(&'panel').content_margin_left = name_label_padding.x
-	nlp.get_theme_stylebox(&'panel').content_margin_right = name_label_padding.x
-	nlp.get_theme_stylebox(&'panel').content_margin_top = name_label_padding.y
-	nlp.get_theme_stylebox(&'panel').content_margin_bottom = name_label_padding.y
-	bubble.name_label_offset = name_label_offset
-	bubble.name_label_alignment = name_label_alignment
-
-	nlp.get_parent().visible = name_label_enabled
-
-	## CHOICE SETTINGS
+	# CHOICE SETTINGS
 	if choices_layout_force_lines:
 		bubble.add_choice_container(VBoxContainer.new(), choices_layout_alignment, choices_custom_button, maximum_choices)
 	else:
@@ -188,4 +182,22 @@ func bubble_apply_overrides(bubble:TextBubble) -> void:
 	choice_theme.set_color(&'font_hover_color', &'Button', choices_text_color_hover)
 	choice_theme.set_color(&'font_focus_color', &'Button', choices_text_color_focus)
 	choice_theme.set_color(&'font_disabled_color', &'Button', choices_text_color_disabled)
-	bubble.choice_container.theme = choice_theme
+	
+	# 确保选择容器存在
+	if bubble.choice_container and is_instance_valid(bubble.choice_container):
+		bubble.choice_container.theme = choice_theme
+
+func _apply_bubble_overrides_deferred(bubble:TextBubble) -> void:
+	# 延迟应用覆盖，等待一帧后重试
+	if not is_instance_valid(bubble):
+		return
+	
+	await get_tree().process_frame
+	
+	# 再次检查气泡文本节点
+	var rtl: RichTextLabel = bubble.text
+	if rtl and is_instance_valid(rtl):
+		print("延迟应用气泡覆盖成功")
+		bubble_apply_overrides(bubble)
+	else:
+		print("错误：延迟应用后气泡文本节点仍为 null")

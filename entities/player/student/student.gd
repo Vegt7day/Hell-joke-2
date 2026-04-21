@@ -14,6 +14,11 @@ extends CharacterBody2D
 # 子弹相关参数
 @export var ink_bullet_scene: PackedScene  # 子弹场景
 
+# 墨水恢复参数
+@export var ink_recovery_rate: float = 1  # 每次恢复的墨水量，从1.0改为0.01
+@export var ink_recovery_interval: float = 0.1  # 墨水恢复间隔，单位：秒，从1.0改为0.01
+@export var max_ink: float = 100  # 最大墨水量
+
 @onready var interaction_icon: AnimatedSprite2D = $interactionIcon
 
 
@@ -31,6 +36,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var jump_timer: Timer = Timer.new()
 @onready var attack_timer: Timer = Timer.new()
 @onready var attack_delay_timer: Timer = Timer.new()
+@onready var ink_recovery_timer: Timer = Timer.new()  # 墨水恢复计时器
 
 # 发射位置
 @onready var shoot_position_right: Marker2D = $Marker2D
@@ -106,12 +112,20 @@ func _ready():
 	attack_delay_timer.timeout.connect(_on_attack_delay_timer_timeout)
 	attack_delay_timer.wait_time = attack_shoot_delay
 	
+	# 初始化墨水恢复计时器
+	add_child(ink_recovery_timer)
+	ink_recovery_timer.one_shot = false
+	ink_recovery_timer.wait_time = ink_recovery_interval
+	ink_recovery_timer.timeout.connect(_on_ink_recovery_timer_timeout)
+	ink_recovery_timer.start()
+	
 	# 检查子弹场景是否已设置
 	if not ink_bullet_scene:
 		push_warning("ink_bullet_scene 未设置！请在编辑器中分配子弹场景。")
 	_init_input_control()
 	print("输入控制系统初始化完成")
-	
+	print("墨水恢复系统初始化完成，恢复速率：", ink_recovery_rate, "/次，恢复间隔：", ink_recovery_interval, "秒，最大墨水量：", max_ink)
+	print("墨水每秒恢复量：", ink_recovery_rate / ink_recovery_interval, "/秒")
 	
 	
 func register_interactable(v:Interactable):
@@ -307,10 +321,13 @@ func _on_attack_timer_timeout():
 	else:
 		animation_player_up.play("upper_idle_left")
 
+
 func _on_attack_delay_timer_timeout():
 	# 攻击延迟计时器超时，执行发射子弹
 	if is_shoot_requested and is_attack_delayed and is_attacking:
 		# 发射子弹
+
+		stats.ink-=15
 		shoot()
 		is_shoot_requested = false
 		is_attack_delayed = false
@@ -340,6 +357,9 @@ func _input(event):
 			Input.action_release("attack")
 
 func start_attack():
+
+	if stats.ink<=0:
+		return
 	is_attacking = true
 	attack_cooldown = attack_duration
 	is_attack_delayed = true
@@ -396,9 +416,16 @@ func take_damage(damage_amount: float):
 func get_health():
 	return stats.health
 
-# 添加以下代码到角色脚本中
+func _on_ink_recovery_timer_timeout():
+	# 墨水恢复计时器超时，恢复墨水
+	if stats.ink < max_ink:
+		stats.ink = min(stats.ink + ink_recovery_rate, max_ink)
+		# 可以添加调试输出，但频率太高，建议注释掉
+		print("墨水恢复: ", stats.ink, "/", max_ink)
+	else:
+		# 墨水已满
+		pass
 
-# ... 在现有的导出变量后面添加 ...
 @export var enable_input_control: bool = true  # 是否启用输入控制
 
 # ... 在现有的变量声明后面添加 ...

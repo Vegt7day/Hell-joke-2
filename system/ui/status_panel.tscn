@@ -13,15 +13,15 @@ region = Rect2(326, -2, 105, 92)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_otet3"]
 atlas = ExtResource("2_qtcyv")
-region = Rect2(734, 0, 207, 44)
+region = Rect2(739, 11, 197, 23)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qtcyv"]
 atlas = ExtResource("2_qtcyv")
-region = Rect2(727, 45, 223, 44)
+region = Rect2(739, 55, 197, 23)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rdj4t"]
 atlas = ExtResource("2_qtcyv")
-region = Rect2(639, 40, 34, 59)
+region = Rect2(639, 44, 34, 44)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mxto2"]
 atlas = ExtResource("2_qtcyv")
@@ -55,10 +55,10 @@ texture = SubResource("AtlasTexture_ysatu")
 [node name="HealthBar" type="TextureProgressBar" parent="外框" unique_id=1365006029]
 layout_direction = 3
 layout_mode = 0
-offset_left = 3.0
-offset_top = -5.0
-offset_right = 210.0
-offset_bottom = 39.0
+offset_left = -2.0
+offset_top = 6.0
+offset_right = 205.0
+offset_bottom = 50.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
@@ -73,7 +73,12 @@ texture_progress_offset = Vector2(1, 1)
 [node name="EasedHealthBar" type="TextureProgressBar" parent="外框/HealthBar" unique_id=1729769315]
 show_behind_parent = true
 layout_direction = 3
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.033816423
+anchor_top = -0.022727273
+anchor_right = -0.033816423
+anchor_bottom = -0.022727273
 offset_left = -9.0
 offset_top = 1.0
 offset_right = 214.0
@@ -94,15 +99,15 @@ metadata/_edit_use_anchors_ = true
 layout_direction = 3
 layout_mode = 0
 offset_left = -56.0
-offset_top = 33.0
+offset_top = 37.0
 offset_right = 151.0
-offset_bottom = 92.0
+offset_bottom = 96.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 max_value = 1.0
 step = 0.0
-value = 0.655
+value = 0.815
 fill_mode = 3
 stretch_margin_right = 95
 stretch_margin_bottom = 4

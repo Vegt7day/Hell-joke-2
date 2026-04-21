@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="10_m8c1u"]
 [ext_resource type="PackedScene" uid="uid://c3lidg7114ml" path="res://system/dialogic/到区域触发对话.tscn" id="10_ytupi"]
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
+[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_js66a"]
 texture = ExtResource("1_4oalq")
@@ -268,6 +269,8 @@ trap_group = "1"
 position = Vector2(-992, 704)
 dialogue_timeline = "res://assets/什么？！.dtl"
 debug_enabled = false
+
+[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("14_xr4xx")]
 
 [connection signal="switch_state_changed" from="开关" to="door" method="_on_开关_switch_state_changed"]
 [connection signal="switch_state_changed" from="开关" to="door/door2" method="_on_开关_switch_state_changed"]

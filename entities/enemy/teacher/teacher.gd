@@ -52,6 +52,8 @@ func _ready():
 	shoot_timer.wait_time = shoot_interval
 	shoot_timer.timeout.connect(_on_shoot_timer_timeout)
 	
+	add_to_group("enemies")
+	
 	# 初始朝向设置
 	if face_direction == -1:
 		sprite.flip_h = true
@@ -284,6 +286,9 @@ func _on_student_intro_triggered():
 	
 	# 不停止攻击，只停止自动扣血
 	stop_auto_damage()
+	
+
+	
 	
 	# 注意：这里不调用stop_attacking()，所以攻击会继续
 

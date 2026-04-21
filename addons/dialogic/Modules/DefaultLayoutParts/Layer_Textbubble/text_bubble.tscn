@@ -1,14 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://dlx7jcvm52tyw"]
+[gd_scene format=3 uid="uid://dlx7jcvm52tyw"]
 
 [ext_resource type="Script" uid="uid://bminl7x3r40vc" path="res://addons/dialogic/Modules/DefaultLayoutParts/Layer_Textbubble/text_bubble.gd" id="1_jdhpk"]
 [ext_resource type="Shader" uid="uid://byskpb7ypvuab" path="res://addons/dialogic/Modules/DefaultLayoutParts/Layer_Textbubble/text_bubble.gdshader" id="2_1mhvf"]
+[ext_resource type="Texture2D" uid="uid://bqlcfts7sj11p" path="res://addons/dialogic/样式/气泡/气泡.png" id="2_aa5yc"]
 [ext_resource type="Script" uid="uid://drhfq6rmdeuri" path="res://addons/dialogic/Modules/Text/node_dialog_text.gd" id="3_syv35"]
 [ext_resource type="Script" uid="uid://dpv2dfiv5dhmr" path="res://addons/dialogic/Modules/Text/node_type_sound.gd" id="4_7bm4b"]
-[ext_resource type="Script" uid="uid://bak74s0kcr0ao" path="res://addons/dialogic/Modules/Text/node_name_label.gd" id="6_5gd03"]
-
-[sub_resource type="Curve" id="Curve_0j8nu"]
-_data = [Vector2(0, 1), 0.0, -1.0, 0, 1, Vector2(1, 0), -1.0, 0.0, 1, 0]
-point_count = 2
+[ext_resource type="AudioStream" uid="uid://dno0gg0tgvoce" path="res://assets/水滴.mp3" id="6_cs4it"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_lsfnp"]
 noise_type = 0
@@ -16,8 +13,8 @@ fractal_type = 0
 cellular_jitter = 0.15
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kr7hw"]
-seamless = true
 noise = SubResource("FastNoiseLite_lsfnp")
+seamless = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_60xbe"]
 resource_local_to_scene = true
@@ -30,83 +27,63 @@ shader_parameter/wobble_amount = 0.75
 shader_parameter/wobble_speed = 10.0
 shader_parameter/wobble_detail = 0.51
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6ls0"]
-content_margin_left = 5.0
-content_margin_right = 5.0
-bg_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-shadow_color = Color(0.152941, 0.152941, 0.152941, 0.12549)
-shadow_size = 5
-
-[node name="TextBubble" type="Control"]
+[node name="TextBubble" type="Control" unique_id=1473366640]
 layout_mode = 3
-anchors_preset = 0
+anchor_left = -0.32900003
+anchor_top = -0.254
+anchor_bottom = 0.26700002
+offset_left = 29.120026
+offset_top = -100.119995
+offset_right = -152.0
+offset_bottom = -192.24002
 script = ExtResource("1_jdhpk")
 
-[node name="Group" type="CanvasGroup" parent="."]
+[node name="Group" type="CanvasGroup" parent="." unique_id=693842157]
 
-[node name="Tail" type="Line2D" parent="Group"]
+[node name="Background" type="ColorRect" parent="Group" unique_id=1797299897]
 unique_name_in_owner = true
-points = PackedVector2Array(-9, 7, -29, 118, -95, 174, -193, 195)
-width = 96.0
-width_curve = SubResource("Curve_0j8nu")
-
-[node name="Background" type="ColorRect" parent="Group"]
-unique_name_in_owner = true
+visible = false
 material = SubResource("ShaderMaterial_60xbe")
-offset_left = -115.0
-offset_top = -69.0
-offset_right = 108.0
-offset_bottom = 83.0
+offset_left = -509.0
+offset_top = -126.0
+offset_right = -286.0
+offset_bottom = 26.0
 mouse_filter = 2
 
-[node name="DialogText" type="RichTextLabel" parent="." node_paths=PackedStringArray("textbox_root")]
+[node name="NinePatchRect" type="NinePatchRect" parent="Group" unique_id=163767998]
+z_index = 1
+offset_left = -310.0
+offset_top = -146.0
+offset_right = 655.0
+offset_bottom = 298.0
+texture = ExtResource("2_aa5yc")
+region_rect = Rect2(27, 24, 206, 209)
+patch_margin_left = 14
+patch_margin_top = 13
+patch_margin_right = 13
+patch_margin_bottom = 14
+
+[node name="DialogText" type="RichTextLabel" parent="." unique_id=538490433 node_paths=PackedStringArray("textbox_root")]
 unique_name_in_owner = true
+z_index = 2
 clip_contents = false
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -53.0
-offset_top = -13.0
-offset_right = 53.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = 42.0
+offset_top = 3.0
+offset_right = 502.0
+offset_bottom = 393.0
 theme_override_colors/default_color = Color(0, 0, 0, 1)
+bbcode_enabled = true
 fit_content = true
 scroll_active = false
+vertical_alignment = 1
+justification_flags = 0
 visible_characters_behavior = 1
 script = ExtResource("3_syv35")
 textbox_root = NodePath("..")
 
-[node name="DialogicNode_TypeSounds" type="AudioStreamPlayer" parent="DialogText"]
+[node name="DialogicNode_TypeSounds" type="AudioStreamPlayer" parent="DialogText" unique_id=1953875339]
 script = ExtResource("4_7bm4b")
-
-[node name="NameLabelPositioner" type="HBoxContainer" parent="DialogText"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 23.0
-grow_horizontal = 2
-alignment = 1
-
-[node name="NameLabelPanel" type="PanelContainer" parent="DialogText/NameLabelPositioner"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_h6ls0")
-
-[node name="NameLabel" type="Label" parent="DialogText/NameLabelPositioner/NameLabelPanel" node_paths=PackedStringArray("name_label_root")]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-script = ExtResource("6_5gd03")
-name_label_root = NodePath("..")
-use_character_color = false
+end_sound = ExtResource("6_cs4it")
 
 [connection signal="started_revealing_text" from="DialogText" to="." method="_on_dialog_text_started_revealing_text"]

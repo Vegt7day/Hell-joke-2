@@ -146,11 +146,11 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7bv5w"]
-size = Vector2(33, 31)
+size = Vector2(47.5, 32.5)
 
 [node name="蚊子" type="CharacterBody2D" unique_id=1346345363]
-collision_layer = 64
-collision_mask = 10
+collision_layer = 72
+collision_mask = 26
 script = ExtResource("1_05b2m")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1315790127]
@@ -163,7 +163,7 @@ region_rect = Rect2(0, 0, 1344, 96)
 libraries/ = SubResource("AnimationLibrary_c4b4e")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1925394695]
-position = Vector2(0, 1)
+position = Vector2(7.25, 0.25)
 shape = SubResource("RectangleShape2D_7bv5w")
 
 [node name="shooting" type="AudioStreamPlayer" parent="." unique_id=672304745]

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://btabg4u8s8x8o"]
+
+[ext_resource type="Script" uid="uid://yivwmkfwrvfr" path="res://addons/dialogic/Modules/DefaultLayoutParts/Base_Default/default_layout_base.gd" id="1_ifsho"]
+[ext_resource type="PackedScene" uid="uid://d2it0xiap3gnt" path="res://addons/dialogic/Modules/DefaultLayoutParts/Layer_Textbubble/text_bubble_layer.tscn" id="4_uft88"]
+
+[node name="Custom" type="CanvasLayer" unique_id=1073146102]
+script = ExtResource("1_ifsho")
+
+[node name="TextBubbleLayer" parent="." unique_id=484503372 instance=ExtResource("4_uft88")]
+text_size = 32
+normal_font = "uid://ba7c2komi8rsr"
+bold_font = "uid://ba7c2komi8rsr"
+italic_font = "uid://ba7c2komi8rsr"
+bold_italic_font = "uid://ba7c2komi8rsr"
+apply_overrides_on_ready = true

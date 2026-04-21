@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="DialogicStyle" format=3 uid="uid://df1th7nispvgd"]
+
+[ext_resource type="PackedScene" uid="uid://syki6k0e6aac" path="res://addons/dialogic/Modules/DefaultLayoutParts/Base_TextBubble/text_bubble_base.tscn" id="1_t2d7n"]
+[ext_resource type="Script" uid="uid://bwg6yncmh2cml" path="res://addons/dialogic/Resources/dialogic_style_layer.gd" id="2_q3rmx"]
+[ext_resource type="Script" uid="uid://dv08k6ljua6fm" path="res://addons/dialogic/Resources/dialogic_style.gd" id="5_5tp1f"]
+
+[sub_resource type="Resource" id="Resource_n4inx"]
+script = ExtResource("2_q3rmx")
+scene = ExtResource("1_t2d7n")
+
+[resource]
+script = ExtResource("5_5tp1f")
+name = "New_File"
+layer_info = {
+"": SubResource("Resource_n4inx")
+}
+metadata/_latest_layer = ""

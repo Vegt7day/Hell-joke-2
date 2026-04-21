@@ -8,9 +8,11 @@ layer = 99
 script = ExtResource("1_llum1")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1063501712]
+z_index = 4096
 offset_right = 72.39819
 offset_bottom = 720.0
 scale = Vector2(17.68, 1)
+mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
 [node name="PlayerStats" parent="." unique_id=1279137 instance=ExtResource("2_toj2w")]

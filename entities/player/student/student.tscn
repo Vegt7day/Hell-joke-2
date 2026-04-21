@@ -514,7 +514,7 @@ animations = [{
 
 [node name="Student" type="CharacterBody2D" unique_id=396663958]
 collision_layer = 2
-collision_mask = 69
+collision_mask = 5
 platform_floor_layers = 4294967231
 script = ExtResource("1_l16gt")
 ink_bullet_scene = ExtResource("2_cwgbi")
@@ -585,4 +585,4 @@ max_health = 1000
 position = Vector2(1, -157)
 sprite_frames = SubResource("SpriteFrames_022kj")
 autoplay = "default"
-frame_progress = 0.95218396
+frame_progress = 0.12256785

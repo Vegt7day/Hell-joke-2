@@ -80,6 +80,12 @@ variables={}
 text/autocolor_names=false
 text/autoadvance_enabled=true
 text/autoadvance_fixed_delay=1.0
+translation/enabled=false
+translation/original_locale="zh_Hans"
+translation/file_mode=1
+translation/translation_folder=""
+translation/save_mode=0
+translation/add_separator=false
 
 [display]
 
