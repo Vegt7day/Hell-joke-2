@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cwnvqmdyl2j3i"]
+
+[ext_resource type="Script" uid="uid://ns6ycj2hy1ny" path="res://system/globals/game/game.gd" id="1_llum1"]
+[ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="2_toj2w"]
+
+[node name="Game" type="CanvasLayer" unique_id=1668650706]
+layer = 99
+script = ExtResource("1_llum1")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1063501712]
+offset_right = 72.39819
+offset_bottom = 720.0
+scale = Vector2(17.68, 1)
+color = Color(0, 0, 0, 1)
+
+[node name="PlayerStats" parent="." unique_id=1279137 instance=ExtResource("2_toj2w")]
+max_health = 1000

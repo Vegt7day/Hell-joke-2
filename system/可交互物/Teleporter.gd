@@ -1,10 +1,10 @@
 class_name Teleporter
 
 extends Interactable
+@export var entry_point:String
 
 @export_file("*.tscn") var path:String
 
 func interact()->void:
 	super()
-	get_tree().change_scene_to_file(path)
-	
+	Game.change_scene(path,entry_point)

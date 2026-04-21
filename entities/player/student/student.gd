@@ -21,7 +21,7 @@ extends CharacterBody2D
 
 # 重力（从项目设置中获取）
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-@onready var stats: Stats = $Stats
+@onready var stats: Stats = Game.player_stats
 
 # 获取节点
 @onready var animation_down: Sprite2D = $downer

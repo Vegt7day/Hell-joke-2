@@ -567,8 +567,6 @@ position = Vector2(10, -106)
 [node name="jump" type="AudioStreamPlayer" parent="." unique_id=538191384]
 stream = ExtResource("5_dsjed")
 
-[node name="walk" type="AudioStreamPlayer" parent="." unique_id=215325866]
-
 [node name="attack" type="AudioStreamPlayer" parent="." unique_id=1491403653]
 stream = ExtResource("5_dsjed")
 
@@ -581,11 +579,10 @@ max_health = 1000
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=298142384]
 
-[node name="status panel" parent="CanvasLayer" unique_id=43131948 node_paths=PackedStringArray("stats") instance=ExtResource("7_r2ghn")]
-stats = NodePath("../../Stats")
+[node name="status panel" parent="CanvasLayer" unique_id=43131948 instance=ExtResource("7_r2ghn")]
 
 [node name="interactionIcon" type="AnimatedSprite2D" parent="." unique_id=121447576]
 position = Vector2(1, -157)
 sprite_frames = SubResource("SpriteFrames_022kj")
 autoplay = "default"
-frame_progress = 0.08574191
+frame_progress = 0.95218396

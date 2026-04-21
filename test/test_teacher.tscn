@@ -204,12 +204,12 @@ position = Vector2(800, 480)
 path = "uid://cb28e04q4603v"
 
 [node name="接触触发" parent="." unique_id=483767925 instance=ExtResource("9_8tocs")]
-position = Vector2(576, 576)
+position = Vector2(544, 32)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="接触触发" unique_id=665197454]
 position = Vector2(-608, -64)
 shape = SubResource("RectangleShape2D_fssad")
 
 [node name="地下传送门" parent="." unique_id=922243628 instance=ExtResource("10_5asf3")]
-position = Vector2(128, 512)
+position = Vector2(-320, 512)
 path = "uid://cb28e04q4603v"

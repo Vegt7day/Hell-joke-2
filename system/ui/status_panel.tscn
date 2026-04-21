@@ -1,61 +1,64 @@
 [gd_scene format=3 uid="uid://lmhmviqigfpb"]
 
 [ext_resource type="Script" uid="uid://dv5qa18qbluus" path="res://system/ui/status_panel.gd" id="1_rswnf"]
-[ext_resource type="Texture2D" uid="uid://bq2o4qubipamy" path="res://system/ui/头像框.png" id="2_ysatu"]
-[ext_resource type="Texture2D" uid="uid://dk8fbnkmyy57h" path="res://system/ui/血条.png" id="3_otet3"]
+[ext_resource type="Texture2D" uid="uid://bfm1pts62jioj" path="res://system/ui/ui.png" id="2_qtcyv"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rdj4t"]
-content_margin_left = 3.0
-content_margin_top = 3.0
-content_margin_right = 3.0
-content_margin_bottom = 3.0
-texture = ExtResource("2_ysatu")
-region_rect = Rect2(30, 30, 36, 36)
+[sub_resource type="AtlasTexture" id="AtlasTexture_rswnf"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(0, 0, 320, 90)
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_mxto2"]
-load_path = "res://.godot/imported/student_upper-sheet.png-f66e6ad550f3835b2be91486a76bada8.ctex"
+[sub_resource type="AtlasTexture" id="AtlasTexture_ysatu"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(326, -2, 105, 92)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_otet3"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(734, 0, 207, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qtcyv"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(727, 45, 223, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rdj4t"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(639, 40, 34, 59)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mxto2"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(626, -13, 60, 51)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0jv2l"]
-atlas = SubResource("CompressedTexture2D_mxto2")
-region = Rect2(2144, 0, 32, 32)
+atlas = ExtResource("2_qtcyv")
+region = Rect2(680, -23, 38, 66)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_brda4"]
-atlas = ExtResource("3_otet3")
-region = Rect2(0, 53, 96, 4)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1g7q4"]
-atlas = ExtResource("3_otet3")
-region = Rect2(97, 54, 94, 2)
+atlas = ExtResource("2_qtcyv")
+region = Rect2(674, 46, 35, 39)
 
 [node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1742936706]
-custom_minimum_size = Vector2(140, 0)
-offset_right = 311.0
-offset_bottom = 95.0
-localize_numeral_system = false
-color = Color(0.624721, 0.23991266, 0.14083955, 1)
+[node name="外框" type="TextureRect" parent="." unique_id=311222353]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_rswnf")
 
-[node name="status panel" type="HBoxContainer" parent="." unique_id=43131948]
-offset_right = 391.0
-offset_bottom = 93.0
-size_flags_horizontal = 4
+[node name="头像" type="TextureRect" parent="外框" unique_id=1098264628]
+z_index = 1
+layout_mode = 0
+offset_left = 7.0
+offset_top = -2.0
+offset_right = 112.0
+offset_bottom = 90.0
+texture = SubResource("AtlasTexture_ysatu")
 
-[node name="Avatarbox" type="PanelContainer" parent="status panel" unique_id=1304642445]
-custom_minimum_size = Vector2(38, 38)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_rdj4t")
-
-[node name="Avatar" type="TextureRect" parent="status panel/Avatarbox" unique_id=1662519808]
-layout_mode = 2
-texture = SubResource("AtlasTexture_0jv2l")
-expand_mode = 2
-stretch_mode = 1
-
-[node name="HealthBar" type="TextureProgressBar" parent="status panel" unique_id=1932358805]
+[node name="HealthBar" type="TextureProgressBar" parent="外框" unique_id=1365006029]
 layout_direction = 3
-layout_mode = 2
+layout_mode = 0
+offset_left = 3.0
+offset_top = -5.0
+offset_right = 210.0
+offset_bottom = 39.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
@@ -64,6 +67,68 @@ step = 0.0
 value = 1.0
 stretch_margin_right = 95
 stretch_margin_bottom = 4
-texture_under = SubResource("AtlasTexture_brda4")
-texture_progress = SubResource("AtlasTexture_1g7q4")
+texture_progress = SubResource("AtlasTexture_otet3")
 texture_progress_offset = Vector2(1, 1)
+
+[node name="EasedHealthBar" type="TextureProgressBar" parent="外框/HealthBar" unique_id=1729769315]
+show_behind_parent = true
+layout_direction = 3
+layout_mode = 0
+offset_left = -9.0
+offset_top = 1.0
+offset_right = 214.0
+offset_bottom = 45.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+max_value = 1.0
+step = 0.0
+value = 0.445
+stretch_margin_right = 95
+stretch_margin_bottom = 4
+texture_progress = SubResource("AtlasTexture_qtcyv")
+texture_progress_offset = Vector2(1, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="InkBar" type="TextureProgressBar" parent="外框" unique_id=732746693]
+layout_direction = 3
+layout_mode = 0
+offset_left = -56.0
+offset_top = 33.0
+offset_right = 151.0
+offset_bottom = 92.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+max_value = 1.0
+step = 0.0
+value = 0.655
+fill_mode = 3
+stretch_margin_right = 95
+stretch_margin_bottom = 4
+texture_progress = SubResource("AtlasTexture_rdj4t")
+texture_progress_offset = Vector2(1, 1)
+
+[node name="瓶子" type="TextureRect" parent="外框" unique_id=611363329]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 28.0
+offset_right = 169.0
+offset_bottom = 79.0
+texture = SubResource("AtlasTexture_mxto2")
+
+[node name="TextureRect" type="TextureRect" parent="外框" unique_id=1601962238]
+layout_mode = 0
+offset_left = 227.0
+offset_top = 17.0
+offset_right = 267.0
+offset_bottom = 83.0
+texture = SubResource("AtlasTexture_0jv2l")
+
+[node name="TextureRect2" type="TextureRect" parent="外框" unique_id=2096655792]
+layout_mode = 0
+offset_left = 276.0
+offset_top = 40.0
+offset_right = 316.0
+offset_bottom = 80.0
+texture = SubResource("AtlasTexture_brda4")
