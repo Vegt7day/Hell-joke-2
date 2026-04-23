@@ -13,7 +13,7 @@ offset_right = 72.39819
 offset_bottom = 720.0
 scale = Vector2(17.68, 1)
 mouse_filter = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0)
 
 [node name="PlayerStats" parent="." unique_id=1279137 instance=ExtResource("2_toj2w")]
 max_health = 1000

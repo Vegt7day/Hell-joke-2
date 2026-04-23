@@ -8,4 +8,4 @@ extends 接触触发
 func interact()->void:
 	super()
 
-	Game.change_scene(path,entry_point)
+	Game.change_scene(path,{entry_point=entry_point})

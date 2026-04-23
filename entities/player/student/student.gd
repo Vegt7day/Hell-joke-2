@@ -1,10 +1,10 @@
-class_name Player
+class_name Student
 
 extends CharacterBody2D
 
 # 移动参数
 @export var move_speed: float = 500.0
-@export var jump_velocity: float = -400.0
+@export var jump_velocity: float = -500.0
 @export var acceleration: float = 40.0
 @export var friction: float = 10.0
 @export var jump_delay: float = 0.14  # 跳跃延迟时间，单位：秒
@@ -15,8 +15,8 @@ extends CharacterBody2D
 @export var ink_bullet_scene: PackedScene  # 子弹场景
 
 # 墨水恢复参数
-@export var ink_recovery_rate: float = 1  # 每次恢复的墨水量，从1.0改为0.01
-@export var ink_recovery_interval: float = 0.1  # 墨水恢复间隔，单位：秒，从1.0改为0.01
+@export var ink_recovery_rate: float = 1 
+@export var ink_recovery_interval: float = 0.1 
 @export var max_ink: float = 100  # 最大墨水量
 
 @onready var interaction_icon: AnimatedSprite2D = $interactionIcon

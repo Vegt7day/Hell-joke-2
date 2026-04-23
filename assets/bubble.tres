@@ -21,14 +21,14 @@ overrides = {
 "behaviour_mouse_filter": "2",
 "bold_font": "\"res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf\"",
 "bold_italic_font": "\"res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf\"",
-"box_padding": "Vector2(20, 20)",
+"box_corner_radius": "15.0",
 "italic_font": "\"res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf\"",
 "name_label_box_modulate": "Color(0, 0, 0, 1)",
 "name_label_enabled": "false",
 "name_label_font": "\"res://addons/dialogic/样式/字体/VonwaonBitmap-16px.ttf\"",
 "name_label_font_size": "0.0",
 "normal_font": "\"res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf\"",
-"text_size": "24.0"
+"text_size": "12.0"
 }
 
 [resource]

@@ -4,15 +4,17 @@ var world_states := {}
 
 @onready var color_rect: ColorRect = $ColorRect
 @onready var player_stats: Stats = $PlayerStats
+@onready var default_player_stats := player_stats.to_dict()
 
 func _ready() -> void:
 	color_rect.color.a = 0
+	print("游戏管理器初始化完成")
 
-func change_scene(path: String, entery_point: String) -> void:
+func change_scene(path: String, params: Dictionary = {}) -> void:
 	var tree := get_tree()
 	
 	# 1. 首先保存当前场景的状态（在开始切换前）
-	if tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty():
+	if tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty() and tree.current_scene.has_method("to_dict"):
 		var old_name := tree.current_scene.scene_file_path.get_file().get_basename()
 		world_states[old_name] = tree.current_scene.to_dict()
 		print("保存场景状态: ", old_name)
@@ -55,15 +57,17 @@ func change_scene(path: String, entery_point: String) -> void:
 	
 	# 9. 设置玩家到入口点
 	var player_set = false
-	for node in tree.get_nodes_in_group("entry_points"):
-		if node.name == entery_point:
-			tree.current_scene.update_player(node.global_position)
-			print("设置玩家到入口点: ", entery_point)
-			player_set = true
-			break
 	
-	if not player_set:
-		push_error("未找到入口点: " + entery_point)
+	if params.has("entry_point"):
+		for node in tree.get_nodes_in_group("entry_points"):
+			if node.name == params.entry_point:
+				tree.current_scene.update_player(node.global_position)
+				player_set = true
+				break
+	
+	if params.has("position") and params.has("direction"):
+		tree.current_scene.update_player(params.position, params.direction)
+		player_set = true
 	
 	# 10. 恢复游戏
 	tree.paused = false
@@ -86,34 +90,133 @@ func _wait_for_scene_load(tree: SceneTree, max_frames: int) -> void:
 	push_error("场景加载超时，等待了" + str(max_frames) + "帧")
 
 const SAVE_PATH := "user://data.sav"
+
 func save_game() -> void:
 	var scene := get_tree().current_scene
-	if scene == null:
-		push_error("无法保存：当前场景为 null")
-		return
-	
-	if scene.scene_file_path.is_empty():
-		push_error("无法保存：场景未保存到文件")
+	if not scene or scene.scene_file_path.is_empty():
+		print("错误：没有有效的当前场景")
 		return
 	
 	var scene_name := scene.scene_file_path.get_file().get_basename()
-	world_states[scene_name] = scene.to_dict()
 	
-	# 检查是否有 player 属性
-	if scene.has_method("get_player"):
-		var player = scene.get_player()
-		var data := {
-			"world_states": world_states,
-			"stats": player_stats.to_dict(),
-			"scene": scene.scene_file_path,
-			"player": {
-				"direction": player.direction if player.has_property("direction") else Vector2.ZERO,
-				"position": {
-					"x": player.global_position.x,
-					"y": player.global_position.y
-				}
+	# 保存场景状态
+	if scene.has_method("to_dict"):
+		world_states[scene_name] = scene.to_dict()
+	
+	# 保存角色注册信息
+	var character_registry_data = {}
+	
+	# 通过自动加载节点获取注册表
+	var registry = get_node_or_null("/root/DialogueRegistryManager")
+	if registry and registry.has_method("save_registry"):
+		character_registry_data = registry.save_registry()
+	else:
+		print("警告：DialogueRegistryManager不存在或没有save_registry方法，跳过保存角色注册信息")
+	
+	var player_position = Vector2.ZERO
+	var player_direction = 1
+	
+	if scene.has_node("player"):
+		var player = scene.get_node("player")
+		player_position = player.global_position
+		
+		if player.has_method("get_direction"):
+			player_direction = player.get_direction()
+		elif player.has_property("direction"):
+			player_direction = player.direction
+	
+	var data := {
+		"world_states": world_states,
+		"character_registry": character_registry_data,
+		"stats": player_stats.to_dict(),
+		"scene": scene.scene_file_path,
+		"player": {
+			"direction": player_direction,
+			"position": {
+				"x": player_position.x,
+				"y": player_position.y
 			}
 		}
-		print("游戏已保存: ", scene_name)
-	else:
-		print("场景没有 get_player 方法，保存基本状态")
+	}
+	
+	var json := JSON.stringify(data)
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if not file:
+		print("存档失败：无法创建文件")
+		return
+	
+	file.store_string(json)
+	file = null
+	
+	print("游戏已保存: ", scene_name)
+
+func load_game() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		print("存档文件不存在")
+		return
+	
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
+		print("读取存档失败：无法打开文件")
+		return
+	
+	var json := file.get_as_text()
+	var parse_result = JSON.parse_string(json)
+	
+	if not parse_result or not (parse_result is Dictionary):
+		print("存档文件格式错误")
+		return
+	
+	var data := parse_result as Dictionary
+	
+	# 验证必要字段
+	if not data.has("scene") or not data.has("player") or not data.has("stats"):
+		print("存档文件缺少必要字段")
+		return
+	
+	# 恢复世界状态
+	world_states = data.get("world_states", {})
+	
+	# 恢复玩家状态
+	player_stats.from_dict(data.stats)
+	
+	# 获取玩家位置和方向
+	var player_data = data.get("player", {})
+	var position_data = player_data.get("position", {"x": 0, "y": 0})
+	var player_position = Vector2(position_data.get("x", 0), position_data.get("y", 0))
+	var player_direction = player_data.get("direction", 1)
+	
+	# 恢复角色注册
+	if data.has("character_registry"):
+		var registry = get_node_or_null("/root/DialogueRegistryManager")
+		if registry and registry.has_method("load_registry"):
+			registry.load_registry(data.character_registry)
+		else:
+			print("警告：无法加载角色注册信息，DialogueRegistryManager不存在或没有load_registry方法")
+	
+	print("正在加载存档...")
+	print("场景: ", data.scene)
+	print("玩家位置: ", player_position)
+	print("玩家方向: ", player_direction)
+	
+	change_scene(data.scene, {
+		"direction": player_direction,
+		"position": player_position
+	})
+
+func new_game() -> void:
+	# 清理角色注册
+	var registry = get_node_or_null("/root/DialogueRegistryManager")
+	if registry and registry.has_method("clear_all"):
+		registry.clear_all()
+	
+	change_scene("res://system/levels/world.tscn", {
+		"init": func():
+			world_states = {}
+			player_stats.from_dict(default_player_stats)
+	})
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		print("保存游戏")
+		save_game()

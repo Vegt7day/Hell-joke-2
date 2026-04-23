@@ -18,3 +18,4 @@ shape = SubResource("RectangleShape2D_iq86e")
 offset_left = -49.0
 offset_top = -72.0
 offset_right = 50.0
+color = Color(1, 1, 1, 0)

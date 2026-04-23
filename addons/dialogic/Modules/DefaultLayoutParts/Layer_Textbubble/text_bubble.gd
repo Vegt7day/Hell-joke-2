@@ -43,11 +43,11 @@ var bubble_rect: Rect2 = Rect2(0.0, 0.0, 2.0, 2.0)
 var base_position := Vector2.ZERO
 
 var base_direction := Vector2(1.0, -1.0).normalized()
-var safe_zone := 50.0
-var padding := Vector2(20,20)  # 这个padding变量在_resize_bubble中没有被使用
+var safe_zone := 20.0
+var padding := Vector2(10,10)  # 这个padding变量在_resize_bubble中没有被使用
 
 # 气泡背景的内边距
-var bg_padding := Vector2(15, 15)  # 这个在_resize_bubble中被使用
+var bg_padding := Vector2(5, 5)  # 这个在_resize_bubble中被使用
 
 # 调试计数器
 var resize_counter: int = 0
