@@ -1,3 +1,5 @@
+# Player.gd - 修改后的版本，添加召唤商鞅功能
+@tool
 class_name Player
 extends CharacterBody2D
 
@@ -13,6 +15,13 @@ extends CharacterBody2D
 @export var ink_bullet_scene: PackedScene
 @export var shoot_offset_x: float = 50.0  # 子弹发射位置的水平偏移
 @export var shoot_offset_y: float = 0.0   # 子弹发射位置的垂直偏移
+
+# 召唤商鞅相关参数
+@export var shangyang_summon_scene: PackedScene
+@export var summon_cooldown: float = 5.0  # 召唤冷却时间
+@export var summon_ink_cost: float = 30.0  # 召唤墨水消耗
+@export var summon_offset_x: float = 100.0  # 召唤位置的水平偏移
+@export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
 
 # 墨水恢复参数
 @export var ink_recovery_rate: float = 1
@@ -40,6 +49,9 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var attack_sound: AudioStreamPlayer = $attack
 @onready var dialogic: Marker2D = $Marker2D3
 
+# 召唤音效
+@onready var summon_sound: AudioStreamPlayer = $summon_sound
+
 # ========== 状态机定义 ==========
 enum PlayerState {
 	IDLE,           # 闲置
@@ -62,6 +74,8 @@ var 接触触发_with: Array[接触触发] = []
 
 # 状态机参数
 var attack_cooldown: float = 0.0
+var summon_cooldown_timer: float = 0.0
+var can_summon: bool = true
 
 # 输入控制相关变量
 @export var enable_input_control: bool = true
@@ -228,6 +242,12 @@ func handle_common_updates(delta: float):
 	# 处理冷却时间
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
+	
+	# 处理召唤冷却时间
+	if summon_cooldown_timer > 0:
+		summon_cooldown_timer -= delta
+		if summon_cooldown_timer <= 0:
+			can_summon = true
 
 # ========== 状态更新函数 ==========
 func update_idle(delta: float):
@@ -246,6 +266,11 @@ func update_idle(delta: float):
 	# 检查攻击
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
 		start_attack()
+		return
+	
+	# 检查召唤
+	if Input.is_action_just_pressed("summon") and can_summon:
+		try_summon_shangyang()
 		return
 	
 	# 应用水平减速
@@ -278,6 +303,11 @@ func update_walk(delta: float):
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
 		start_attack()
 		return
+	
+	# 检查召唤
+	if Input.is_action_just_pressed("summon") and can_summon:
+		try_summon_shangyang()
+		return
 
 func update_jump_ascend(delta: float):
 	# 处理水平移动
@@ -305,6 +335,11 @@ func update_jump_ascend(delta: float):
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
 		start_attack()
 		return
+	
+	# 检查召唤
+	if Input.is_action_just_pressed("summon") and can_summon:
+		try_summon_shangyang()
+		return
 
 func update_jump_fall(delta: float):
 	# 处理水平移动
@@ -327,6 +362,11 @@ func update_jump_fall(delta: float):
 	# 检查攻击
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
 		start_attack()
+		return
+	
+	# 检查召唤
+	if Input.is_action_just_pressed("summon") and can_summon:
+		try_summon_shangyang()
 		return
 
 func update_attack_start(delta: float):
@@ -371,6 +411,70 @@ func start_attack():
 	change_state(PlayerState.ATTACK_START)
 	attack_cooldown = attack_duration
 
+# ========== 召唤功能 ==========
+func try_summon_shangyang():
+	"""尝试召唤商鞅"""
+	if not can_summon or stats.ink < summon_ink_cost or not shangyang_summon_scene:
+		# 如果墨水不足、冷却中或没有设置商鞅场景
+		print("无法召唤商鞅：墨水不足、冷却中或未设置召唤场景")
+		return
+	
+	# 扣除墨水
+	stats.ink -= summon_ink_cost
+	
+	# 播放召唤音效
+	if summon_sound:
+		summon_sound.play()
+	
+	# 执行召唤
+	summon_shangyang()
+	
+	# 启动冷却
+	can_summon = false
+	summon_cooldown_timer = summon_cooldown
+	print("召唤商鞅，冷却时间: %.1f秒" % summon_cooldown)
+
+func summon_shangyang():
+	"""执行召唤商鞅"""
+	if not shangyang_summon_scene:
+		push_error("无法召唤商鞅：shangyang_summon_scene 未设置！")
+		return
+	
+	# 实例化商鞅
+	var shangyang = shangyang_summon_scene.instantiate() as ShangYang
+	
+	# 计算召唤位置
+	var summon_position = calculate_summon_position()
+	
+	# 设置商鞅位置
+	shangyang.global_position = summon_position
+	
+	## 设置商鞅朝向
+	#if direction == 0:  # 向左
+		#shangyang.sprite.flip_h = true
+	#
+	# 添加到场景
+	get_parent().add_child(shangyang)
+	
+	# 切换到被召唤模式
+	shangyang.switch_to_summoned_mode()
+	
+	print("成功召唤商鞅在位置: %s" % str(summon_position))
+
+func calculate_summon_position() -> Vector2:
+	"""计算召唤位置"""
+	var base_position = global_position
+	var offset = Vector2(summon_offset_x, summon_offset_y)
+	
+	# 根据玩家朝向调整水平偏移
+	if direction == 0:  # 向左
+		offset.x = -summon_offset_x
+	
+	return Vector2(
+		base_position.x + offset.x,
+		base_position.y + offset.y
+	)
+
 # ========== 辅助函数 ==========
 func return_to_normal_state():
 	# 根据当前状态返回到合适的正常状态
@@ -413,6 +517,10 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END:
 		start_attack()
 	
+	# 处理召唤输入
+	if Input.is_action_just_pressed("summon") and can_summon and stats.ink >= summon_ink_cost:
+		try_summon_shangyang()
+	
 	# 应用移动
 	move_and_slide()
 	
@@ -442,7 +550,7 @@ func update_facing():
 		return
 	
 	# direction=1: 向右，不翻转
-	# direction=-1: 向左，翻转
+	# direction=0: 向左，翻转
 	sprite.flip_h = direction == 0
 
 func shoot():
@@ -502,9 +610,15 @@ func _input(event):
 			Input.action_press("attack")
 		elif not event.pressed and event.keycode == KEY_J:
 			Input.action_release("attack")
+		
+		# 添加F键召唤检测
+		if event.pressed and event.keycode == KEY_F:
+			Input.action_press("summon")
+		elif not event.pressed and event.keycode == KEY_F:
+			Input.action_release("summon")
 
 func _init_input_control():
-	var actions_to_monitor = ["move_left", "move_right", "jump", "attack"]
+	var actions_to_monitor = ["move_left", "move_right", "jump", "attack", "summon"]
 	for action in actions_to_monitor:
 		if InputMap.has_action(action):
 			disabled_actions[action] = false

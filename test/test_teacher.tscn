@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="11_5asf3"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="12_eyx0r"]
 [ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="13_hv1sd"]
+[ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="14_4sj0c"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hv1sd"]
 texture = ExtResource("1_tai3u")
@@ -223,3 +224,6 @@ editor_draw_drag_margin = true
 
 [node name="Marker2D5" type="Marker2D" parent="Student" unique_id=1128356385]
 position = Vector2(-109, 435)
+
+[node name="商鞅" parent="." unique_id=516840921 instance=ExtResource("14_4sj0c")]
+position = Vector2(578, 610)
