@@ -4,10 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://d10f8lwtf7fj4" path="res://entities/npc/商鞅/商鞅.png" id="2_bob5k"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="3_bob5k"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wa22q"]
-atlas = ExtResource("2_bob5k")
-region = Rect2(0, 0, 5600, 160)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wa22q"]
 size = Vector2(94, 126)
 
@@ -96,6 +92,83 @@ tracks/6/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [0.7853982]
+}
+
+[sub_resource type="Animation" id="Animation_bob5k"]
+resource_name = "common"
+length = 0.6
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 6560, 160)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [41]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [35, 36, 37, 38, 39, 40]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CollisionShape2D:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.6),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(49.5, -65)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CollisionShape2D:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.6),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CollisionShape2D:shape:size")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(97, 130)]
 }
 
 [sub_resource type="Animation" id="Animation_bg5pc"]
@@ -610,6 +683,7 @@ tracks/5/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sqpc5"]
 _data = {
 &"RESET": SubResource("Animation_mmhi5"),
+&"common": SubResource("Animation_bob5k"),
 &"get_1": SubResource("Animation_bg5pc"),
 &"get_2": SubResource("Animation_dssm2"),
 &"get_3": SubResource("Animation_072nv"),
@@ -627,7 +701,7 @@ script = ExtResource("1_iv8hp")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1433168498]
 position = Vector2(51, -80)
-texture = SubResource("AtlasTexture_wa22q")
+texture = ExtResource("2_bob5k")
 hframes = 35
 frame = 29
 region_enabled = true

@@ -1,5 +1,3 @@
-# Player.gd - 修改后的版本，添加召唤商鞅功能
-@tool
 class_name Player
 extends CharacterBody2D
 
@@ -22,6 +20,7 @@ extends CharacterBody2D
 @export var summon_ink_cost: float = 30.0  # 召唤墨水消耗
 @export var summon_offset_x: float = 100.0  # 召唤位置的水平偏移
 @export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
+@export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
 
 # 墨水恢复参数
 @export var ink_recovery_rate: float = 1
@@ -41,6 +40,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var attack_timer: Timer = Timer.new()
 @onready var attack_delay_timer: Timer = Timer.new()
 @onready var ink_recovery_timer: Timer = Timer.new()
+@onready var summon_delay_timer: Timer = Timer.new()  # 召唤延迟计时器
 
 # 发射位置（现在只使用一个参考节点）
 @onready var shoot_position_base: Marker2D = $Marker2D
@@ -61,7 +61,9 @@ enum PlayerState {
 	ATTACK_START,   # 攻击开始
 	ATTACK_SHOOT,   # 攻击发射子弹
 	ATTACK_END,     # 攻击结束
-	STUNNED         # 被击晕/受伤
+	STUNNED,        # 被击晕/受伤
+	SUMMON_START,   # 召唤开始
+	SUMMON_END      # 召唤结束
 }
 
 var current_state: PlayerState = PlayerState.IDLE
@@ -76,6 +78,7 @@ var 接触触发_with: Array[接触触发] = []
 var attack_cooldown: float = 0.0
 var summon_cooldown_timer: float = 0.0
 var can_summon: bool = true
+var animation_complete_connected: bool = false  # 动画完成信号连接标志
 
 # 输入控制相关变量
 @export var enable_input_control: bool = true
@@ -84,6 +87,13 @@ var action_callbacks: Dictionary = {}
 var action_presses: Dictionary = {}
 
 func _ready():
+	print("=== Player.gd _ready() 开始 ===")
+	print("玩家初始位置:", global_position)
+	print("父节点:", get_parent().name if get_parent() else "无父节点")
+	
+	# 首先重置所有物理状态
+	velocity = Vector2.ZERO
+	
 	# 初始化角色朝向
 	update_facing()
 	
@@ -97,10 +107,47 @@ func _ready():
 	# 初始化输入控制
 	_init_input_control()
 	
-	# 初始化状态机
-	change_state(PlayerState.IDLE)
+	# 连接动画完成信号
+	if not animation_complete_connected:
+		animation_player.animation_finished.connect(_on_animation_finished)
+		animation_complete_connected = true
 	
-	print("角色状态机初始化完成")
+	# 等待一帧，让物理系统完全初始化
+	await get_tree().process_frame
+	
+	# 强制进行一次物理检测
+	move_and_slide()
+	
+	# 检查是否在地面上
+	if is_on_floor():
+		print("玩家在地面上，初始状态: IDLE")
+		change_state(PlayerState.IDLE)
+	else:
+		# 如果不在平面上，尝试向上调整位置
+		var original_y = global_position.y
+		var found_ground = false
+		
+		# 尝试向上搜索地面
+		for i in range(10):
+			global_position.y -= 20
+			velocity = Vector2.ZERO
+			move_and_slide()
+			
+			if is_on_floor():
+				print("找到地面，调整后位置:", global_position)
+				change_state(PlayerState.IDLE)
+				found_ground = true
+				break
+		
+		# 如果没有找到地面，恢复原始位置
+		if not found_ground:
+			global_position.y = original_y
+			print("玩家不在平面上，初始状态: JUMP_FALL")
+			# 重置速度，防止初始速度过大
+			velocity = Vector2.ZERO
+			change_state(PlayerState.JUMP_FALL)
+	
+	print("=== Player.gd _ready() 完成 ===")
 
 func init_timers():
 	# 攻击计时器
@@ -121,6 +168,12 @@ func init_timers():
 	ink_recovery_timer.wait_time = ink_recovery_interval
 	ink_recovery_timer.timeout.connect(_on_ink_recovery_timer_timeout)
 	ink_recovery_timer.start()
+	
+	# 召唤延迟计时器
+	add_child(summon_delay_timer)
+	summon_delay_timer.one_shot = true
+	summon_delay_timer.timeout.connect(_on_summon_delay_timer_timeout)
+	summon_delay_timer.wait_time = summon_delay_in_animation
 
 # ========== 状态机核心函数 ==========
 func change_state(new_state: PlayerState):
@@ -151,6 +204,8 @@ func get_state_name(state: PlayerState) -> String:
 		PlayerState.ATTACK_SHOOT: return "ATTACK_SHOOT"
 		PlayerState.ATTACK_END: return "ATTACK_END"
 		PlayerState.STUNNED: return "STUNNED"
+		PlayerState.SUMMON_START: return "SUMMON_START"
+		PlayerState.SUMMON_END: return "SUMMON_END"
 		_: return "UNKNOWN"
 
 func enter_state(state: PlayerState):
@@ -194,6 +249,26 @@ func enter_state(state: PlayerState):
 		PlayerState.STUNNED:
 			# 被击晕状态
 			animation_player.play("idle")
+			
+		PlayerState.SUMMON_START:
+			# 播放draw动画
+			if animation_player.has_animation("draw"):
+				animation_player.play("draw")
+				# 播放召唤音效
+				if summon_sound:
+					summon_sound.play()
+				# 在动画中延迟召唤
+				summon_delay_timer.start()
+				print("开始召唤商鞅，播放draw动画")
+			else:
+				# 如果没有draw动画，直接召唤
+				print("警告：未找到draw动画，直接召唤")
+				execute_summon()
+				change_state(PlayerState.SUMMON_END)
+			
+		PlayerState.SUMMON_END:
+			# 召唤结束，回到之前的状态
+			return_to_normal_state()
 
 func exit_state(state: PlayerState):
 	match state:
@@ -206,6 +281,10 @@ func exit_state(state: PlayerState):
 		PlayerState.ATTACK_SHOOT:
 			# 停止攻击延迟计时器
 			attack_delay_timer.stop()
+		PlayerState.SUMMON_START:
+			# 停止召唤延迟计时器
+			if summon_delay_timer.time_left > 0:
+				summon_delay_timer.stop()
 
 func update_state(delta: float):
 	state_timer += delta
@@ -237,6 +316,12 @@ func update_state(delta: float):
 			
 		PlayerState.STUNNED:
 			update_stunned(delta)
+			
+		PlayerState.SUMMON_START:
+			update_summon_start(delta)
+			
+		PlayerState.SUMMON_END:
+			update_summon_end(delta)
 
 func handle_common_updates(delta: float):
 	# 处理冷却时间
@@ -398,6 +483,19 @@ func update_stunned(delta: float):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
+func update_summon_start(delta: float):
+	# 召唤期间不能移动
+	velocity.x = move_toward(velocity.x, 0, friction)
+	
+	# 应用重力
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+func update_summon_end(delta: float):
+	# 召唤结束状态，应该立即转换
+	# 这里不执行任何逻辑，让计时器触发状态转换
+	pass
+
 # ========== 动作函数 ==========
 func can_jump() -> bool:
 	# 检查是否可以进行跳跃
@@ -422,19 +520,16 @@ func try_summon_shangyang():
 	# 扣除墨水
 	stats.ink -= summon_ink_cost
 	
-	# 播放召唤音效
-	if summon_sound:
-		summon_sound.play()
-	
-	# 执行召唤
-	summon_shangyang()
-	
 	# 启动冷却
 	can_summon = false
 	summon_cooldown_timer = summon_cooldown
-	print("召唤商鞅，冷却时间: %.1f秒" % summon_cooldown)
+	
+	# 切换到召唤开始状态
+	change_state(PlayerState.SUMMON_START)
+	
+	print("开始召唤商鞅，冷却时间: %.1f秒" % summon_cooldown)
 
-func summon_shangyang():
+func execute_summon():
 	"""执行召唤商鞅"""
 	if not shangyang_summon_scene:
 		push_error("无法召唤商鞅：shangyang_summon_scene 未设置！")
@@ -449,10 +544,6 @@ func summon_shangyang():
 	# 设置商鞅位置
 	shangyang.global_position = summon_position
 	
-	## 设置商鞅朝向
-	#if direction == 0:  # 向左
-		#shangyang.sprite.flip_h = true
-	#
 	# 添加到场景
 	get_parent().add_child(shangyang)
 	
@@ -501,7 +592,7 @@ func _physics_process(delta):
 				Input.action_release(action)
 	
 	# 处理跳跃输入 - 立即响应
-	if Input.is_action_just_pressed("jump") and is_on_floor() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END:
+	if Input.is_action_just_pressed("jump") and is_on_floor() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
 		change_state(PlayerState.JUMP_ASCEND)
 	
 	# 更新当前状态
@@ -514,11 +605,11 @@ func _physics_process(delta):
 		接触触发_with.back().interact()
 	
 	# 处理攻击输入
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END:
+	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
 		start_attack()
 	
 	# 处理召唤输入
-	if Input.is_action_just_pressed("summon") and can_summon and stats.ink >= summon_ink_cost:
+	if Input.is_action_just_pressed("summon") and can_summon and stats.ink >= summon_ink_cost and current_state != PlayerState.SUMMON_START:
 		try_summon_shangyang()
 	
 	# 应用移动
@@ -543,10 +634,31 @@ func _on_ink_recovery_timer_timeout():
 	if stats.ink < max_ink:
 		stats.ink = min(stats.ink + ink_recovery_rate, max_ink)
 
+func _on_summon_delay_timer_timeout():
+	"""召唤延迟计时器超时，在动画中召唤商鞅"""
+	if current_state == PlayerState.SUMMON_START:
+		# 执行召唤
+		execute_summon()
+
+# ========== 动画完成回调 ==========
+func _on_animation_finished(anim_name: String):
+	"""动画播放完成时的回调"""
+	print("动画完成: %s, 当前状态: %s" % [anim_name, get_state_name(current_state)])
+	
+	match current_state:
+		PlayerState.SUMMON_START:
+			# draw动画播放完成，进入SUMMON_END状态
+			if anim_name == "draw":
+				print("draw动画播放完成，进入SUMMON_END状态")
+				change_state(PlayerState.SUMMON_END)
+		
+		# 其他状态的处理保持不变
+		# ...
+
 # ========== 辅助函数 ==========
 func update_facing():
-	if current_state == PlayerState.ATTACK_START or current_state == PlayerState.ATTACK_SHOOT or current_state == PlayerState.ATTACK_END:
-		# 攻击状态下不更新朝向
+	if current_state == PlayerState.ATTACK_START or current_state == PlayerState.ATTACK_SHOOT or current_state == PlayerState.ATTACK_END or current_state == PlayerState.SUMMON_START:
+		# 攻击状态和召唤状态下不更新朝向
 		return
 	
 	# direction=1: 向右，不翻转

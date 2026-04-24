@@ -1,4 +1,4 @@
-@tool
+
 class_name ShangYang
 extends CharacterBody2D
 
@@ -13,7 +13,8 @@ enum STATE {
 	IDLE,       # 空闲状态
 	DAMAGED,    # 受击状态
 	TRANSITION, # 形态切换状态
-	DEAD        # 死亡状态
+	DEAD,       # 死亡状态
+	COMMON      # 执行common动画状态
 }
 
 # 血量阈值常量
@@ -53,7 +54,7 @@ func _ready():
 		# 剧情模式：初始形态为19帧
 		_initialize_story_mode()
 	else:
-		# 召唤模式：播放idle动画
+		# 召唤模式：先执行common动作
 		_initialize_summoned_mode()
 
 func _initialize_story_mode():
@@ -67,14 +68,19 @@ func _initialize_story_mode():
 
 func _initialize_summoned_mode():
 	"""初始化召唤模式"""
-	_current_state = STATE.IDLE
+	_current_state = STATE.COMMON
 	_current_form = 0
 	_is_dead = false
 	health = max_health
 	_thresholds_passed.clear()
 	
-	# 播放idle动画
-	if animation_player.has_animation("idle"):
+	# 先执行common动作
+	if animation_player.has_animation("common"):
+		animation_player.play("common")
+	else:
+		# 如果没有common动画，直接进入idle状态
+		print("警告：未找到common动画，直接进入idle状态")
+		_current_state = STATE.IDLE
 		animation_player.play("idle")
 
 func switch_to_summoned_mode():
@@ -125,7 +131,8 @@ func take_damage(damage_amount: float):
 	Args:
 		damage_amount: 伤害值
 	"""
-	if _is_dead or current_mode != MODE.SUMMONED:
+	if _is_dead or current_mode != MODE.SUMMONED or _current_state == STATE.COMMON:
+		# 在common动画播放期间不接受伤害
 		return
 	
 	# 减少血量
@@ -148,7 +155,8 @@ func take_damage(damage_amount: float):
 
 func _check_health_thresholds():
 	"""检查血量是否达到阈值并触发相应动画"""
-	if _is_dead or current_mode != MODE.SUMMONED:
+	if _is_dead or current_mode != MODE.SUMMONED or _current_state == STATE.COMMON:
+		# 在common动画播放期间不检查血量阈值
 		return
 	
 	var health_percent = health / max_health
@@ -196,6 +204,13 @@ func _on_animation_finished(anim_name: String):
 	"""动画播放完成时的回调"""
 	
 	match _current_state:
+		STATE.COMMON:
+			# common动画播放完成后，进入idle状态
+			if current_mode == MODE.SUMMONED:
+				_current_state = STATE.IDLE
+				animation_player.play("idle")
+				print("common动画完成，进入idle状态")
+		
 		STATE.DAMAGED:
 			# 伤害动画播放完成后
 			if not _is_dead and health > 0.0:

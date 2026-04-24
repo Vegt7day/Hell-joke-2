@@ -1,23 +1,17 @@
-[gd_scene format=4 uid="uid://cb28e04q4603v"]
+[gd_scene format=4 uid="uid://cothuryi4ghn8"]
 
-[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="1_4oalq"]
-[ext_resource type="Script" uid="uid://c4qk0i2o145qi" path="res://system/levels/world.gd" id="1_pk68g"]
-[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_bdba8"]
-[ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
-[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/地下传送门.tscn" id="4_js66a"]
-[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="6_tls4y"]
-[ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="7_b258r"]
-[ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="8_y8eji"]
-[ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="9_25x0f"]
-[ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="10_m8c1u"]
-[ext_resource type="PackedScene" uid="uid://c3lidg7114ml" path="res://system/dialogic/到区域触发对话.tscn" id="10_ytupi"]
-[ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
-[ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="14_3o3xc"]
-[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
-[ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="15_wuw35"]
+[ext_resource type="Script" uid="uid://3pgsci56wkln" path="res://system/levels/world_2.gd" id="1_06p58"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="2_o4usy"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="3_8bqis"]
+[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/地下传送门.tscn" id="4_74o8t"]
+[ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="5_86wch"]
+[ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="6_h8yu3"]
+[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="8_8bqis"]
+[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="9_86wch"]
+[ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="10_h8yu3"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hrldk"]
-texture = ExtResource("1_4oalq")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t3csa"]
+texture = ExtResource("2_o4usy")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
@@ -27,8 +21,8 @@ texture = ExtResource("1_4oalq")
 1:1/0 = 0
 1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kv7wa"]
-texture = ExtResource("2_bdba8")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8yweu"]
+texture = ExtResource("3_8bqis")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
@@ -38,76 +32,89 @@ texture = ExtResource("2_bdba8")
 1:1/0 = 0
 1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
-[sub_resource type="TileSet" id="TileSet_2u1fa"]
+[sub_resource type="TileSet" id="TileSet_6work"]
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 0
-sources/0 = SubResource("TileSetAtlasSource_hrldk")
-sources/1 = SubResource("TileSetAtlasSource_kv7wa")
+sources/0 = SubResource("TileSetAtlasSource_t3csa")
+sources/1 = SubResource("TileSetAtlasSource_8yweu")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_b258r"]
-atlas = ExtResource("7_b258r")
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3csa"]
+atlas = ExtResource("10_h8yu3")
 region = Rect2(2304, 0, 1152, 648)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_25x0f"]
-atlas = ExtResource("7_b258r")
+[sub_resource type="AtlasTexture" id="AtlasTexture_8yweu"]
+atlas = ExtResource("10_h8yu3")
 region = Rect2(0, 0, 1152, 648)
 
-[node name="World" type="Node2D" unique_id=1385105138]
-script = ExtResource("1_pk68g")
-level_duration = null
-teacher_intro_timeline = null
-student_escape_timeline = null
-door_area_path = null
-metadata/_edit_vertical_guides_ = [-193.0, 1280.0, 320.0]
-metadata/_edit_horizontal_guides_ = [640.0, -514.0, 720.0, 90.0]
+[node name="world2" type="Node2D" unique_id=1661760605]
+script = ExtResource("1_06p58")
 
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=635298548]
+[node name="player" parent="." unique_id=396663958 instance=ExtResource("5_86wch")]
+position = Vector2(832, 608)
+
+[node name="Camera2D" type="Camera2D" parent="player" unique_id=1212052187]
+position = Vector2(32, 0)
+process_callback = 0
+limit_left = -10000009
+limit_top = -9999665
+limit_right = 1143
+limit_bottom = 643
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_horizontal_offset = -1.0
+drag_left_margin = 0.04
+drag_top_margin = 0.01
+drag_right_margin = 0.04
+drag_bottom_margin = 0.07
+editor_draw_drag_margin = true
+
+[node name="Marker2D5" type="Marker2D" parent="player" unique_id=1432899364]
+position = Vector2(179, 1043)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1740259634]
 tile_map_data = PackedByteArray("AAAAACYAAAAAAAAAAAAAACcAAAAAAAEAAAABACYAAAABAAAAAAABACcAAAABAAEAAAACACYAAAAAAAAAAAACACcAAAAAAAEAAAADACYAAAABAAAAAAADACcAAAABAAEAAAAEACYAAAAAAAAAAAAEACcAAAAAAAEAAAAFACYAAAABAAAAAAAFACcAAAABAAEAAAAGACYAAAAAAAAAAAAGACcAAAAAAAEAAAAHACYAAAABAAAAAAAHACcAAAABAAEAAAAIACYAAAAAAAAAAAAIACcAAAAAAAEAAAAJACYAAAABAAAAAAAJACcAAAABAAEAAAAKACYAAAAAAAAAAAAKACcAAAAAAAEAAAALACYAAAABAAAAAAALACcAAAABAAEAAAAMACYAAAAAAAAAAAAMACcAAAAAAAEAAAANACYAAAABAAAAAAANACcAAAABAAEAAAAOACYAAAAAAAAAAAAOACcAAAAAAAEAAAAPACYAAAABAAAAAAAPACcAAAABAAEAAAAQACYAAAAAAAAAAAAQACcAAAAAAAEAAAARACYAAAABAAAAAAARACcAAAABAAEAAAASACYAAAAAAAAAAAASACcAAAAAAAEAAAATACYAAAABAAAAAAATACcAAAABAAEAAAAUACYAAAAAAAAAAAAUACcAAAAAAAEAAAAVACYAAAABAAAAAAAVACcAAAABAAEAAAAWACYAAAAAAAAAAAAWACcAAAAAAAEAAAAXACYAAAABAAAAAAAXACcAAAABAAEAAAAYACYAAAAAAAAAAAAYACcAAAAAAAEAAAAZACYAAAABAAAAAAAZACcAAAABAAEAAAAaACYAAAAAAAAAAAAaACcAAAAAAAEAAAAbACYAAAABAAAAAAAbACcAAAABAAEAAAAcACYAAAAAAAAAAAAcACcAAAAAAAEAAAAdACYAAAABAAAAAAAdACcAAAABAAEAAAAeACYAAAAAAAAAAAAeACcAAAAAAAEAAAAfACYAAAABAAAAAAAfACcAAAABAAEAAAAgACYAAAAAAAAAAAAgACcAAAAAAAEAAAAhACYAAAABAAAAAAAhACcAAAABAAEAAAAiACYAAAAAAAAAAAAiACcAAAAAAAEAAAAjACYAAAABAAAAAAAjACcAAAABAAEAAAAkACYAAAAAAAAAAAAkACcAAAAAAAEAAAAlACYAAAABAAAAAAAlACcAAAABAAEAAAAmACYAAAAAAAAAAAAmACcAAAAAAAEAAAAnACYAAAABAAAAAAAnACcAAAABAAEAAAAoACYAAAAAAAAAAAAoACcAAAAAAAEAAAApACYAAAABAAAAAAApACcAAAABAAEAAAAqACYAAAAAAAAAAAAqACcAAAAAAAEAAAArACYAAAABAAAAAAArACcAAAABAAEAAAAsACYAAAAAAAAAAAAsACcAAAAAAAEAAAAtACYAAAABAAAAAAAtACcAAAABAAEAAAAuACYAAAAAAAAAAAAuACcAAAAAAAEAAAAvACYAAAABAAAAAAAvACcAAAABAAEAAAAwACYAAAAAAAAAAAAwACcAAAAAAAEAAAAxACYAAAABAAAAAAAxACcAAAABAAEAAAAyACYAAAAAAAAAAAAyACcAAAAAAAEAAAAzACYAAAABAAAAAAAzACcAAAABAAEAAAA0ACYAAAAAAAAAAAA0ACcAAAAAAAEAAAA1ACYAAAABAAAAAAA1ACcAAAABAAEAAAA2ACYAAAAAAAAAAAA2ACcAAAAAAAEAAAA3ACYAAAABAAAAAAA3ACcAAAABAAEAAAA4ACYAAAAAAAAAAAA4ACcAAAAAAAEAAAA5ACYAAAABAAAAAAA5ACcAAAABAAEAAAA6ACYAAAAAAAAAAAA6ACcAAAAAAAEAAAA7ACYAAAABAAAAAAA7ACcAAAABAAEAAAA8ACYAAAAAAAAAAAA8ACcAAAAAAAEAAAA9ACYAAAABAAAAAAA9ACcAAAABAAEAAAA+ACYAAAAAAAAAAAA+ACcAAAAAAAEAAAA/ACYAAAABAAAAAAA/ACcAAAABAAEAAABEACYAAAAAAAAAAABEACcAAAAAAAEAAABFACYAAAABAAAAAABFACcAAAABAAEAAABGACYAAAAAAAAAAABGACcAAAAAAAEAAABHACYAAAABAAAAAABHACcAAAABAAEAAABCACYAAAAAAAAAAABCACcAAAAAAAEAAABDACYAAAABAAAAAABDACcAAAABAAEAAABAACYAAAAAAAAAAABAACcAAAAAAAEAAABBACYAAAABAAAAAABBACcAAAABAAEAAAD+/yYAAAAAAAAAAAD+/ycAAAAAAAEAAAD//yYAAAABAAAAAAD//ycAAAABAAEAAAD8/yYAAAAAAAAAAAD8/ycAAAAAAAEAAAD9/yYAAAABAAAAAAD9/ycAAAABAAEAAAD6/yYAAAAAAAAAAAD6/ycAAAAAAAEAAAD7/yYAAAABAAAAAAD7/ycAAAABAAEAAAD4/yYAAAAAAAAAAAD4/ycAAAAAAAEAAAD5/yYAAAABAAAAAAD5/ycAAAABAAEAAAD2/yYAAAAAAAAAAAD2/ycAAAAAAAEAAAD3/yYAAAABAAAAAAD3/ycAAAABAAEAAAD0/yYAAAAAAAAAAAD0/ycAAAAAAAEAAAD1/yYAAAABAAAAAAD1/ycAAAABAAEAAADy/yYAAAAAAAAAAADy/ycAAAAAAAEAAADz/yYAAAABAAAAAADz/ycAAAABAAEAAADw/yYAAAAAAAAAAADw/ycAAAAAAAEAAADx/yYAAAABAAAAAADx/ycAAAABAAEAAADu/yYAAAAAAAAAAADu/ycAAAAAAAEAAADv/yYAAAABAAAAAADv/ycAAAABAAEAAADs/yYAAAAAAAAAAADs/ycAAAAAAAEAAADt/yYAAAABAAAAAADt/ycAAAABAAEAAADq/yYAAAAAAAAAAADq/ycAAAAAAAEAAADr/yYAAAABAAAAAADr/ycAAAABAAEAAADo/yYAAAAAAAAAAADo/ycAAAAAAAEAAADp/yYAAAABAAAAAADp/ycAAAABAAEAAADm/yYAAAAAAAAAAADm/ycAAAAAAAEAAADn/yYAAAABAAAAAADn/ycAAAABAAEAAADk/yYAAAAAAAAAAADk/ycAAAAAAAEAAADl/yYAAAABAAAAAADl/ycAAAABAAEAAADi/yYAAAAAAAAAAADi/ycAAAAAAAEAAADj/yYAAAABAAAAAADj/ycAAAABAAEAAADg/yYAAAAAAAAAAADg/ycAAAAAAAEAAADh/yYAAAABAAAAAADh/ycAAAABAAEAAADe/yYAAAAAAAAAAADe/ycAAAAAAAEAAADf/yYAAAABAAAAAADf/ycAAAABAAEAAADc/yYAAAAAAAAAAADc/ycAAAAAAAEAAADd/yYAAAABAAAAAADd/ycAAAABAAEAAADa/yYAAAAAAAAAAADa/ycAAAAAAAEAAADb/yYAAAABAAAAAADb/ycAAAABAAEAAADY/yYAAAAAAAAAAADY/ycAAAAAAAEAAADZ/yYAAAABAAAAAADZ/ycAAAABAAEAAADW/yYAAAAAAAAAAADW/ycAAAAAAAEAAADX/yYAAAABAAAAAADX/ycAAAABAAEAAADU/yYAAAAAAAAAAADU/ycAAAAAAAEAAADV/yYAAAABAAAAAADV/ycAAAABAAEAAADS/yYAAAAAAAAAAADS/ycAAAAAAAEAAADT/yYAAAABAAAAAADT/ycAAAABAAEAAADQ/yYAAAAAAAAAAADQ/ycAAAAAAAEAAADR/yYAAAABAAAAAADR/ycAAAABAAEAAADO/yYAAAAAAAAAAADO/ycAAAAAAAEAAADP/yYAAAABAAAAAADP/ycAAAABAAEAAABGACQAAQAAAAAAAABGACUAAQAAAAEAAABHACQAAQABAAAAAABHACUAAQABAAEAAABGACIAAQAAAAAAAABGACMAAQAAAAEAAABHACIAAQABAAAAAABHACMAAQABAAEAAABGACAAAQAAAAAAAABGACEAAQAAAAEAAABHACAAAQABAAAAAABHACEAAQABAAEAAABGAB4AAQAAAAAAAABGAB8AAQAAAAEAAABHAB4AAQABAAAAAABHAB8AAQABAAEAAABGABwAAQAAAAAAAABGAB0AAQAAAAEAAABHABwAAQABAAAAAABHAB0AAQABAAEAAABGABoAAQAAAAAAAABGABsAAQAAAAEAAABHABoAAQABAAAAAABHABsAAQABAAEAAABGABgAAQAAAAAAAABGABkAAQAAAAEAAABHABgAAQABAAAAAABHABkAAQABAAEAAABGABYAAQAAAAAAAABGABcAAQAAAAEAAABHABYAAQABAAAAAABHABcAAQABAAEAAABGABQAAQAAAAAAAABGABUAAQAAAAEAAABHABQAAQABAAAAAABHABUAAQABAAEAAABGABIAAQAAAAAAAABGABMAAQAAAAEAAABHABIAAQABAAAAAABHABMAAQABAAEAAABGABAAAQAAAAAAAABGABEAAQAAAAEAAABHABAAAQABAAAAAABHABEAAQABAAEAAABGAA4AAQAAAAAAAABGAA8AAQAAAAEAAABHAA4AAQABAAAAAABHAA8AAQABAAEAAABGAAwAAQAAAAAAAABGAA0AAQAAAAEAAABHAAwAAQABAAAAAABHAA0AAQABAAEAAABGAAoAAQAAAAAAAABGAAsAAQAAAAEAAABHAAoAAQABAAAAAABHAAsAAQABAAEAAABGAAgAAQAAAAAAAABGAAkAAQAAAAEAAABHAAgAAQABAAAAAABHAAkAAQABAAEAAABGAAYAAQAAAAAAAABGAAcAAQAAAAEAAABHAAYAAQABAAAAAABHAAcAAQABAAEAAABGAAQAAQAAAAAAAABGAAUAAQAAAAEAAABHAAQAAQABAAAAAABHAAUAAQABAAEAAABGAAIAAQAAAAAAAABGAAMAAQAAAAEAAABHAAIAAQABAAAAAABHAAMAAQABAAEAAABGAAAAAQAAAAAAAABGAAEAAQAAAAEAAABHAAAAAQABAAAAAABHAAEAAQABAAEAAADQ/xwAAQAAAAAAAADQ/x0AAQAAAAEAAADR/xwAAQABAAAAAADR/x0AAQABAAEAAADQ/xoAAQAAAAAAAADQ/xsAAQAAAAEAAADR/xoAAQABAAAAAADR/xsAAQABAAEAAADQ/xgAAQAAAAAAAADQ/xkAAQAAAAEAAADR/xgAAQABAAAAAADR/xkAAQABAAEAAADQ/wwAAQAAAAAAAADQ/w0AAQAAAAEAAADR/wwAAQABAAAAAADR/w0AAQABAAEAAADQ/woAAQAAAAAAAADQ/wsAAQAAAAEAAADR/woAAQABAAAAAADR/wsAAQABAAEAAADQ/wgAAQAAAAAAAADQ/wkAAQAAAAEAAADR/wgAAQABAAAAAADR/wkAAQABAAEAAADQ/wYAAQAAAAAAAADQ/wcAAQAAAAEAAADR/wYAAQABAAAAAADR/wcAAQABAAEAAADQ/wQAAQAAAAAAAADQ/wUAAQAAAAEAAADR/wQAAQABAAAAAADR/wUAAQABAAEAAADQ/wIAAQAAAAAAAADQ/wMAAQAAAAEAAADR/wIAAQABAAAAAADR/wMAAQABAAEAAADQ/wAAAQAAAAAAAADQ/wEAAQAAAAEAAADR/wAAAQABAAAAAADR/wEAAQABAAEAAADQ/w4AAQAAAAAAAADQ/w8AAQAAAAEAAADR/w4AAQABAAAAAADR/w8AAQABAAEAAADQ/xAAAQAAAAAAAADQ/xEAAQAAAAEAAADR/xAAAQABAAAAAADR/xEAAQABAAEAAADQ/xIAAQAAAAAAAADQ/xMAAQAAAAEAAADR/xIAAQABAAAAAADR/xMAAQABAAEAAADQ/xQAAQAAAAAAAADQ/xUAAQAAAAEAAADR/xQAAQABAAAAAADR/xUAAQABAAEAAADQ/xYAAQAAAAAAAADQ/xcAAQAAAAEAAADR/xYAAQABAAAAAADR/xcAAQABAAEAAAC0/yYAAAAAAAAAAAC0/ycAAAAAAAEAAAC1/yYAAAABAAAAAAC1/ycAAAABAAEAAACy/yYAAAAAAAAAAACy/ycAAAAAAAEAAACz/yYAAAABAAAAAACz/ycAAAABAAEAAACw/yYAAAAAAAAAAACw/ycAAAAAAAEAAACx/yYAAAABAAAAAACx/ycAAAABAAEAAACu/yYAAAAAAAAAAACu/ycAAAAAAAEAAACv/yYAAAABAAAAAACv/ycAAAABAAEAAACs/yYAAAAAAAAAAACs/ycAAAAAAAEAAACt/yYAAAABAAAAAACt/ycAAAABAAEAAACq/yYAAAAAAAAAAACq/ycAAAAAAAEAAACr/yYAAAABAAAAAACr/ycAAAABAAEAAACo/yYAAAAAAAAAAACo/ycAAAAAAAEAAACp/yYAAAABAAAAAACp/ycAAAABAAEAAACm/yYAAAAAAAAAAACm/ycAAAAAAAEAAACn/yYAAAABAAAAAACn/ycAAAABAAEAAACk/yYAAAAAAAAAAACk/ycAAAAAAAEAAACl/yYAAAABAAAAAACl/ycAAAABAAEAAACi/yYAAAAAAAAAAACi/ycAAAAAAAEAAACj/yYAAAABAAAAAACj/ycAAAABAAEAAACg/yYAAAAAAAAAAACg/ycAAAAAAAEAAACh/yYAAAABAAAAAACh/ycAAAABAAEAAACe/yYAAAAAAAAAAACe/ycAAAAAAAEAAACf/yYAAAABAAAAAACf/ycAAAABAAEAAACc/yYAAAAAAAAAAACc/ycAAAAAAAEAAACd/yYAAAABAAAAAACd/ycAAAABAAEAAACa/yYAAAAAAAAAAACa/ycAAAAAAAEAAACb/yYAAAABAAAAAACb/ycAAAABAAEAAACY/yYAAAAAAAAAAACY/ycAAAAAAAEAAACZ/yYAAAABAAAAAACZ/ycAAAABAAEAAACW/yYAAAAAAAAAAACW/ycAAAAAAAEAAACX/yYAAAABAAAAAACX/ycAAAABAAEAAACU/yYAAAAAAAAAAACU/ycAAAAAAAEAAACV/yYAAAABAAAAAACV/ycAAAABAAEAAACS/yYAAAAAAAAAAACS/ycAAAAAAAEAAACT/yYAAAABAAAAAACT/ycAAAABAAEAAACQ/yYAAAAAAAAAAACQ/ycAAAAAAAEAAACR/yYAAAABAAAAAACR/ycAAAABAAEAAACO/yYAAAAAAAAAAACO/ycAAAAAAAEAAACP/yYAAAABAAAAAACP/ycAAAABAAEAAACM/yYAAAAAAAAAAACM/ycAAAAAAAEAAACN/yYAAAABAAAAAACN/ycAAAABAAEAAACK/yYAAAAAAAAAAACK/ycAAAAAAAEAAACL/yYAAAABAAAAAACL/ycAAAABAAEAAACI/yYAAAAAAAAAAACI/ycAAAAAAAEAAACJ/yYAAAABAAAAAACJ/ycAAAABAAEAAACG/yYAAAAAAAAAAACG/ycAAAAAAAEAAACH/yYAAAABAAAAAACH/ycAAAABAAEAAAA=")
-tile_set = SubResource("TileSet_2u1fa")
+tile_set = SubResource("TileSet_6work")
 
-[node name="地下传送门" parent="TileMapLayer" unique_id=922243628 instance=ExtResource("4_js66a")]
+[node name="地下传送门" parent="TileMapLayer" unique_id=922243628 instance=ExtResource("4_74o8t")]
 position = Vector2(-997, 891)
 path = "uid://cothuryi4ghn8"
 
-[node name="teacher" parent="." unique_id=1927343229 instance=ExtResource("4_4yksg")]
-position = Vector2(784, 609)
-metadata/_edit_vertical_guides_ = [640.0]
+[node name="商鞅" parent="." unique_id=516840921 instance=ExtResource("6_h8yu3")]
+position = Vector2(960, 608)
 
-[node name="Marker2D3" type="Marker2D" parent="teacher" unique_id=425901930]
-position = Vector2(27, -109)
+[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("8_8bqis")]
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=697312936]
+[node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=1304201613]
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=469835150]
-
-[node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1822927404]
+[node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1298926255]
 position = Vector2(-1154, -72)
 motion_scale = Vector2(0.3, 0.3)
 motion_mirroring = Vector2(1152, 0)
 
-[node name="Background" type="Sprite2D" parent="ParallaxBackground/sky" unique_id=2067258832]
+[node name="Background" type="Sprite2D" parent="ParallaxBackground/sky" unique_id=930536572]
 position = Vector2(-25, -2)
-texture = ExtResource("6_tls4y")
+texture = ExtResource("9_86wch")
 centered = false
 
-[node name="trees" type="ParallaxLayer" parent="ParallaxBackground" unique_id=195031564]
+[node name="trees" type="ParallaxLayer" parent="ParallaxBackground" unique_id=662256939]
 motion_scale = Vector2(0.5, 0.5)
 motion_mirroring = Vector2(1152, 0)
 
-[node name="midground" type="Sprite2D" parent="ParallaxBackground/trees" unique_id=1292585755]
+[node name="midground" type="Sprite2D" parent="ParallaxBackground/trees" unique_id=1505295545]
 position = Vector2(4, -10)
-texture = SubResource("AtlasTexture_b258r")
+texture = SubResource("AtlasTexture_t3csa")
 centered = false
 
-[node name="classroom" type="ParallaxLayer" parent="ParallaxBackground" unique_id=105475237]
+[node name="classroom" type="ParallaxLayer" parent="ParallaxBackground" unique_id=173683927]
 position = Vector2(451, 252)
 scale = Vector2(0.6, 0.6)
 
-[node name="forward3" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1222085690]
+[node name="forward3" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1238964144]
 position = Vector2(-1712, 320)
-texture = SubResource("AtlasTexture_25x0f")
+texture = SubResource("AtlasTexture_8yweu")
 
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward3" unique_id=1878013892]
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward3" unique_id=347140541]
 anchors_preset = -1
 anchor_left = 0.053819444
 anchor_top = -0.029320987
@@ -119,11 +126,11 @@ offset_bottom = 601.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
-[node name="forward2" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1045716298]
+[node name="forward2" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=825308099]
 position = Vector2(-560, 320)
-texture = SubResource("AtlasTexture_25x0f")
+texture = SubResource("AtlasTexture_8yweu")
 
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward2" unique_id=1336607545]
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward2" unique_id=1805504525]
 anchors_preset = -1
 anchor_left = 0.053819444
 anchor_top = -0.029320987
@@ -135,11 +142,11 @@ offset_bottom = 601.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
-[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1441166388]
+[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=402987129]
 position = Vector2(592, 320)
-texture = SubResource("AtlasTexture_25x0f")
+texture = SubResource("AtlasTexture_8yweu")
 
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward" unique_id=308698223]
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward" unique_id=1904662712]
 anchors_preset = -1
 anchor_left = -0.055555556
 anchor_top = -0.029320987
@@ -151,11 +158,11 @@ offset_bottom = 601.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
-[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom/forward" unique_id=162288856]
+[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom/forward" unique_id=1636328674]
 position = Vector2(-3456.9998, 0)
-texture = SubResource("AtlasTexture_25x0f")
+texture = SubResource("AtlasTexture_8yweu")
 
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward/forward" unique_id=1733367241]
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward/forward" unique_id=216262061]
 anchors_preset = -1
 anchor_left = -0.055555556
 anchor_top = -0.029320987
@@ -166,118 +173,3 @@ offset_right = 590.99994
 offset_bottom = 599.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
-
-[node name="开关" parent="." unique_id=1755846247 instance=ExtResource("8_y8eji")]
-position = Vector2(-640, 576)
-
-[node name="door" parent="." unique_id=1915584955 instance=ExtResource("9_25x0f")]
-position = Vector2(-752, 608)
-
-[node name="door2" parent="door" unique_id=1494383439 instance=ExtResource("9_25x0f")]
-position = Vector2(0, -32)
-
-[node name="door" parent="door/door2" unique_id=2127837915 instance=ExtResource("9_25x0f")]
-position = Vector2(0, -32)
-
-[node name="door2" parent="door/door2/door" unique_id=467058907 instance=ExtResource("9_25x0f")]
-position = Vector2(0, -32)
-
-[node name="到区域触发对话" parent="." unique_id=865012812 instance=ExtResource("10_ytupi")]
-position = Vector2(-448, 576)
-dialogue_timeline = "res://assets/tip_开关与门1.dtl"
-one_shot = false
-
-[node name="到区域触发对话2" parent="." unique_id=734561275 instance=ExtResource("10_ytupi")]
-position = Vector2(-832, 608)
-dialogue_timeline = "res://assets/哈哈，我逃走了.dtl"
-one_shot = false
-
-[node name="触发器" parent="." unique_id=1732432861 instance=ExtResource("10_m8c1u")]
-position = Vector2(-990, 589)
-trigger_group = "1"
-debug_mode = false
-target_traps = Array[NodePath]([NodePath("../洞")])
-trap_group_to_trigger = "1"
-
-[node name="洞" parent="." unique_id=1602514809 instance=ExtResource("11_tls4y")]
-position = Vector2(-1056, 640)
-trap_group = "1"
-
-[node name="洞" parent="洞" unique_id=2123998304 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞" unique_id=1635795044 instance=ExtResource("11_tls4y")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞2" unique_id=832450325 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞3" parent="洞" unique_id=81150816 instance=ExtResource("11_tls4y")]
-position = Vector2(128, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞3" unique_id=640303585 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞/洞3" unique_id=871346212 instance=ExtResource("11_tls4y")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞3/洞2" unique_id=1857772132 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞4" parent="洞" unique_id=1011460484 instance=ExtResource("11_tls4y")]
-position = Vector2(-128, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞4" unique_id=537268076 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞/洞4" unique_id=2021461469 instance=ExtResource("11_tls4y")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞4/洞2" unique_id=2028485105 instance=ExtResource("11_tls4y")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="到区域触发对话3" parent="." unique_id=692808302 instance=ExtResource("10_ytupi")]
-position = Vector2(-992, 704)
-dialogue_timeline = "res://assets/什么？！.dtl"
-one_shot = false
-
-[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("14_xr4xx")]
-
-[node name="player" parent="." unique_id=396663958 instance=ExtResource("14_3o3xc")]
-position = Vector2(443, 608)
-ink_bullet_scene = ExtResource("15_wuw35")
-
-[node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
-position = Vector2(16, -31)
-process_callback = 0
-limit_top = -9999667
-limit_right = 1152
-limit_bottom = 641
-position_smoothing_enabled = true
-drag_horizontal_enabled = true
-drag_vertical_enabled = true
-drag_horizontal_offset = -1.0
-drag_left_margin = 0.04
-drag_top_margin = 0.01
-drag_right_margin = 0.04
-drag_bottom_margin = 0.07
-editor_draw_drag_margin = true
-
-[node name="Marker2D5" type="Marker2D" parent="player" unique_id=447389776]
-position = Vector2(14, -8)
-
-[connection signal="switch_state_changed" from="开关" to="door" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2/door" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2/door/door2" method="_on_开关_switch_state_changed"]

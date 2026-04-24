@@ -13,6 +13,7 @@ config_version=5
 config/name="文字地狱重制版"
 run/main_scene="uid://cge0gbh6xo5ib"
 config/features=PackedStringArray("4.6", "Forward Plus")
+run/max_fps=240
 boot_splash/show_image=false
 boot_splash/use_filter=false
 config/icon="res://icon.svg"
@@ -28,6 +29,7 @@ DialogicRegistry="*uid://buxvgwfat3tfx"
 directories/dch_directory={
 "character": "res://assets/Dialogic/character.dch",
 "中学生": "res://assets/Dialogic/中学生.dch",
+"商鞅": "res://assets/Dialogic/商鞅.dch",
 "老教师": "res://assets/Dialogic/老教师.dch"
 }
 directories/dtl_directory={
@@ -36,7 +38,8 @@ directories/dtl_directory={
 "timeline": "res://assets/timeline.dtl",
 "tip_开关与门1": "res://assets/tip_开关与门1.dtl",
 "什么？！": "res://assets/什么？！.dtl",
-"哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl"
+"哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl",
+"商鞅提出要求": "res://assets/Dialogic/level2/商鞅提出要求.dtl"
 }
 layout/style_directory={
 "": "res://assets/bubble.tres",
@@ -163,6 +166,7 @@ summon={
 
 [physics]
 
+2d/run_on_separate_thread=true
 3d/physics_engine="Jolt Physics"
 
 [rendering]
