@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var player: Player = $Student
+@onready var player: Player = $player
 
 func to_dict()-> Dictionary:
 	var enemies_alive:=[]
@@ -20,15 +20,16 @@ func from_dict(dict:Dictionary)->void:
 		
 func update_player(position: Vector2, direction: int = 1) -> void:
 	if has_node("player"):
-		var player = $player
-		player.global_position = position
-		print("传送")
-		# 设置玩家方向
-		if player.has_method("set_direction"):
-			player.set_direction(direction)
-		elif player.has_property("direction"):
-			player.direction = direction
+		var player_node = $player
+		if is_instance_valid(player_node):
+			player_node.global_position = position
+			if player_node.has_method("set_direction"):
+				player_node.set_direction(direction)
+			elif player_node.has_property("direction"):
+				player_node.direction = direction
+			else:
+				print("玩家没有方向属性或方法")
 		else:
-			print("玩家没有方向属性或方法")
+			print("玩家节点无效")
 	else:
 		print("场景中没有找到玩家节点")
