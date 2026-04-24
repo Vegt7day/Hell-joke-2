@@ -570,9 +570,10 @@ func calculate_summon_position() -> Vector2:
 	# 根据玩家朝向调整水平偏移
 	if direction == 0:  # 向左
 		offset.x = -summon_offset_x
-	
+	else:
+		offset.x = summon_offset_x
 	return Vector2(
-		base_position.x + offset.x,
+		base_position.x + offset.x-30,
 		base_position.y + offset.y
 	)
 

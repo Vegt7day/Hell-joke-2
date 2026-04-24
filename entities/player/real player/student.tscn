@@ -360,6 +360,7 @@ platform_floor_layers = 4294967231
 script = ExtResource("1_wkr24")
 ink_bullet_scene = ExtResource("2_dnbur")
 shangyang_summon_scene = ExtResource("2_vmijo")
+metadata/_edit_vertical_guides_ = [15.0]
 
 [node name="DialogMarker" type="Marker2D" parent="." unique_id=951327035]
 position = Vector2(21, -2)
@@ -391,7 +392,7 @@ position = Vector2(15, -55.000004)
 scale = Vector2(0.5208333, 0.51388884)
 sprite_frames = SubResource("SpriteFrames_022kj")
 autoplay = "default"
-frame_progress = 0.35337615
+frame_progress = 0.4667811
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=863665813]
 libraries/ = SubResource("AnimationLibrary_kr862")

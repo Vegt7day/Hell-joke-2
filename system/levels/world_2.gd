@@ -90,6 +90,7 @@ func _infer_cutscene_completions_from_saved_limbs() -> void:
 
 
 func _ready() -> void:
+	MechanismLinkBus.clear_last_states()
 	await get_tree().process_frame
 	# Game.change_scene 会在全场景 _ready 之后调用 from_dict，故任务逻辑延后一帧
 	call_deferred("_world2_quest_setup")

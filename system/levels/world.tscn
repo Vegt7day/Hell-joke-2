@@ -281,8 +281,3 @@ editor_draw_drag_margin = true
 
 [node name="Marker2D5" type="Marker2D" parent="player" unique_id=447389776]
 position = Vector2(14, -8)
-
-[connection signal="switch_state_changed" from="开关" to="door" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2/door" method="_on_开关_switch_state_changed"]
-[connection signal="switch_state_changed" from="开关" to="door/door2/door/door2" method="_on_开关_switch_state_changed"]

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c3j3v12ffehqn"]
+
+[ext_resource type="Script" uid="uid://kk4ko5fvb8im" path="res://system/globals/mechanism_link_bus.gd" id="1_l51uh"]
+
+[node name="MechanismLinkBus" type="Sprite2D" unique_id=1563612769]
+script = ExtResource("1_l51uh")

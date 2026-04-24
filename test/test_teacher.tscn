@@ -1,19 +1,12 @@
 [gd_scene format=4 uid="uid://ymid1k5j8sd6"]
 
-[ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="1_8nbjr"]
 [ext_resource type="Script" uid="uid://dvpx45jxn1i1p" path="res://test/test_teacher.gd" id="1_eyx0r"]
-[ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="1_hi4v2"]
 [ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="1_tai3u"]
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_8nbjr"]
-[ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="2_8tocs"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="5_fssad"]
-[ext_resource type="PackedScene" path="res://system/可交互物/接触触发.tscn" id="9_8tocs"]
-[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/auto_teleporter.tscn" id="10_5asf3"]
-[ext_resource type="PackedScene" uid="uid://coaf3l4q1s1xk" path="res://system/可交互物/hell.tscn" id="10_fssad"]
-[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="11_5asf3"]
+[ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="6_tai3u"]
+[ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="7_8nbjr"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="12_eyx0r"]
-[ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="13_hv1sd"]
-[ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="14_4sj0c"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hv1sd"]
 texture = ExtResource("1_tai3u")
@@ -54,9 +47,6 @@ region = Rect2(2304, 0, 1152, 648)
 [sub_resource type="AtlasTexture" id="AtlasTexture_xp1n2"]
 atlas = ExtResource("5_fssad")
 region = Rect2(0, 0, 1152, 648)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_fssad"]
-size = Vector2(106, 106)
 
 [node name="Node2D" type="Node2D" unique_id=1381359538]
 script = ExtResource("1_eyx0r")
@@ -119,91 +109,8 @@ offset_bottom = 601.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
-[node name="触发器" parent="." unique_id=1732432861 instance=ExtResource("2_8tocs")]
-position = Vector2(-576, 512)
-trigger_group = "1"
-trigger_once = true
-debug_mode = false
-target_traps = Array[NodePath]([NodePath("../洞")])
-trap_group_to_trigger = "1"
-
-[node name="洞" parent="." unique_id=1602514809 instance=ExtResource("1_8nbjr")]
-position = Vector2(-32, 640)
-trap_group = "1"
-
-[node name="洞" parent="洞" unique_id=2079535836 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞" unique_id=1545023896 instance=ExtResource("1_8nbjr")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞2" unique_id=1518906903 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞3" parent="洞" unique_id=1494302967 instance=ExtResource("1_8nbjr")]
-position = Vector2(128, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞3" unique_id=248170712 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞/洞3" unique_id=1011615030 instance=ExtResource("1_8nbjr")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞/洞3/洞2" unique_id=755362109 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="teacher" parent="." unique_id=1927343229 instance=ExtResource("1_hi4v2")]
-position = Vector2(771, 579)
-metadata/_edit_vertical_guides_ = [640.0]
-
-[node name="Marker2D3" type="Marker2D" parent="teacher" unique_id=1401957871]
-position = Vector2(27, -109)
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=687155396]
-
-[node name="洞2" parent="." unique_id=1854572038 instance=ExtResource("1_8nbjr")]
-position = Vector2(224, 640)
-trap_group = "1"
-
-[node name="洞" parent="洞2" unique_id=1229253875 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="洞2" parent="洞2" unique_id=1352761595 instance=ExtResource("1_8nbjr")]
-position = Vector2(64, 0)
-trap_group = "1"
-
-[node name="洞" parent="洞2/洞2" unique_id=1873958953 instance=ExtResource("1_8nbjr")]
-position = Vector2(32, 0)
-trap_group = "1"
-
-[node name="Hell" parent="." unique_id=2032551443 instance=ExtResource("10_fssad")]
-position = Vector2(800, 480)
-path = "uid://cb28e04q4603v"
-
-[node name="ContactTrigger" parent="." unique_id=483767925 instance=ExtResource("9_8tocs")]
-position = Vector2(544, 32)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactTrigger" unique_id=665197454]
-position = Vector2(-608, -64)
-shape = SubResource("RectangleShape2D_fssad")
-
-[node name="地下传送门" parent="." unique_id=922243628 instance=ExtResource("10_5asf3")]
-position = Vector2(-320, 512)
-path = "uid://cb28e04q4603v"
-
-[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("11_5asf3")]
-
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("12_eyx0r")]
 position = Vector2(480, 608)
-ink_bullet_scene = ExtResource("13_hv1sd")
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=528715622]
 position = Vector2(27, 489)
@@ -225,5 +132,11 @@ editor_draw_drag_margin = true
 [node name="Marker2D5" type="Marker2D" parent="player" unique_id=1128356385]
 position = Vector2(-109, 435)
 
-[node name="商鞅" parent="." unique_id=516840921 instance=ExtResource("14_4sj0c")]
-position = Vector2(578, 610)
+[node name="开关" parent="." unique_id=1076644298 instance=ExtResource("6_tai3u")]
+position = Vector2(562, 560)
+
+[node name="door" parent="." unique_id=1915584955 instance=ExtResource("7_8nbjr")]
+position = Vector2(361, 565)
+
+[node name="door2" parent="." unique_id=895313681 instance=ExtResource("7_8nbjr")]
+position = Vector2(363, 508)

@@ -11,6 +11,7 @@ func _ready() -> void:
 	print("游戏管理器初始化完成")
 
 func change_scene(path: String, params: Dictionary = {}) -> void:
+	MechanismLinkBus.clear_last_states()
 	var tree := get_tree()
 	
 	# 1. 首先保存当前场景的状态（在开始切换前）

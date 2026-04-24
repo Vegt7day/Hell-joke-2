@@ -86,4 +86,5 @@ func _trigger_switch():
 func _emit_state_change():
 	var state_str = "开" if is_on else "关"
 	emit_signal("switch_state_changed", current_color, state_str)
+	MechanismLinkBus.publish_channel_state(StringName(current_color), is_on)
 	print("开关状态已发送 - 颜色:", current_color, " 状态:", state_str)

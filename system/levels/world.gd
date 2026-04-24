@@ -47,6 +47,7 @@ func has_completed_timeline(timeline_id: String) -> bool:
 
 func _ready():
 	print("世界场景控制器加载中...")
+	MechanismLinkBus.clear_last_states()
 	
 	# 初始化关卡计时器
 	add_child(level_timer)
