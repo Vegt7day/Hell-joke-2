@@ -18,8 +18,8 @@ signal ink_changed
 
 @onready var ink:float = max_ink:
 	set(v):
-		v = clampi(v,0,max_ink)
-		if ink == v:
+		v = clampf(v, 0.0, max_ink)
+		if is_equal_approx(ink, v):
 			return
 		ink = v
 		ink_changed.emit()
@@ -30,9 +30,11 @@ func to_dict()->Dictionary:
 		max_health=max_health,
 		health=health,
 		max_ink=max_ink,
+		ink=ink,
 	}
 	
 func from_dict(dict:Dictionary)->void:
 	max_health=dict.max_health
 	health=dict.health
 	max_ink=dict.max_ink
+	ink=dict.get("ink", max_ink)
