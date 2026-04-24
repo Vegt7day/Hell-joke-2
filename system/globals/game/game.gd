@@ -92,6 +92,23 @@ func _wait_for_scene_load(tree: SceneTree, max_frames: int) -> void:
 const SAVE_PATH := "user://data.sav"
 ## 与 project.godot [autoload] 中名称一致（勿写成 DialogueRegistryManager）
 const DIALOGIC_REGISTRY_PATH := "/root/DialogicRegistry"
+## 玩家根节点约定组名（与 tip_开.gd 等一致）；由 Player / Student 在 _ready 中入组
+const PLAYER_SAVE_GROUP := "player"
+
+
+func _find_player_node_under_scene(scene: Node) -> Node:
+	"""在当前场景子树中查找第一个带 PLAYER_SAVE_GROUP 的 Node2D（浅层优先）。"""
+	if scene == null:
+		return null
+	var queue: Array[Node] = [scene]
+	while not queue.is_empty():
+		var n: Node = queue.pop_front()
+		for c in n.get_children():
+			if c is Node2D and c.is_in_group(PLAYER_SAVE_GROUP):
+				return c
+			queue.append(c)
+	return null
+
 
 func save_game() -> void:
 	var scene := get_tree().current_scene
@@ -118,14 +135,13 @@ func save_game() -> void:
 	var player_position = Vector2.ZERO
 	var player_direction = 1
 	
-	if scene.has_node("player"):
-		var player = scene.get_node("player")
-		player_position = player.global_position
-		
-		if player.has_method("get_direction"):
-			player_direction = player.get_direction()
-		elif player.has_property("direction"):
-			player_direction = player.direction
+	var player_node := _find_player_node_under_scene(scene)
+	if player_node:
+		player_position = player_node.global_position
+		if player_node.has_method("get_direction"):
+			player_direction = player_node.get_direction()
+		elif "direction" in player_node:
+			player_direction = player_node.direction
 	
 	var data := {
 		"world_states": world_states,

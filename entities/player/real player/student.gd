@@ -87,6 +87,7 @@ var action_callbacks: Dictionary = {}
 var action_presses: Dictionary = {}
 
 func _ready():
+	add_to_group("player")
 	print("=== Player.gd _ready() 开始 ===")
 	print("玩家初始位置:", global_position)
 	print("父节点:", get_parent().name if get_parent() else "无父节点")

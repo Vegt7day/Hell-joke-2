@@ -76,6 +76,7 @@ var 接触触发_with:Array[接触触发]
 
 
 func _ready():
+	add_to_group("player")
 	# 初始化角色朝向
 	update_facing()
 	
