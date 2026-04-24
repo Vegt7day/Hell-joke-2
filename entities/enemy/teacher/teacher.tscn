@@ -168,7 +168,7 @@ region_rect = Rect2(0, 0, 2720, 160)
 stream = ExtResource("3_1kfbk")
 
 [node name="DialogMarker" type="Marker2D" parent="." unique_id=1108286260]
-position = Vector2(2, -93)
+position = Vector2(25, -126)
 
 [node name="Marker2D2" type="Marker2D" parent="." unique_id=273930953]
 position = Vector2(25, -111)

@@ -87,7 +87,15 @@ func _register_dialogic_characters() -> void:
 	elif player:
 		registry.register_character("中学生", player)
 	if is_instance_valid(shangyang_npc):
-		registry.register_character("商鞅", shangyang_npc)
+		var sy_marker: Marker2D = null
+		for child in shangyang_npc.get_children():
+			if child is Marker2D:
+				sy_marker = child
+				break
+		if sy_marker:
+			registry.register_character("商鞅", sy_marker)
+		else:
+			registry.register_character("商鞅", shangyang_npc)
 
 
 func _restore_limbs_from_save() -> void:

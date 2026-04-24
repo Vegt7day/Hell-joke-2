@@ -360,6 +360,9 @@ script = ExtResource("1_wkr24")
 ink_bullet_scene = ExtResource("2_dnbur")
 shangyang_summon_scene = ExtResource("2_vmijo")
 
+[node name="DialogMarker" type="Marker2D" parent="." unique_id=951327035]
+position = Vector2(21, -2)
+
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=969579881]
@@ -383,11 +386,11 @@ max_health = 1000
 [node name="status panel" parent="CanvasLayer" unique_id=43131948 instance=ExtResource("5_ic7vs")]
 
 [node name="interactionIcon" type="AnimatedSprite2D" parent="." unique_id=121447576]
-visible = false
-position = Vector2(1, -157)
+position = Vector2(15, -55.000004)
+scale = Vector2(0.5208333, 0.51388884)
 sprite_frames = SubResource("SpriteFrames_022kj")
 autoplay = "default"
-frame_progress = 0.12256785
+frame_progress = 0.29249102
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=863665813]
 libraries/ = SubResource("AnimationLibrary_kr862")
@@ -404,6 +407,3 @@ position = Vector2(29, -18)
 
 [node name="Marker2D3" type="Marker2D" parent="." unique_id=1700378005]
 position = Vector2(1, -18)
-
-[node name="DialogMarker" type="Marker2D" parent="." unique_id=951327035]
-position = Vector2(23, -34)
