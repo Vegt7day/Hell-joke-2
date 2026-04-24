@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="5_fssad"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="6_tai3u"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="7_8nbjr"]
+[ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="8_8nbjr"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="12_eyx0r"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hv1sd"]
@@ -102,10 +103,10 @@ anchors_preset = -1
 anchor_left = -0.055555556
 anchor_top = -0.029320987
 anchor_right = -0.013020833
-offset_left = -543.0
-offset_top = 101.0
-offset_right = 609.0
-offset_bottom = 601.0
+offset_left = -656.0
+offset_top = 19.0
+offset_right = 496.0
+offset_bottom = 519.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
 
@@ -133,10 +134,19 @@ editor_draw_drag_margin = true
 position = Vector2(-109, 435)
 
 [node name="开关" parent="." unique_id=1076644298 instance=ExtResource("6_tai3u")]
-position = Vector2(562, 560)
+position = Vector2(544, 576)
 
 [node name="door" parent="." unique_id=1915584955 instance=ExtResource("7_8nbjr")]
-position = Vector2(361, 565)
+position = Vector2(352, 608)
 
 [node name="door2" parent="." unique_id=895313681 instance=ExtResource("7_8nbjr")]
-position = Vector2(363, 508)
+position = Vector2(352, 576)
+
+[node name="Windows" parent="." unique_id=1643735838 instance=ExtResource("8_8nbjr")]
+position = Vector2(256, 640)
+
+[node name="Windows2" parent="." unique_id=1233991524 instance=ExtResource("8_8nbjr")]
+position = Vector2(224, 640)
+
+[node name="Windows3" parent="." unique_id=2110032973 instance=ExtResource("8_8nbjr")]
+position = Vector2(192, 640)
