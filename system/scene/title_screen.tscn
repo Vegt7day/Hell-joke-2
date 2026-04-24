@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://cge0gbh6xo5ib"]
 
 [ext_resource type="FontFile" uid="uid://ci3qopnqiloaf" path="res://assets/字体/DejaVuSans.ttf" id="1_1nhfq"]
-[ext_resource type="Script" uid="uid://c26pocbqytqju" path="res://system/scence/title_screen.gd" id="2_3lcxb"]
+[ext_resource type="Script" uid="uid://c26pocbqytqju" path="res://system/scene/title_screen.gd" id="2_3lcxb"]
 [ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="2_hc2gf"]
 [ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="5_8wm77"]
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="6_5a8sg"]
