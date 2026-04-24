@@ -255,7 +255,7 @@ one_shot = false
 [node name="Game" parent="." unique_id=1668650706 instance=ExtResource("14_xr4xx")]
 
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("14_3o3xc")]
-position = Vector2(443, 608)
+position = Vector2(550, 606)
 ink_bullet_scene = ExtResource("15_wuw35")
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
