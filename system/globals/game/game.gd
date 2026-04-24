@@ -207,16 +207,13 @@ func load_game() -> void:
 	})
 
 func new_game() -> void:
-	# 清理角色注册
+	# 新游戏：在进入关卡前清空会话状态（勿依赖 change_scene 的 params，避免与步骤 8 的 from_dict 顺序纠缠）
+	world_states.clear()
+	player_stats.from_dict(default_player_stats)
 	var registry = get_node_or_null(DIALOGIC_REGISTRY_PATH)
 	if registry and registry.has_method("clear_all"):
 		registry.clear_all()
-	
-	change_scene("res://system/levels/world.tscn", {
-		"init": func():
-			world_states = {}
-			player_stats.from_dict(default_player_stats)
-	})
+	change_scene("res://system/levels/world.tscn", {})
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
