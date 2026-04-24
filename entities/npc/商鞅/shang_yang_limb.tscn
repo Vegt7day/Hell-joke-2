@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://b158bbjyckou7"]
+
+[ext_resource type="Script" path="res://entities/npc/商鞅/shang_yang_limb.gd" id="1_limb"]
+[ext_resource type="Texture2D" path="res://entities/npc/商鞅/商鞅.png" id="2_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_limb"]
+size = Vector2(36, 36)
+
+[node name="ShangYangLimb" type="Area2D"]
+collision_layer = 128
+collision_mask = 2
+script = ExtResource("1_limb")
+shangyang_path = NodePath("../../商鞅")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -10)
+texture = ExtResource("2_tex")
+region_enabled = true
+region_rect = Rect2(0, 0, 160, 160)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_limb")

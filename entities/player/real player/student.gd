@@ -22,6 +22,9 @@ extends CharacterBody2D
 @export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
 @export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
 
+## world2 剧情完成后解锁；由存档恢复
+var shangyang_summon_unlocked: bool = false
+
 # 墨水恢复参数
 @export var ink_recovery_rate: float = 1
 @export var ink_recovery_interval: float = 0.1
@@ -511,8 +514,14 @@ func start_attack():
 	attack_cooldown = attack_duration
 
 # ========== 召唤功能 ==========
+func unlock_shangyang_summon() -> void:
+	shangyang_summon_unlocked = true
+
+
 func try_summon_shangyang():
 	"""尝试召唤商鞅"""
+	if not shangyang_summon_unlocked:
+		return
 	if not can_summon or stats.ink < summon_ink_cost or not shangyang_summon_scene:
 		# 如果墨水不足、冷却中或没有设置商鞅场景
 		print("无法召唤商鞅：墨水不足、冷却中或未设置召唤场景")

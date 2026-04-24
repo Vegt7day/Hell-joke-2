@@ -28,6 +28,7 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var story_interact: ShangYangStoryInteract = $StoryInteract
 
 # 私有变量
 var _current_state: STATE = STATE.IDLE
@@ -35,6 +36,20 @@ var _current_form: int = 0  # 当前形态索引 0-3
 var _thresholds_passed: Array[int] = []  # 已触发的血量阈值
 var _is_dead: bool = false
 var _story_form_index: int = 3  # 剧情模式下当前形态索引
+
+# world2 肢体收集剧情
+var _limb_pickup_count: int = 0
+var _await_ability_dialog_after_get3: bool = false
+var _pending_return_sy_dialog_after_camera: bool = false
+var _story_get_cutscene_running: bool = false
+var _return_sy_dialog_active: bool = false
+var _return_sy_dialog_node: Node = null
+var _awaiting_npc_interact_for_ability: bool = false
+var _listening_for_ability_dialog_signal: bool = false
+var _ability_dialog_node: Node = null
+var _npc_exiting_after_reward: bool = false
+## 正在等 Dialogic 全局 timeline_ended，以结束「回去看商鞅」
+var _listening_return_sy_timeline: bool = false
 
 # 动画名称映射
 var _damage_animations: Array[String] = ["less_1", "less_2", "less_3", "less_4"]
@@ -53,6 +68,8 @@ func _ready():
 	if current_mode == MODE.STORY:
 		# 剧情模式：初始形态为19帧
 		_initialize_story_mode()
+		if story_interact:
+			story_interact.set_interact_enabled(false)
 	else:
 		# 召唤模式：先执行common动作
 		_initialize_summoned_mode()
@@ -92,6 +109,211 @@ func switch_to_story_mode():
 	"""切换到剧情模式"""
 	current_mode = MODE.STORY
 	_initialize_story_mode()
+
+func can_accept_limb_pickup() -> bool:
+	if _npc_exiting_after_reward:
+		return false
+	if current_mode != MODE.STORY:
+		return false
+	if _limb_pickup_count >= 5:
+		return false
+	if _current_state == STATE.TRANSITION:
+		return false
+	if _story_get_cutscene_running:
+		return false
+	if _return_sy_dialog_active:
+		return false
+	if _awaiting_npc_interact_for_ability:
+		return false
+	if _listening_for_ability_dialog_signal or _ability_dialog_node != null:
+		return false
+	return true
+
+
+func can_use_story_interact() -> bool:
+	return _awaiting_npc_interact_for_ability and not _npc_exiting_after_reward and current_mode == MODE.STORY
+
+
+func is_awaiting_story_interact() -> bool:
+	return _awaiting_npc_interact_for_ability
+
+
+func restore_post_get3_waiting_interact() -> void:
+	_awaiting_npc_interact_for_ability = true
+	if story_interact:
+		story_interact.set_interact_enabled(true)
+		call_deferred("_story_interact_refresh_overlapping_player")
+
+
+func notify_limb_collected() -> void:
+	if not can_accept_limb_pickup():
+		return
+	_story_get_cutscene_running = true
+	_limb_pickup_count += 1
+	var idx := -1
+	match _limb_pickup_count:
+		2:
+			idx = 0
+		4:
+			idx = 1
+		5:
+			_await_ability_dialog_after_get3 = true
+			idx = 2
+		_:
+			_story_get_cutscene_running = false
+			return
+	call_deferred("_deferred_limb_pickup_cutscene", idx)
+
+
+func _deferred_limb_pickup_cutscene(animation_index: int) -> void:
+	await _run_get_cutscene(animation_index)
+	_story_get_cutscene_running = false
+
+
+func _run_get_cutscene(animation_index: int) -> void:
+	var scene := get_tree().current_scene
+	if scene and scene.has_method("run_shangyang_get_cutscene"):
+		await scene.run_shangyang_get_cutscene(self, animation_index)
+	else:
+		play_get_animation(animation_index)
+		await animation_player.animation_finished
+
+
+func consume_pending_return_sy_dialog() -> void:
+	if not _pending_return_sy_dialog_after_camera:
+		return
+	_pending_return_sy_dialog_after_camera = false
+	_start_return_to_sy_dialog()
+
+
+func _disconnect_dialogic_return_sy_listener() -> void:
+	var dlg := DialogicUtil.autoload()
+	if dlg and dlg.timeline_ended.is_connected(_on_dialogic_timeline_ended_for_return_sy):
+		dlg.timeline_ended.disconnect(_on_dialogic_timeline_ended_for_return_sy)
+	_listening_return_sy_timeline = false
+
+
+func _on_dialogic_timeline_ended_for_return_sy() -> void:
+	if not _listening_return_sy_timeline or not _return_sy_dialog_active:
+		return
+	_listening_return_sy_timeline = false
+	_disconnect_dialogic_return_sy_listener()
+	if _return_sy_dialog_node and is_instance_valid(_return_sy_dialog_node):
+		_return_sy_dialog_node.queue_free()
+		_return_sy_dialog_node = null
+	_return_sy_dialog_active = false
+	_finish_return_sy_dialog_enable_interact()
+
+
+func _start_return_to_sy_dialog() -> void:
+	_return_sy_dialog_active = true
+	if not Dialogic:
+		_return_sy_dialog_active = false
+		_finish_return_sy_dialog_enable_interact()
+		return
+	_disconnect_dialogic_return_sy_listener()
+	var dlg := DialogicUtil.autoload()
+	if dlg:
+		_listening_return_sy_timeline = true
+		dlg.timeline_ended.connect(_on_dialogic_timeline_ended_for_return_sy)
+	var dialog := Dialogic.start("回去看商鞅")
+	if dialog == null:
+		_disconnect_dialogic_return_sy_listener()
+		_return_sy_dialog_active = false
+		_finish_return_sy_dialog_enable_interact()
+		return
+	get_tree().current_scene.add_child(dialog)
+	_return_sy_dialog_node = dialog
+
+
+func _finish_return_sy_dialog_enable_interact() -> void:
+	_awaiting_npc_interact_for_ability = true
+	if story_interact:
+		story_interact.set_interact_enabled(true)
+		call_deferred("_story_interact_refresh_overlapping_player")
+
+
+func _story_interact_refresh_overlapping_player() -> void:
+	if not is_instance_valid(story_interact) or not story_interact.monitoring:
+		return
+	var p := get_tree().get_first_node_in_group("player")
+	if not p is Player:
+		return
+	for b in story_interact.get_overlapping_bodies():
+		if b == p:
+			(p as Player).register_interactable(story_interact)
+			return
+
+
+func on_player_story_interact() -> void:
+	if not can_use_story_interact():
+		return
+	_awaiting_npc_interact_for_ability = false
+	if story_interact:
+		story_interact.set_interact_enabled(false)
+	_start_world2_ability_dialog()
+
+
+func _start_world2_ability_dialog() -> void:
+	if not Dialogic:
+		_on_ability_dialogic_signal("ShangYang_dialogic_over")
+		return
+	var dlg := DialogicUtil.autoload()
+	if dlg and not dlg.signal_event.is_connected(_on_ability_dialogic_signal):
+		dlg.signal_event.connect(_on_ability_dialogic_signal)
+	_listening_for_ability_dialog_signal = true
+	var dialog := Dialogic.start("获得商鞅能力")
+	if dialog == null:
+		_on_ability_dialogic_signal("ShangYang_dialogic_over")
+		return
+	get_tree().current_scene.add_child(dialog)
+	_ability_dialog_node = dialog
+
+
+func _disconnect_ability_dialog_listener() -> void:
+	var dlg := DialogicUtil.autoload()
+	if dlg and dlg.signal_event.is_connected(_on_ability_dialogic_signal):
+		dlg.signal_event.disconnect(_on_ability_dialogic_signal)
+	_listening_for_ability_dialog_signal = false
+
+
+func _on_ability_dialogic_signal(sig: String) -> void:
+	if sig != "ShangYang_dialogic_over":
+		return
+	if not _listening_for_ability_dialog_signal:
+		return
+	_listening_for_ability_dialog_signal = false
+	_disconnect_ability_dialog_listener()
+	if _ability_dialog_node and is_instance_valid(_ability_dialog_node):
+		_ability_dialog_node.queue_free()
+		_ability_dialog_node = null
+	_grant_player_summon_unlock()
+	call_deferred("_run_disable_destroy_sequence")
+
+
+func _grant_player_summon_unlock() -> void:
+	var p := get_tree().get_first_node_in_group("player")
+	if p is Player and p.has_method("unlock_shangyang_summon"):
+		(p as Player).unlock_shangyang_summon()
+
+
+func _run_disable_destroy_sequence() -> void:
+	_npc_exiting_after_reward = true
+	_disconnect_dialogic_return_sy_listener()
+	if story_interact:
+		story_interact.set_interact_enabled(false)
+	var scene := get_tree().current_scene
+	if scene and scene.has_method("mark_shangyang_npc_removed"):
+		scene.mark_shangyang_npc_removed()
+	if animation_player.has_animation("disable"):
+		animation_player.play("disable")
+		await animation_player.animation_finished
+	else:
+		var tw := create_tween()
+		tw.tween_property(self, "modulate:a", 0.0, 0.45)
+		await tw.finished
+	queue_free()
+
 
 func play_get_animation(animation_index: int = 0):
 	"""播放获取形态的动画 (剧情模式使用)
@@ -227,7 +449,11 @@ func _on_animation_finished(anim_name: String):
 		STATE.TRANSITION:
 			# 形态切换动画播放完成
 			_current_state = STATE.IDLE
-			print("形态切换完成: %s" % anim_name)
+			if str(anim_name) == "get_3" and _await_ability_dialog_after_get3:
+				_await_ability_dialog_after_get3 = false
+				_pending_return_sy_dialog_after_camera = true
+			else:
+				print("形态切换完成: %s" % anim_name)
 		
 		STATE.DEAD:
 			# 死亡动画播放完成

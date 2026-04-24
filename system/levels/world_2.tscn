@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="6_h8yu3"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="8_8bqis"]
 [ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="9_86wch"]
+[ext_resource type="PackedScene" path="res://entities/npc/商鞅/shang_yang_limb.tscn" id="10_86wch"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="10_h8yu3"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t3csa"]
@@ -173,3 +174,20 @@ offset_right = 590.99994
 offset_bottom = 599.0
 color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
 metadata/_edit_use_anchors_ = true
+
+[node name="ShangYangLimbs" type="Node" parent="." unique_id=774405894]
+
+[node name="ShangYangLimb5" parent="ShangYangLimbs" unique_id=2077955433 instance=ExtResource("10_86wch")]
+position = Vector2(656, 594)
+
+[node name="ShangYangLimb" parent="ShangYangLimbs" unique_id=228570245 instance=ExtResource("10_86wch")]
+position = Vector2(759, 601)
+
+[node name="ShangYangLimb2" parent="ShangYangLimbs" unique_id=1023321276 instance=ExtResource("10_86wch")]
+position = Vector2(524, 589)
+
+[node name="ShangYangLimb3" parent="ShangYangLimbs" unique_id=616318570 instance=ExtResource("10_86wch")]
+position = Vector2(393, 586)
+
+[node name="ShangYangLimb4" parent="ShangYangLimbs" unique_id=578986330 instance=ExtResource("10_86wch")]
+position = Vector2(281, 575)

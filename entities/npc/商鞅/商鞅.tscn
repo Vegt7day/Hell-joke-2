@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bfshakbr65jkp" path="res://entities/npc/商鞅/商鞅.gd" id="1_iv8hp"]
 [ext_resource type="Texture2D" uid="uid://d10f8lwtf7fj4" path="res://entities/npc/商鞅/商鞅.png" id="2_bob5k"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="3_bob5k"]
+[ext_resource type="Script" uid="uid://dh5d2t0x4sqpp" path="res://entities/npc/商鞅/shang_yang_story_interact.gd" id="4_story"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wa22q"]
 size = Vector2(94, 126)
@@ -169,6 +170,47 @@ tracks/5/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(0, 0), Vector2(97, 130)]
+}
+
+[sub_resource type="Animation" id="Animation_wa22q"]
+resource_name = "disable"
+length = 0.6
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 6560, 160)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [41]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [40, 39, 38, 37, 36, 35]
 }
 
 [sub_resource type="Animation" id="Animation_bg5pc"]
@@ -684,6 +726,7 @@ tracks/5/keys = {
 _data = {
 &"RESET": SubResource("Animation_mmhi5"),
 &"common": SubResource("Animation_bob5k"),
+&"disable": SubResource("Animation_wa22q"),
 &"get_1": SubResource("Animation_bg5pc"),
 &"get_2": SubResource("Animation_dssm2"),
 &"get_3": SubResource("Animation_072nv"),
@@ -693,6 +736,9 @@ _data = {
 &"less_3": SubResource("Animation_o8rys"),
 &"less_4": SubResource("Animation_qskp7")
 }
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_story_ix"]
+size = Vector2(631, 154)
 
 [node name="商鞅" type="CharacterBody2D" unique_id=516840921]
 collision_layer = 2
@@ -717,3 +763,17 @@ position = Vector2(50, -63)
 rotation = 0.7853982
 scale = Vector2(0.99999994, 0.99999994)
 shape = SubResource("RectangleShape2D_wa22q")
+
+[node name="StoryInteract" type="Area2D" parent="." unique_id=1861250903]
+collision_layer = 128
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("4_story")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StoryInteract" unique_id=29079753]
+position = Vector2(51, -77)
+shape = SubResource("RectangleShape2D_story_ix")
+
+[node name="DialogMarker" type="Marker2D" parent="." unique_id=2107278150]
+position = Vector2(78, -149)

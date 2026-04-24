@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://0hq3gxsgrf3d"]
 
 [ext_resource type="Script" uid="uid://bd4ejhaavitm7" path="res://entities/player/real player/student.gd" id="1_wkr24"]
+[ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="2_dnbur"]
 [ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="2_vmijo"]
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_dnbur"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_cdn5u"]
@@ -351,12 +352,12 @@ _data = {
 atlas = ExtResource("6_vmijo")
 
 [node name="player" type="CharacterBody2D" unique_id=396663958]
-position = Vector2(-148, -22480)
 collision_layer = 2
 collision_mask = 5
 velocity = Vector2(0, 98313.47)
 platform_floor_layers = 4294967231
 script = ExtResource("1_wkr24")
+ink_bullet_scene = ExtResource("2_dnbur")
 shangyang_summon_scene = ExtResource("2_vmijo")
 
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]

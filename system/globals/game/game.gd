@@ -69,6 +69,11 @@ func change_scene(path: String, params: Dictionary = {}) -> void:
 		tree.current_scene.update_player(params.position, params.direction)
 		player_set = true
 	
+	if params.has("shangyang_summon_unlocked"):
+		var pn := _find_player_node_under_scene(tree.current_scene)
+		if pn is Player:
+			(pn as Player).shangyang_summon_unlocked = bool(params["shangyang_summon_unlocked"])
+	
 	# 10. 恢复游戏
 	tree.paused = false
 	
@@ -134,6 +139,7 @@ func save_game() -> void:
 	
 	var player_position = Vector2.ZERO
 	var player_direction = 1
+	var summon_unlocked := false
 	
 	var player_node := _find_player_node_under_scene(scene)
 	if player_node:
@@ -142,6 +148,8 @@ func save_game() -> void:
 			player_direction = player_node.get_direction()
 		elif "direction" in player_node:
 			player_direction = player_node.direction
+		if player_node is Player:
+			summon_unlocked = (player_node as Player).shangyang_summon_unlocked
 	
 	var data := {
 		"world_states": world_states,
@@ -153,7 +161,8 @@ func save_game() -> void:
 			"position": {
 				"x": player_position.x,
 				"y": player_position.y
-			}
+			},
+			"shangyang_summon_unlocked": summon_unlocked
 		}
 	}
 	
@@ -217,10 +226,12 @@ func load_game() -> void:
 	print("玩家位置: ", player_position)
 	print("玩家方向: ", player_direction)
 	
-	change_scene(data.scene, {
+	var load_params := {
 		"direction": player_direction,
-		"position": player_position
-	})
+		"position": player_position,
+		"shangyang_summon_unlocked": player_data.get("shangyang_summon_unlocked", false)
+	}
+	change_scene(data.scene, load_params)
 
 func new_game() -> void:
 	# 新游戏：在进入关卡前清空会话状态（勿依赖 change_scene 的 params，避免与步骤 8 的 from_dict 顺序纠缠）
