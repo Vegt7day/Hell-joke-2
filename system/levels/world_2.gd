@@ -1,20 +1,55 @@
 extends Node2D
 
 const INTRO_TIMELINE := "商鞅提出要求"
+const TL_RETURN_SY := "回去看商鞅"
+const TL_GAIN_ABILITY := "获得商鞅能力"
 
 @onready var player: Player = $player
 @onready var shangyang_npc: ShangYang = $商鞅 as ShangYang
 
 var _intro_completed: bool = false
 var _intro_dialog_node: Node = null
+var _listening_intro_timeline: bool = false
 ## 已收集肢体节点名（与存档 sy_limbs_collected 同步）
 var _limbs_collected_names: Array[String] = []
 var sy_npc_removed: bool = false
 var _sy_awaiting_interact_restore: bool = false
+## 本场景已播放完成的时间线 / 演出键（与存档 completed_timelines 同步）
+var _completed_timelines: Array[String] = []
+
+
+func mark_dialog_timeline_completed(timeline_id: String) -> void:
+	if timeline_id.is_empty() or timeline_id in _completed_timelines:
+		return
+	_completed_timelines.append(timeline_id)
+
+
+func has_completed_timeline(timeline_id: String) -> bool:
+	return timeline_id in _completed_timelines
+
+
+func _disconnect_intro_timeline_listener() -> void:
+	var dlg := DialogicUtil.autoload()
+	if dlg and dlg.timeline_ended.is_connected(_on_dialogic_intro_timeline_ended):
+		dlg.timeline_ended.disconnect(_on_dialogic_intro_timeline_ended)
+	_listening_intro_timeline = false
+
+
+func _on_dialogic_intro_timeline_ended() -> void:
+	if not _listening_intro_timeline:
+		return
+	_listening_intro_timeline = false
+	_disconnect_intro_timeline_listener()
+	_on_intro_dialog_finished()
 
 
 func run_shangyang_get_cutscene(sy: ShangYang, anim_index: int) -> void:
 	if not is_instance_valid(player) or not is_instance_valid(sy):
+		return
+	var cut_key := "sy_cutscene_get_%d" % (anim_index + 1)
+	if has_completed_timeline(cut_key):
+		if anim_index == 2:
+			sy.consume_pending_return_sy_dialog()
 		return
 	var cam := player.get_node_or_null("Camera2D") as Camera2D
 	var from_off := Vector2.ZERO
@@ -40,7 +75,18 @@ func run_shangyang_get_cutscene(sy: ShangYang, anim_index: int) -> void:
 		twb.tween_property(cam, "position", from_off, dur_back)
 		await twb.finished
 	if is_instance_valid(sy):
+		mark_dialog_timeline_completed(cut_key)
 		sy.consume_pending_return_sy_dialog()
+
+
+func _infer_cutscene_completions_from_saved_limbs() -> void:
+	var n := _limbs_collected_names.size()
+	if n >= 2:
+		mark_dialog_timeline_completed("sy_cutscene_get_1")
+	if n >= 4:
+		mark_dialog_timeline_completed("sy_cutscene_get_2")
+	if n >= 5:
+		mark_dialog_timeline_completed("sy_cutscene_get_3")
 
 
 func _ready() -> void:
@@ -52,6 +98,8 @@ func _ready() -> void:
 func _world2_quest_setup() -> void:
 	_restore_limbs_from_save()
 	await get_tree().process_frame
+	if is_instance_valid(shangyang_npc) and shangyang_npc.has_method("apply_story_progress_without_cutscene"):
+		shangyang_npc.apply_story_progress_without_cutscene(_limbs_collected_names.size())
 	if _sy_awaiting_interact_restore and is_instance_valid(shangyang_npc):
 		shangyang_npc.restore_post_get3_waiting_interact()
 	_register_dialogic_characters()
@@ -113,30 +161,35 @@ func _set_limbs_pickups_enabled(enabled: bool) -> void:
 
 
 func _start_intro_dialog() -> void:
+	if has_completed_timeline(INTRO_TIMELINE):
+		_intro_completed = true
+		_set_limbs_pickups_enabled(true)
+		return
 	if not Dialogic:
+		mark_dialog_timeline_completed(INTRO_TIMELINE)
 		_on_intro_dialog_finished()
 		return
+	_disconnect_intro_timeline_listener()
+	var dlg := DialogicUtil.autoload()
+	if dlg:
+		_listening_intro_timeline = true
+		dlg.timeline_ended.connect(_on_dialogic_intro_timeline_ended)
 	var dialog := Dialogic.start(INTRO_TIMELINE)
 	if dialog == null:
+		_disconnect_intro_timeline_listener()
+		mark_dialog_timeline_completed(INTRO_TIMELINE)
 		_on_intro_dialog_finished()
 		return
 	get_tree().current_scene.add_child(dialog)
 	_intro_dialog_node = dialog
-	if dialog.has_signal("timeline_ended"):
-		dialog.timeline_ended.connect(_on_intro_dialog_finished)
-	elif dialog.has_signal("event_end"):
-		dialog.event_end.connect(_on_intro_dialog_finished)
 
 
 func _on_intro_dialog_finished(_arg = null) -> void:
 	if _intro_completed:
 		return
 	_intro_completed = true
+	mark_dialog_timeline_completed(INTRO_TIMELINE)
 	if _intro_dialog_node and is_instance_valid(_intro_dialog_node):
-		if _intro_dialog_node.has_signal("timeline_ended") and _intro_dialog_node.timeline_ended.is_connected(_on_intro_dialog_finished):
-			_intro_dialog_node.timeline_ended.disconnect(_on_intro_dialog_finished)
-		if _intro_dialog_node.has_signal("event_end") and _intro_dialog_node.event_end.is_connected(_on_intro_dialog_finished):
-			_intro_dialog_node.event_end.disconnect(_on_intro_dialog_finished)
 		_intro_dialog_node.queue_free()
 		_intro_dialog_node = null
 	_set_limbs_pickups_enabled(true)
@@ -151,10 +204,11 @@ func to_dict() -> Dictionary:
 		awaiting_interact = shangyang_npc.is_awaiting_story_interact()
 	return {
 		"enemies_alive": enemies_alive,
-		"sy_intro_done": _intro_completed,
+		"sy_intro_done": has_completed_timeline(INTRO_TIMELINE),
 		"sy_limbs_collected": _limbs_collected_names.duplicate(),
 		"sy_npc_removed": sy_npc_removed,
 		"sy_awaiting_sy_interact": awaiting_interact,
+		"completed_timelines": _completed_timelines.duplicate(),
 	}
 
 
@@ -164,10 +218,16 @@ func from_dict(dict: Dictionary) -> void:
 		var path := get_path_to(node)
 		if path not in alive:
 			node.queue_free()
-	_intro_completed = dict.get("sy_intro_done", false)
+	_completed_timelines.clear()
+	for x in dict.get("completed_timelines", []):
+		_completed_timelines.append(String(x))
+	if dict.get("sy_intro_done", false):
+		mark_dialog_timeline_completed(INTRO_TIMELINE)
 	_limbs_collected_names.clear()
 	for x in dict.get("sy_limbs_collected", []):
 		_limbs_collected_names.append(String(x))
+	_infer_cutscene_completions_from_saved_limbs()
+	_intro_completed = has_completed_timeline(INTRO_TIMELINE)
 	sy_npc_removed = dict.get("sy_npc_removed", false)
 	_sy_awaiting_interact_restore = dict.get("sy_awaiting_sy_interact", false)
 

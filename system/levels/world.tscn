@@ -15,7 +15,6 @@
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="14_3o3xc"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
-[ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="15_wuw35"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hrldk"]
 texture = ExtResource("1_4oalq")
@@ -58,10 +57,6 @@ region = Rect2(0, 0, 1152, 648)
 
 [node name="World" type="Node2D" unique_id=1385105138]
 script = ExtResource("1_pk68g")
-level_duration = null
-teacher_intro_timeline = null
-student_escape_timeline = null
-door_area_path = null
 metadata/_edit_vertical_guides_ = [-193.0, 1280.0, 320.0]
 metadata/_edit_horizontal_guides_ = [640.0, -514.0, 720.0, 90.0]
 
@@ -182,7 +177,7 @@ metadata/_edit_use_anchors_ = true
 position = Vector2(-640, 576)
 
 [node name="door" parent="." unique_id=1915584955 instance=ExtResource("9_25x0f")]
-position = Vector2(-752, 608)
+position = Vector2(-768, 608)
 
 [node name="door2" parent="door" unique_id=1494383439 instance=ExtResource("9_25x0f")]
 position = Vector2(0, -32)
@@ -267,7 +262,6 @@ one_shot = false
 
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("14_3o3xc")]
 position = Vector2(550, 606)
-ink_bullet_scene = ExtResource("15_wuw35")
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
 position = Vector2(16, -31)

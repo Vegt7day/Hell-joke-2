@@ -48,6 +48,7 @@ var _awaiting_npc_interact_for_ability: bool = false
 var _listening_for_ability_dialog_signal: bool = false
 var _ability_dialog_node: Node = null
 var _npc_exiting_after_reward: bool = false
+var _disable_destroy_sequence_started: bool = false
 ## 正在等 Dialogic 全局 timeline_ended，以结束「回去看商鞅」
 var _listening_return_sy_timeline: bool = false
 
@@ -152,9 +153,9 @@ func notify_limb_collected() -> void:
 	_limb_pickup_count += 1
 	var idx := -1
 	match _limb_pickup_count:
-		2:
+		1:
 			idx = 0
-		4:
+		3:
 			idx = 1
 		5:
 			_await_ability_dialog_after_get3 = true
@@ -202,10 +203,18 @@ func _on_dialogic_timeline_ended_for_return_sy() -> void:
 		_return_sy_dialog_node.queue_free()
 		_return_sy_dialog_node = null
 	_return_sy_dialog_active = false
+	var sc := get_tree().current_scene
+	if sc and sc.has_method("mark_dialog_timeline_completed"):
+		sc.mark_dialog_timeline_completed("回去看商鞅")
 	_finish_return_sy_dialog_enable_interact()
 
 
 func _start_return_to_sy_dialog() -> void:
+	var scn := get_tree().current_scene
+	if scn and scn.has_method("has_completed_timeline") and scn.has_completed_timeline("回去看商鞅"):
+		_return_sy_dialog_active = false
+		_finish_return_sy_dialog_enable_interact()
+		return
 	_return_sy_dialog_active = true
 	if not Dialogic:
 		_return_sy_dialog_active = false
@@ -255,6 +264,10 @@ func on_player_story_interact() -> void:
 
 
 func _start_world2_ability_dialog() -> void:
+	var scn2 := get_tree().current_scene
+	if scn2 and scn2.has_method("has_completed_timeline") and scn2.has_completed_timeline("获得商鞅能力"):
+		_finish_world2_ability_reward_after_dialog()
+		return
 	if not Dialogic:
 		_on_ability_dialogic_signal("ShangYang_dialogic_over")
 		return
@@ -283,6 +296,13 @@ func _on_ability_dialogic_signal(sig: String) -> void:
 	if not _listening_for_ability_dialog_signal:
 		return
 	_listening_for_ability_dialog_signal = false
+	_finish_world2_ability_reward_after_dialog()
+
+
+func _finish_world2_ability_reward_after_dialog() -> void:
+	var scn3 := get_tree().current_scene
+	if scn3 and scn3.has_method("mark_dialog_timeline_completed"):
+		scn3.mark_dialog_timeline_completed("获得商鞅能力")
 	_disconnect_ability_dialog_listener()
 	if _ability_dialog_node and is_instance_valid(_ability_dialog_node):
 		_ability_dialog_node.queue_free()
@@ -298,6 +318,9 @@ func _grant_player_summon_unlock() -> void:
 
 
 func _run_disable_destroy_sequence() -> void:
+	if not is_inside_tree() or _disable_destroy_sequence_started:
+		return
+	_disable_destroy_sequence_started = true
 	_npc_exiting_after_reward = true
 	_disconnect_dialogic_return_sy_listener()
 	if story_interact:
@@ -464,6 +487,38 @@ func _on_animation_finished(anim_name: String):
 func _process(delta):
 	"""每帧更新，用于调试和状态监测"""
 	pass  # 可以根据需要添加逻辑
+
+
+func apply_story_progress_without_cutscene(saved_pickup_count: int) -> void:
+	if current_mode != MODE.STORY:
+		return
+	_limb_pickup_count = clampi(saved_pickup_count, 0, 5)
+	var idx := -1
+	if _limb_pickup_count >= 5:
+		idx = 2
+	elif _limb_pickup_count >= 4:
+		idx = 1
+	elif _limb_pickup_count >= 2:
+		idx = 0
+	if idx >= 0:
+		_snap_get_animation_to_end(idx)
+
+
+func _snap_get_animation_to_end(animation_index: int) -> void:
+	if animation_index < 0 or animation_index >= _get_animations.size():
+		return
+	var anim_name := _get_animations[animation_index]
+	if not animation_player.has_animation(anim_name):
+		return
+	_current_state = STATE.TRANSITION
+	animation_player.play(anim_name)
+	var anim := animation_player.get_animation(anim_name)
+	if anim:
+		animation_player.seek(anim.length, true)
+	_current_state = STATE.IDLE
+	_story_form_index = 2 - animation_index
+	if animation_player.has_animation("idle"):
+		animation_player.play("idle")
 
 # 调试函数
 func get_status() -> Dictionary:

@@ -352,6 +352,7 @@ _data = {
 atlas = ExtResource("6_vmijo")
 
 [node name="player" type="CharacterBody2D" unique_id=396663958]
+z_index = 1
 collision_layer = 2
 collision_mask = 5
 velocity = Vector2(0, 98313.47)
@@ -390,7 +391,7 @@ position = Vector2(15, -55.000004)
 scale = Vector2(0.5208333, 0.51388884)
 sprite_frames = SubResource("SpriteFrames_022kj")
 autoplay = "default"
-frame_progress = 0.29249102
+frame_progress = 0.35337615
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=863665813]
 libraries/ = SubResource("AnimationLibrary_kr862")

@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="9_86wch"]
 [ext_resource type="PackedScene" uid="uid://bahd8uj8gujj5" path="res://entities/npc/商鞅/shang_yang_limb.tscn" id="10_86wch"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="10_h8yu3"]
+[ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="10_t3csa"]
+[ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="11_h8yu3"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t3csa"]
 texture = ExtResource("2_o4usy")
@@ -186,3 +188,18 @@ position = Vector2(393, 586)
 
 [node name="ShangYangLimb4" parent="ShangYangLimbs" unique_id=578986330 instance=ExtResource("10_86wch")]
 position = Vector2(281, 575)
+
+[node name="door" parent="." unique_id=1915584955 instance=ExtResource("10_t3csa")]
+position = Vector2(-768, 608)
+
+[node name="door" parent="door" unique_id=779944630 instance=ExtResource("10_t3csa")]
+position = Vector2(0, -96)
+
+[node name="door" parent="door/door" unique_id=250379254 instance=ExtResource("10_t3csa")]
+position = Vector2(0, 64)
+
+[node name="door" parent="door/door/door" unique_id=325479837 instance=ExtResource("10_t3csa")]
+position = Vector2(0, -32)
+
+[node name="开关" parent="." unique_id=1076644298 instance=ExtResource("11_h8yu3")]
+position = Vector2(-544, 544)

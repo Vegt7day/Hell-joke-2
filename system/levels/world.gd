@@ -32,6 +32,19 @@ var name_label: Label = $UI/DialogueBox/NameLabel if has_node("UI/DialogueBox/Na
 var characters_registered: bool = false
 var registry_initialized: bool = false
 
+## 本场景已播放完成的时间线（与存档 completed_timelines 同步）
+var _completed_timelines: Array[String] = []
+
+
+func mark_dialog_timeline_completed(timeline_id: String) -> void:
+	if timeline_id.is_empty() or timeline_id in _completed_timelines:
+		return
+	_completed_timelines.append(timeline_id)
+
+
+func has_completed_timeline(timeline_id: String) -> bool:
+	return timeline_id in _completed_timelines
+
 func _ready():
 	print("世界场景控制器加载中...")
 	
@@ -166,6 +179,10 @@ func start_dialogue():
 		return
 	
 	dialogue_started = true
+
+	if has_completed_timeline(teacher_intro_timeline):
+		_apply_post_intro_dialogue_state()
+		return
 	
 	if not Dialogic:
 		printerr("Dialogic不可用，跳过对话")
@@ -187,6 +204,16 @@ func start_dialogue():
 	
 	print("对话已启动")
 
+
+func _apply_post_intro_dialogue_state() -> void:
+	dialogue_ended = true
+	var dlg := DialogicUtil.autoload()
+	if dlg and not dlg.signal_event.is_connected(receive):
+		dlg.signal_event.connect(receive)
+	start_level()
+	show_message("关卡开始！坚持5秒！", 3.0)
+
+
 func _on_intro_dialogue_ended():
 	print("=== 教师介绍对话结束回调被调用 ===")
 	
@@ -194,6 +221,7 @@ func _on_intro_dialogue_ended():
 		return
 	
 	dialogue_ended = true
+	mark_dialog_timeline_completed(teacher_intro_timeline)
 	
 	if current_dialog and is_instance_valid(current_dialog):
 		current_dialog.queue_free()
@@ -302,6 +330,10 @@ func _on_door_area_entered(body: Node2D):
 
 func play_ending_dialogue(is_victory: bool):
 	print("开始播放结局对话，胜利状态:", is_victory)
+
+	if has_completed_timeline(student_escape_timeline):
+		show_level_result()
+		return
 	
 	if not Dialogic:
 		printerr("Dialogic不可用，跳过结局对话")
@@ -315,12 +347,17 @@ func play_ending_dialogue(is_victory: bool):
 		return
 	
 	add_child(dialog)
+	current_dialog = dialog
 	dialog.connect("event_end", Callable(self, "_on_ending_dialogue_ended"))
 	
 	print("结局对话已启动")
 
 func _on_ending_dialogue_ended():
 	print("结局对话结束")
+	mark_dialog_timeline_completed(student_escape_timeline)
+	if current_dialog and is_instance_valid(current_dialog):
+		current_dialog.queue_free()
+		current_dialog = null
 	show_level_result()
 
 func end_level():
@@ -363,7 +400,8 @@ func to_dict() -> Dictionary:
 			var path := get_path_to(node)
 			enemies_alive.append(str(path))
 	return {
-		"enemies_alive": enemies_alive
+		"enemies_alive": enemies_alive,
+		"completed_timelines": _completed_timelines.duplicate(),
 	}
 
 func from_dict(dict: Dictionary) -> void:
@@ -374,6 +412,9 @@ func from_dict(dict: Dictionary) -> void:
 				var path := get_path_to(node)
 				if not str(path) in enemies_alive:
 					node.queue_free()
+	_completed_timelines.clear()
+	for x in dict.get("completed_timelines", []):
+		_completed_timelines.append(String(x))
 		
 func update_player(position: Vector2, direction: int = 1) -> void:
 	if has_node("player"):

@@ -146,27 +146,28 @@ collision_priority = 0.1
 script = ExtResource("1_gxmog")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1152197087]
-position = Vector2(0, -16)
+position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_2r42g")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=560288617]
 libraries/ = SubResource("AnimationLibrary_pd243")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1258688923]
+position = Vector2(16, 0)
 texture = SubResource("AtlasTexture_iimot")
 hframes = 5
 region_enabled = true
 region_rect = Rect2(0, 0, 160, 64)
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=426175512]
-offset_left = -13.0
+offset_left = 3.0
 offset_top = -29.0
-offset_right = -6.0
+offset_right = 10.0
 offset_bottom = -22.0
 metadata/_edit_use_anchors_ = true
 
 [node name="PushArea" type="Area2D" parent="." unique_id=1174246916]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PushArea" unique_id=1850196385]
-position = Vector2(0, -16)
+position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_vs45f")
