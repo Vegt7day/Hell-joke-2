@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var player: Player = $Student
+@onready var player: Player = $player
 
 func to_dict()-> Dictionary:
 	var enemies_alive:=[]

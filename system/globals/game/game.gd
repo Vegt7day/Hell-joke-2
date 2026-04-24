@@ -92,7 +92,7 @@ func _wait_for_scene_load(tree: SceneTree, max_frames: int) -> void:
 const SAVE_PATH := "user://data.sav"
 ## 与 project.godot [autoload] 中名称一致（勿写成 DialogueRegistryManager）
 const DIALOGIC_REGISTRY_PATH := "/root/DialogicRegistry"
-## 玩家根节点约定组名（与 tip_开.gd 等一致）；由 Player / Student 在 _ready 中入组
+## 玩家根节点约定组名（与 tip_开.gd 等一致）；由 Player 在 _ready 中入组
 const PLAYER_SAVE_GROUP := "player"
 
 

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://3pgsci56wkln" path="res://system/levels/world_2.gd" id="1_06p58"]
 [ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="2_o4usy"]
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="3_8bqis"]
-[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/地下传送门.tscn" id="4_74o8t"]
+[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/auto_teleporter.tscn" id="4_74o8t"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="5_86wch"]
 [ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="6_h8yu3"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="8_8bqis"]

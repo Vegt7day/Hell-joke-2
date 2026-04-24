@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_8nbjr"]
 [ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="2_8tocs"]
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="5_fssad"]
-[ext_resource type="PackedScene" uid="uid://c7dv8iqw4kvvi" path="res://system/可交互物/接触触发.tscn" id="9_8tocs"]
-[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/地下传送门.tscn" id="10_5asf3"]
+[ext_resource type="PackedScene" path="res://system/可交互物/接触触发.tscn" id="9_8tocs"]
+[ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/auto_teleporter.tscn" id="10_5asf3"]
 [ext_resource type="PackedScene" uid="uid://coaf3l4q1s1xk" path="res://system/可交互物/hell.tscn" id="10_fssad"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="11_5asf3"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="12_eyx0r"]
@@ -188,10 +188,10 @@ trap_group = "1"
 position = Vector2(800, 480)
 path = "uid://cb28e04q4603v"
 
-[node name="接触触发" parent="." unique_id=483767925 instance=ExtResource("9_8tocs")]
+[node name="ContactTrigger" parent="." unique_id=483767925 instance=ExtResource("9_8tocs")]
 position = Vector2(544, 32)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="接触触发" unique_id=665197454]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactTrigger" unique_id=665197454]
 position = Vector2(-608, -64)
 shape = SubResource("RectangleShape2D_fssad")
 
@@ -201,11 +201,11 @@ path = "uid://cb28e04q4603v"
 
 [node name="Game" parent="." unique_id=1668650706 instance=ExtResource("11_5asf3")]
 
-[node name="Student" parent="." unique_id=396663958 instance=ExtResource("12_eyx0r")]
+[node name="player" parent="." unique_id=396663958 instance=ExtResource("12_eyx0r")]
 position = Vector2(480, 608)
 ink_bullet_scene = ExtResource("13_hv1sd")
 
-[node name="Camera2D" type="Camera2D" parent="Student" unique_id=528715622]
+[node name="Camera2D" type="Camera2D" parent="player" unique_id=528715622]
 position = Vector2(27, 489)
 process_callback = 0
 limit_left = -10000009
@@ -222,7 +222,7 @@ drag_right_margin = 0.04
 drag_bottom_margin = 0.07
 editor_draw_drag_margin = true
 
-[node name="Marker2D5" type="Marker2D" parent="Student" unique_id=1128356385]
+[node name="Marker2D5" type="Marker2D" parent="player" unique_id=1128356385]
 position = Vector2(-109, 435)
 
 [node name="商鞅" parent="." unique_id=516840921 instance=ExtResource("14_4sj0c")]

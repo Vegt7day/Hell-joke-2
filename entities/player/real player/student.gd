@@ -72,7 +72,7 @@ var state_timer: float = 0.0
 var direction: int = 1  # 1=向右, 0=向左
 var last_shoot_direction: int = 1
 var interacting_with: Array[Interactable] = []
-var 接触触发_with: Array[接触触发] = []
+var _contact_triggers: Array[ContactTrigger] = []
 
 # 状态机参数
 var attack_cooldown: float = 0.0
@@ -602,8 +602,8 @@ func _physics_process(delta):
 	# 处理互动输入
 	if Input.is_action_just_pressed("interact") and not interacting_with.is_empty():
 		interacting_with.back().interact()
-	if not 接触触发_with.is_empty():
-		接触触发_with.back().interact()
+	if not _contact_triggers.is_empty():
+		_contact_triggers.back().interact()
 	
 	# 处理攻击输入
 	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
@@ -847,10 +847,11 @@ func register_interactable(v: Interactable):
 func unregister_interactable(v: Interactable):
 	interacting_with.erase(v)
 
-func register_接触触发(v: 接触触发):
-	if v in 接触触发_with:
+func register_contact_trigger(v: ContactTrigger) -> void:
+	if v in _contact_triggers:
 		return
-	接触触发_with.append(v)
+	_contact_triggers.append(v)
 
-func unregister_接触触发(v: 接触触发):
-	接触触发_with.erase(v)
+
+func unregister_contact_trigger(v: ContactTrigger) -> void:
+	_contact_triggers.erase(v)
