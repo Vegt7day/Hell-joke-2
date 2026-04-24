@@ -90,6 +90,8 @@ func _wait_for_scene_load(tree: SceneTree, max_frames: int) -> void:
 	push_error("场景加载超时，等待了" + str(max_frames) + "帧")
 
 const SAVE_PATH := "user://data.sav"
+## 与 project.godot [autoload] 中名称一致（勿写成 DialogueRegistryManager）
+const DIALOGIC_REGISTRY_PATH := "/root/DialogicRegistry"
 
 func save_game() -> void:
 	var scene := get_tree().current_scene
@@ -107,11 +109,11 @@ func save_game() -> void:
 	var character_registry_data = {}
 	
 	# 通过自动加载节点获取注册表
-	var registry = get_node_or_null("/root/DialogueRegistryManager")
+	var registry = get_node_or_null(DIALOGIC_REGISTRY_PATH)
 	if registry and registry.has_method("save_registry"):
 		character_registry_data = registry.save_registry()
 	else:
-		print("警告：DialogueRegistryManager不存在或没有save_registry方法，跳过保存角色注册信息")
+		print("警告：DialogicRegistry 不存在或没有 save_registry 方法，跳过保存角色注册信息")
 	
 	var player_position = Vector2.ZERO
 	var player_direction = 1
@@ -188,11 +190,11 @@ func load_game() -> void:
 	
 	# 恢复角色注册
 	if data.has("character_registry"):
-		var registry = get_node_or_null("/root/DialogueRegistryManager")
+		var registry = get_node_or_null(DIALOGIC_REGISTRY_PATH)
 		if registry and registry.has_method("load_registry"):
 			registry.load_registry(data.character_registry)
 		else:
-			print("警告：无法加载角色注册信息，DialogueRegistryManager不存在或没有load_registry方法")
+			print("警告：无法加载角色注册信息，DialogicRegistry 不存在或没有 load_registry 方法")
 	
 	print("正在加载存档...")
 	print("场景: ", data.scene)
@@ -206,7 +208,7 @@ func load_game() -> void:
 
 func new_game() -> void:
 	# 清理角色注册
-	var registry = get_node_or_null("/root/DialogueRegistryManager")
+	var registry = get_node_or_null(DIALOGIC_REGISTRY_PATH)
 	if registry and registry.has_method("clear_all"):
 		registry.clear_all()
 	
