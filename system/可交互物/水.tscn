@@ -2,7 +2,6 @@
 
 [ext_resource type="Texture2D" uid="uid://dei6m667i8tb4" path="res://system/可交互物/水.png" id="1_l1p8m"]
 [ext_resource type="Script" uid="uid://csh2hcm1hja2l" path="res://system/可交互物/水.gd" id="2_water"]
-[ext_resource type="AudioStream" uid="uid://dno0gg0tgvoce" path="res://assets/水滴.mp3" id="3_sfx"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dcifr"]
 atlas = ExtResource("1_l1p8m")
@@ -187,5 +186,3 @@ libraries/ = SubResource("AnimationLibrary_eowga")
 position = Vector2(72, -16)
 shape = SubResource("RectangleShape2D_water")
 
-[node name="TriggerSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("3_sfx")

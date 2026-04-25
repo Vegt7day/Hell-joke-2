@@ -24,6 +24,7 @@ Dialogic="*uid://ds2q0uclmolvu"
 MechanismLinkBus="*uid://c3j3v12ffehqn"
 Game="*uid://cwnvqmdyl2j3i"
 DialogicRegistry="*uid://buxvgwfat3tfx"
+MechanismSfxBus="*res://system/globals/mechanism_sfx_bus.gd"
 
 [dialogic]
 

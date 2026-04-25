@@ -12,12 +12,12 @@ const _PUSH_DIR_META := "_window_push_dir"
 
 @export var initial_color: String = "红"
 @export var is_open: bool = true
+@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
 
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var color_rect: ColorRect = $ColorRect
-@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var current_color: String
 var _is_processing: bool = false
@@ -204,6 +204,6 @@ func _resolve_push_direction(player: Node2D, desired_dir: float) -> float:
 
 
 func _play_trigger_sound() -> void:
-	if trigger_sound == null or trigger_sound.stream == null:
+	if trigger_sfx == null:
 		return
-	trigger_sound.play()
+	MechanismSfxBus.request_once(&"switch_chain_trigger", trigger_sfx)

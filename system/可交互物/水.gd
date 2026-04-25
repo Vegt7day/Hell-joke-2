@@ -5,10 +5,10 @@ extends CharacterBody2D
 @export var damage: float = 1.0
 @export var lifetime: float = 6.0
 @export var collision_disable_defer: bool = true
+@export var trigger_sfx: AudioStream = preload("res://assets/水滴.mp3")
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
-@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var _is_destroying: bool = false
 var _is_falling: bool = false
@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 func _start_spawn() -> void:
 	_is_falling = false
 	velocity = Vector2.ZERO
-	_play_trigger_sound()
+	_play_trigger_sound(&"water_spawn")
 	animation_player.play("be created")
 
 
@@ -69,7 +69,7 @@ func _start_disappear() -> void:
 		else:
 			collision_shape.disabled = true
 	animation_player.play("disappear")
-	_play_trigger_sound()
+	_play_trigger_sound(&"water_disappear")
 	var length := animation_player.current_animation_length
 	if length <= 0.0:
 		queue_free()
@@ -93,7 +93,7 @@ func _on_lifetime_timeout() -> void:
 	_start_disappear()
 
 
-func _play_trigger_sound() -> void:
-	if trigger_sound == null or trigger_sound.stream == null:
+func _play_trigger_sound(event_key: StringName) -> void:
+	if trigger_sfx == null:
 		return
-	trigger_sound.play()
+	MechanismSfxBus.request_once(event_key, trigger_sfx)

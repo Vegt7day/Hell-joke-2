@@ -5,12 +5,12 @@ extends StaticBody2D
 @export var disable_collision_on_trigger: bool = true  # 触发时是否禁用碰撞
 @export var one_time_trigger: bool = true  # 是否一次性触发
 @export var reset_delay: float = 0.0  # 重置延迟（秒），0表示不重置
+@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
 
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
-@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 # 状态变量
 var is_triggered: bool = false
@@ -107,6 +107,6 @@ func _on_animation_finished(anim_name: String):
 
 
 func _play_trigger_sound() -> void:
-	if trigger_sound == null or trigger_sound.stream == null:
+	if trigger_sfx == null:
 		return
-	trigger_sound.play()
+	MechanismSfxBus.request_once(&"trap_trigger", trigger_sfx)

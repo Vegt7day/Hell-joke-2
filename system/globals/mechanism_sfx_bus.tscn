@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://qtot6xv1jxkn"]
+
+[ext_resource type="Script" uid="uid://ds257wwu3ejdy" path="res://system/globals/mechanism_sfx_bus.gd" id="1_2wh6i"]
+
+[node name="MechanismSfxBus" type="Node" unique_id=941497219]
+script = ExtResource("1_2wh6i")

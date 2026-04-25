@@ -10,11 +10,11 @@ signal switch_state_changed(color: String, switch_state: String)
 @export var is_on: bool = false
 @export var bullet_trigger_enabled: bool = true  # 是否允许子弹触发
 @export var damage_threshold: float = 1.0  # 触发开关所需的最小伤害值
+@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
 
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var color_rect: ColorRect = $ColorRect
-@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var current_color: String
 var _channel_id: StringName = StringName()
@@ -139,6 +139,6 @@ func _emit_state_change() -> void:
 
 
 func _play_trigger_sound() -> void:
-	if trigger_sound == null or trigger_sound.stream == null:
+	if trigger_sfx == null:
 		return
-	trigger_sound.play()
+	MechanismSfxBus.request_once(&"switch_chain_trigger", trigger_sfx)

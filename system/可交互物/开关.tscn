@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b84oghaoaxwpg" path="res://system/可交互物/开关.gd" id="1_7bjq7"]
 [ext_resource type="Texture2D" uid="uid://6rl2ivpb87gt" path="res://system/可交互物/开关.png" id="2_7bjq7"]
-[ext_resource type="AudioStream" uid="uid://rtdoc4qvgfva" path="res://assets/开关.mp3" id="3_jmglv"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jmglv"]
 
@@ -168,5 +167,3 @@ libraries/ = SubResource("AnimationLibrary_5um43")
 position = Vector2(15, -15.5)
 shape = SubResource("CircleShape2D_7bjq7")
 
-[node name="TriggerSound" type="AudioStreamPlayer" parent="." unique_id=107854829]
-stream = ExtResource("3_jmglv")

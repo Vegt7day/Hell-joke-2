@@ -4,9 +4,9 @@ extends StaticBody2D
 @export var damage_threshold: float = 1.0
 @export var water_scene: PackedScene = preload("res://system/可交互物/水.tscn")
 @export var spawn_offset: Vector2 = Vector2(32.0, -48.0)
+@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 enum BarrelState {
 	WITH_WATER_IDLE,
@@ -101,6 +101,6 @@ func _resolve_water_spawn_position() -> Vector2:
 
 
 func _play_trigger_sound() -> void:
-	if trigger_sound == null or trigger_sound.stream == null:
+	if trigger_sfx == null:
 		return
-	trigger_sound.play()
+	MechanismSfxBus.request_once(&"bucket_trigger", trigger_sfx)
