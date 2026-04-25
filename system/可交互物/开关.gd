@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+const MechanismChannelIds = preload("res://system/mechanisms/mechanism_channel_ids.gd")
+
 # 信号定义
 signal switch_state_changed(color: String, switch_state: String)
 
@@ -86,5 +88,9 @@ func _trigger_switch():
 func _emit_state_change():
 	var state_str = "开" if is_on else "关"
 	emit_signal("switch_state_changed", current_color, state_str)
-	MechanismLinkBus.publish_channel_state(StringName(current_color), is_on)
+	var channel_id := MechanismChannelIds.color_to_channel_id(current_color)
+	if channel_id.is_empty():
+		push_warning("开关状态发送失败：未知颜色 %s，无法映射 channel_id" % current_color)
+		return
+	MechanismLinkBus.publish_channel_state(channel_id, is_on)
 	print("开关状态已发送 - 颜色:", current_color, " 状态:", state_str)

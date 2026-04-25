@@ -1,6 +1,8 @@
 extends Node
 ## 挂在门或其它机关下的子节点：订阅 [MechanismLinkBus]，仅响应与 [member channel_id] 一致的颜色通道。
-## [member channel_id] 为空时，若父节点存在 [code]initial_color[/code] 字符串属性，则以其为通道 ID（与开关 [code]current_color[/code] 一致）。
+## [member channel_id] 为空时，若父节点存在 [code]initial_color[/code] 字符串属性，则将颜色映射为序号通道 ID（与开关发布一致）。
+
+const MechanismChannelIds = preload("res://system/mechanisms/mechanism_channel_ids.gd")
 
 @export var channel_id: StringName = StringName()
 
@@ -26,7 +28,10 @@ func _resolve_channel_id() -> StringName:
 		return channel_id
 	var p := get_parent()
 	if p != null and "initial_color" in p:
-		return StringName(str(p.get("initial_color")))
+		var resolved := MechanismChannelIds.color_to_channel_id(str(p.get("initial_color")))
+		if resolved.is_empty():
+			push_warning("switch_channel_listener: 父节点 initial_color 无法映射到 channel_id (%s)" % get_path())
+		return resolved
 	return StringName()
 
 

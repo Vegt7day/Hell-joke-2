@@ -4,7 +4,6 @@ extends StaticBody2D
 
 const _OPEN_FRAME := 4
 const _CLOSED_FRAME := 0
-const _OPEN_COLLISION_SIZE := Vector2(29, 5)
 const _COLLISION_POS := Vector2(16.5, -2.5)
 
 @export var initial_color: String = "红"
@@ -20,6 +19,8 @@ var _is_processing: bool = false
 
 
 func _ready() -> void:
+	if collision_shape.shape != null:
+		collision_shape.shape = collision_shape.shape.duplicate(true)
 	current_color = initial_color
 	match current_color:
 		"红":
@@ -56,8 +57,10 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 	_is_processing = true
 	if target_open:
 		animation_player.play("open")
+		collision_shape.disabled = false
 	else:
 		animation_player.play("close")
+		collision_shape.disabled = true
 	is_open = target_open
 	await get_tree().create_timer(0.5).timeout
 	_is_processing = false
@@ -66,14 +69,8 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 func _apply_instant_visual(open: bool) -> void:
 	if open:
 		sprite_2d.frame = _OPEN_FRAME
-		_set_collision_size(_OPEN_COLLISION_SIZE)
+		collision_shape.disabled = false
 	else:
 		sprite_2d.frame = _CLOSED_FRAME
-		_set_collision_size(Vector2.ZERO)
+		collision_shape.disabled = true
 	collision_shape.position = _COLLISION_POS
-
-
-func _set_collision_size(sz: Vector2) -> void:
-	var rect := collision_shape.shape as RectangleShape2D
-	if rect:
-		rect.size = sz

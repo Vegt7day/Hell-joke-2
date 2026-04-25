@@ -5,13 +5,13 @@
 [ext_resource type="Script" uid="uid://ct1y7mrsh0rss" path="res://system/可交互物/窗.gd" id="3_win"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rp01u"]
-size = Vector2(29, 5)
+size = Vector2(32, 5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hlgj2"]
 atlas = ExtResource("1_bnd1u")
 
 [sub_resource type="Animation" id="Animation_blbh3"]
-length = 0.033333335
+length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -46,37 +46,13 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [4]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("CollisionShape2D:shape:size")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(29, 5)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("CollisionShape2D:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(16.5, -2.5)]
+"values": [0]
 }
 
 [sub_resource type="Animation" id="Animation_ah3uy"]
 resource_name = "close"
-length = 0.5
-step = 0.1
+length = 0.25
+step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -108,40 +84,16 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [4, 3, 2, 1, 0]
 }
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("CollisionShape2D:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(16.5, -2.5)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("CollisionShape2D:shape:size")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0, 0.10261711),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [Vector2(29, 5), Vector2(0, 0)]
-}
 
 [sub_resource type="Animation" id="Animation_sxbo1"]
 resource_name = "open"
-length = 0.5
-step = 0.1
+length = 0.25
+step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -173,34 +125,10 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("CollisionShape2D:shape:size")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [Vector2(0, 0), Vector2(29, 5)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("CollisionShape2D:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0.4),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [Vector2(16.5, -2.5)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_1ff2v"]
@@ -211,18 +139,19 @@ _data = {
 }
 
 [node name="Windows" type="StaticBody2D" unique_id=1643735838]
+collision_mask = 0
+collision_priority = 0.1
 script = ExtResource("3_win")
 is_open = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=451198066]
-position = Vector2(16.5, -2.5)
+position = Vector2(16, -2.5)
 shape = SubResource("RectangleShape2D_rp01u")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1322254876]
 position = Vector2(16, -16)
 texture = SubResource("AtlasTexture_hlgj2")
 hframes = 5
-frame = 4
 region_enabled = true
 region_rect = Rect2(0, 0, 320, 64)
 
