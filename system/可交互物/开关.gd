@@ -16,17 +16,18 @@ signal switch_state_changed(color: String, switch_state: String)
 @onready var color_rect: ColorRect = $ColorRect
 
 var current_color: String
+var _channel_id: StringName = StringName()
 var is_processing: bool = false  # 防止连续触发
 
 func _ready():
 	# 初始化颜色
 	current_color = initial_color
+	_channel_id = MechanismChannelIds.color_to_channel_id(current_color)
+	if _channel_id.is_empty():
+		push_warning("开关: 未知颜色 %s，无法映射 channel_id" % current_color)
 	
 	# 初始化开关状态
-	if is_on:
-		sprite_2d.frame = 0  # 开的状态
-	else:
-		sprite_2d.frame = 3  # 关的状态
+	_apply_switch_visual(is_on)
 	# 根据颜色字符串设置ColorRect的颜色
 	match current_color:
 		"红":
@@ -48,7 +49,24 @@ func _ready():
 		_:
 			color_rect.color = Color.WHITE  # 默认白色
 			print("警告：未知颜色", current_color, "，使用默认白色")
+	if not _channel_id.is_empty():
+		MechanismLinkBus.channel_state_changed.connect(_on_channel_state_changed)
+		call_deferred("_deferred_sync_initial_from_bus")
 	print("开关初始化完成 - 颜色:", current_color, " 状态:", "开" if is_on else "关")
+
+
+func _exit_tree() -> void:
+	if MechanismLinkBus.channel_state_changed.is_connected(_on_channel_state_changed):
+		MechanismLinkBus.channel_state_changed.disconnect(_on_channel_state_changed)
+
+
+func _deferred_sync_initial_from_bus() -> void:
+	if not is_inside_tree() or _channel_id.is_empty():
+		return
+	if not MechanismLinkBus.has_published_state(_channel_id):
+		return
+	apply_switch_bus_state(MechanismLinkBus.get_last_is_open(_channel_id), false)
+
 
 func take_damage(damage_amount: float, attacker = null):
 	# 检查是否允许子弹触发
@@ -70,27 +88,49 @@ func take_damage(damage_amount: float, attacker = null):
 	_trigger_switch()
 
 func _trigger_switch():
+	if _channel_id.is_empty():
+		push_warning("开关状态发送失败：未知颜色 %s，无法映射 channel_id" % current_color)
+		return
+	# 同色开关共用一个通道状态：发布目标状态，由总线回调驱动所有同色开关（含自身）统一播放/同步。
+	MechanismLinkBus.publish_channel_state(_channel_id, not is_on)
+
+
+func _on_channel_state_changed(ch: StringName, target_on: bool) -> void:
+	if ch != _channel_id:
+		return
+	apply_switch_bus_state(target_on, true)
+
+
+func apply_switch_bus_state(target_on: bool, play_anim: bool = true) -> void:
+	if is_processing:
+		return
+	if target_on == is_on:
+		return
+	if not play_anim:
+		is_on = target_on
+		_apply_switch_visual(target_on)
+		_emit_state_change()
+		return
 	is_processing = true
-	
-	# 切换开关状态
-	if is_on:
-		animation_player.play("close")
-		is_on = false
-	else:
+	if target_on:
 		animation_player.play("open")
-		is_on = true
-	
-	# 延迟一段时间后发送信号
+	else:
+		animation_player.play("close")
+	is_on = target_on
 	await get_tree().create_timer(0.4).timeout
+	_apply_switch_visual(target_on)
 	_emit_state_change()
 	is_processing = false
 
-func _emit_state_change():
+
+func _apply_switch_visual(target_on: bool) -> void:
+	if target_on:
+		sprite_2d.frame = 0  # 开的状态
+	else:
+		sprite_2d.frame = 3  # 关的状态
+
+
+func _emit_state_change() -> void:
 	var state_str = "开" if is_on else "关"
 	emit_signal("switch_state_changed", current_color, state_str)
-	var channel_id := MechanismChannelIds.color_to_channel_id(current_color)
-	if channel_id.is_empty():
-		push_warning("开关状态发送失败：未知颜色 %s，无法映射 channel_id" % current_color)
-		return
-	MechanismLinkBus.publish_channel_state(channel_id, is_on)
 	print("开关状态已发送 - 颜色:", current_color, " 状态:", state_str)
