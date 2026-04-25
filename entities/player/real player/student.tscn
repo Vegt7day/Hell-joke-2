@@ -371,7 +371,7 @@ position = Vector2(21, -2)
 
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
 stream = ExtResource("4_avp68")
-stream = ExtResource("4_avp68")
+bus = &"SFX_Player"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=969579881]
 position = Vector2(15, -15)
@@ -383,9 +383,11 @@ position = Vector2(29, -18)
 
 [node name="jump" type="AudioStreamPlayer" parent="." unique_id=538191384]
 stream = ExtResource("4_ic7vs")
+bus = &"SFX_Player"
 
 [node name="attack" type="AudioStreamPlayer" parent="." unique_id=1491403653]
 stream = ExtResource("3_dnbur")
+bus = &"SFX_Player"
 volume_db = -16.845
 
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]
@@ -421,3 +423,4 @@ position = Vector2(1, -18)
 
 [node name="common" type="AudioStreamPlayer" parent="." unique_id=1947778410]
 stream = ExtResource("9_cdn5u")
+bus = &"SFX_Player"
