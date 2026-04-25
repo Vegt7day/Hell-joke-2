@@ -9,6 +9,7 @@ extends StaticBody2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var color_rect: ColorRect = $ColorRect
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var current_color: String
 var door_is_processing: bool = false  # 防止重复处理
@@ -71,6 +72,7 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 	if not target_open:
 		push_players_out()
 	door_is_processing = true
+	_play_trigger_sound()
 	if not target_open:
 		animation_player.play("open")
 		collision_shape.disabled = true
@@ -91,3 +93,9 @@ func push_players_out():
 		if body.is_in_group("player"):
 			var push_direction = (body.global_position - global_position).normalized()
 			body.apply_central_impulse(push_direction * 100)
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

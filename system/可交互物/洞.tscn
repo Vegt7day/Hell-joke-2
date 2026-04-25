@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://csdsjshtmy6pa" path="res://system/可交互物/洞.gd" id="1_71r04"]
 [ext_resource type="Texture2D" uid="uid://cqdvb2vdmxva8" path="res://system/可交互物/洞.png" id="1_sgvyn"]
+[ext_resource type="AudioStream" uid="uid://dj5saoxegjvkl" path="res://assets/jump.mp3" id="2_sfx"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_71r04"]
 atlas = ExtResource("1_sgvyn")
@@ -112,3 +113,6 @@ libraries/ = SubResource("AnimationLibrary_b65ad")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1224310495]
 position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_71r04")
+
+[node name="TriggerSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_sfx")

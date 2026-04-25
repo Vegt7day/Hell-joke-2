@@ -14,6 +14,7 @@ signal switch_state_changed(color: String, switch_state: String)
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var color_rect: ColorRect = $ColorRect
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var current_color: String
 var _channel_id: StringName = StringName()
@@ -112,6 +113,7 @@ func apply_switch_bus_state(target_on: bool, play_anim: bool = true) -> void:
 		_emit_state_change()
 		return
 	is_processing = true
+	_play_trigger_sound()
 	if target_on:
 		animation_player.play("open")
 	else:
@@ -134,3 +136,9 @@ func _emit_state_change() -> void:
 	var state_str = "开" if is_on else "关"
 	emit_signal("switch_state_changed", current_color, state_str)
 	print("开关状态已发送 - 颜色:", current_color, " 状态:", state_str)
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

@@ -82,8 +82,6 @@ metadata/_edit_vertical_guides_ = [640.0]
 [node name="Marker2D3" type="Marker2D" parent="teacher" unique_id=425901930]
 position = Vector2(27, -109)
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=697312936]
-
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=469835150]
 
 [node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1822927404]

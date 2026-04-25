@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://lgwxwg0o45k3" path="res://门.gd" id="1_gxmog"]
 [ext_resource type="Texture2D" uid="uid://qmerhi1eunid" path="res://system/可交互物/门.png" id="2_vs45f"]
-[ext_resource type="Script" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
+[ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
+[ext_resource type="AudioStream" uid="uid://bsdtpixx8gxbp" path="res://assets/咔擦，门窗.mp3" id="4_hyt57"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2r42g"]
 size = Vector2(32, 32)
@@ -48,8 +49,8 @@ tracks/2/keys = {
 
 [sub_resource type="Animation" id="Animation_j6hqg"]
 resource_name = "close"
-length = 0.5
-step = 0.1
+length = 0.25
+step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -81,7 +82,7 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.096242405, 0.2, 0.3, 0.4),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [4, 3, 2, 1, 0]
@@ -90,7 +91,7 @@ tracks/2/keys = {
 [sub_resource type="Animation" id="Animation_0xcpo"]
 resource_name = "open"
 length = 0.5
-step = 0.1
+step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -122,7 +123,7 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4]
@@ -146,7 +147,7 @@ collision_mask = 0
 collision_priority = 0.1
 script = ExtResource("1_gxmog")
 
-[node name="SwitchChannelListener" type="Node" parent="."]
+[node name="SwitchChannelListener" type="Node" parent="." unique_id=765164709]
 script = ExtResource("3_swch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1152197087]
@@ -175,3 +176,6 @@ metadata/_edit_use_anchors_ = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PushArea" unique_id=1850196385]
 position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_vs45f")
+
+[node name="TriggerSound" type="AudioStreamPlayer" parent="." unique_id=1830021214]
+stream = ExtResource("4_hyt57")

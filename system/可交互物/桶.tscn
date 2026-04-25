@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://crcjrb213eibh" path="res://system/可交互物/桶.png" id="1_om5tm"]
 [ext_resource type="Script" uid="uid://wc33s3teuqb" path="res://system/可交互物/桶.gd" id="2_barrel"]
+[ext_resource type="AudioStream" uid="uid://bsdtpixx8gxbp" path="res://assets/咔擦，门窗.mp3" id="3_m65kv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m5nc4"]
 atlas = ExtResource("1_om5tm")
@@ -181,6 +182,8 @@ _data = {
 size = Vector2(64, 64)
 
 [node name="bucket" type="StaticBody2D" unique_id=669743261]
+collision_layer = 16
+collision_mask = 8
 script = ExtResource("2_barrel")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=821578870]
@@ -196,3 +199,6 @@ libraries/ = SubResource("AnimationLibrary_lkbo5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1436692806]
 position = Vector2(64, -64)
 shape = SubResource("RectangleShape2D_m65kv")
+
+[node name="TriggerSound" type="AudioStreamPlayer" parent="." unique_id=259560595]
+stream = ExtResource("3_m65kv")

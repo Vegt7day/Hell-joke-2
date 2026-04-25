@@ -10,6 +10,7 @@ extends StaticBody2D
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 # 状态变量
 var is_triggered: bool = false
@@ -54,6 +55,7 @@ func trigger_trap():
 	
 	# 播放触发动画
 	if animation_player and animation_player.has_animation("触发"):
+		_play_trigger_sound()
 		animation_player.play("触发")
 		print("播放触发动画")
 	else:
@@ -102,3 +104,9 @@ func _on_animation_finished(anim_name: String):
 	"""动画播放完成回调"""
 	if anim_name == "触发":
 		print("陷阱触发动画完成: ", name)
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

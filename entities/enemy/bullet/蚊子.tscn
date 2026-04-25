@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://wwxgsad1reo1" path="res://entities/enemy/bullet/蚊子.gd" id="1_05b2m"]
 [ext_resource type="Texture2D" uid="uid://bbm164dqxcnkx" path="res://entities/enemy/teacher/蚊子.png" id="1_wrnvi"]
 [ext_resource type="AudioStream" uid="uid://ccqwwnr0tjbq4" path="res://entities/enemy/teacher/蚊子叫.mp3" id="3_7bv5w"]
+[ext_resource type="AudioStream" uid="uid://bv281x84rdxox" path="res://entities/enemy/bullet/蚊子吸血.mp3" id="4_5205r"]
 
 [sub_resource type="Animation" id="Animation_05b2m"]
 length = 0.001
@@ -170,3 +171,4 @@ shape = SubResource("RectangleShape2D_7bv5w")
 stream = ExtResource("3_7bv5w")
 
 [node name="disappear" type="AudioStreamPlayer" parent="." unique_id=1228261163]
+stream = ExtResource("4_5205r")

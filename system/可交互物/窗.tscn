@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://0niqdh3e61ev" path="res://system/可交互物/窗.png" id="1_bnd1u"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="2_rp01u"]
 [ext_resource type="Script" uid="uid://ct1y7mrsh0rss" path="res://system/可交互物/窗.gd" id="3_win"]
+[ext_resource type="AudioStream" uid="uid://bsdtpixx8gxbp" path="res://assets/咔擦，门窗.mp3" id="4_blbh3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rp01u"]
 size = Vector2(32, 5)
@@ -140,7 +141,6 @@ _data = {
 
 [node name="Windows" type="StaticBody2D" unique_id=1643735838]
 collision_mask = 0
-collision_priority = 10.0
 script = ExtResource("3_win")
 is_open = false
 
@@ -166,3 +166,6 @@ libraries/ = SubResource("AnimationLibrary_1ff2v")
 
 [node name="SwitchChannelListener" type="Node" parent="." unique_id=444957683]
 script = ExtResource("2_rp01u")
+
+[node name="TriggerSound" type="AudioStreamPlayer" parent="." unique_id=1761407093]
+stream = ExtResource("4_blbh3")

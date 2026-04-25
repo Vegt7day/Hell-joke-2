@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="10_h8yu3"]
 [ext_resource type="PackedScene" uid="uid://dt75fgerevtc5" path="res://system/levels/world2/world_2_1.tscn" id="10_t3csa"]
 [ext_resource type="PackedScene" uid="uid://ttbe3tlsfdkt" path="res://system/levels/world2/world_2_2.tscn" id="11_6hyit"]
+[ext_resource type="PackedScene" uid="uid://b6ubg33ffka11" path="res://system/levels/world2/world_2_3.tscn" id="12_u3b1l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8yweu"]
 texture = ExtResource("2_o4usy")
@@ -172,13 +173,13 @@ metadata/_edit_use_anchors_ = true
 [node name="ShangYangLimbs" type="Node" parent="." unique_id=774405894]
 
 [node name="ShangYangLimb5" parent="ShangYangLimbs" unique_id=2077955433 instance=ExtResource("10_86wch")]
-position = Vector2(663, -45)
+position = Vector2(735, 96)
 
 [node name="ShangYangLimb" parent="ShangYangLimbs" unique_id=228570245 instance=ExtResource("10_86wch")]
-position = Vector2(766, -38)
+position = Vector2(1088, 288)
 
 [node name="ShangYangLimb2" parent="ShangYangLimbs" unique_id=1023321276 instance=ExtResource("10_86wch")]
-position = Vector2(531, -50)
+position = Vector2(96, -160)
 
 [node name="ShangYangLimb4" parent="ShangYangLimbs" unique_id=578986330 instance=ExtResource("10_86wch")]
 position = Vector2(-1152, 320)
@@ -191,3 +192,6 @@ position = Vector2(-1952, 0)
 
 [node name="world2-2" parent="." unique_id=217958986 instance=ExtResource("11_6hyit")]
 position = Vector2(-800, 128)
+
+[node name="Node2D" parent="." unique_id=679792777 instance=ExtResource("12_u3b1l")]
+position = Vector2(64, 128)

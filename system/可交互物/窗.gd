@@ -17,6 +17,7 @@ const _PUSH_DIR_META := "_window_push_dir"
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var color_rect: ColorRect = $ColorRect
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var current_color: String
 var _is_processing: bool = false
@@ -59,6 +60,7 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 		_apply_instant_visual(target_open)
 		return
 	_is_processing = true
+	_play_trigger_sound()
 	if target_open:
 		animation_player.play("open")
 		collision_shape.disabled = false
@@ -199,3 +201,9 @@ func _resolve_push_direction(player: Node2D, desired_dir: float) -> float:
 	player.set_meta(_PUSH_FRAME_META, current_frame)
 	player.set_meta(_PUSH_DIR_META, desired_dir)
 	return desired_dir
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

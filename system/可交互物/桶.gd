@@ -6,6 +6,7 @@ extends StaticBody2D
 @export var spawn_offset: Vector2 = Vector2(32.0, -48.0)
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 enum BarrelState {
 	WITH_WATER_IDLE,
@@ -32,6 +33,7 @@ func take_damage(damage_amount: float, attacker = null) -> void:
 
 
 func _on_hit() -> void:
+	_play_trigger_sound()
 	match _state:
 		BarrelState.WITH_WATER_IDLE:
 			_is_auto_cycle_running = true
@@ -96,3 +98,9 @@ func _resolve_water_spawn_position() -> Vector2:
 	if marker != null:
 		return marker.global_position
 	return global_position + spawn_offset
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

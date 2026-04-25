@@ -6,7 +6,7 @@ extends CharacterBody2D
 @export var damage: float = 0.05
 @export var lifetime: float = 5.0
 @export var stick_to_target: bool = true  # 是否附着在目标上
-@export var stick_duration: float = 5  # 附着持续时间
+@export var stick_duration: float = 2  # 附着持续时间
 
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D

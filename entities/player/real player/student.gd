@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 # 移动参数
 @export var move_speed: float = 200.0
-@export var jump_velocity: float = -360.0
+@export var jump_velocity: float = -380.0
 @export var acceleration: float = 40.0
 @export var friction: float = 40.0
 @export var attack_duration: float = 0.3
@@ -53,7 +53,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var dialogic: Marker2D = $Marker2D3
 
 # 召唤音效
-@onready var summon_sound: AudioStreamPlayer = $summon_sound
+@onready var summon_sound: AudioStreamPlayer = $common
 
 # ========== 状态机定义 ==========
 enum PlayerState {
@@ -107,6 +107,7 @@ func _ready():
 	
 	# 初始化计时器
 	init_timers()
+	_ensure_walk_sound_loop()
 	
 	# 初始化输入控制
 	_init_input_control()
@@ -368,6 +369,8 @@ func update_idle(delta: float):
 
 func update_walk(delta: float):
 	var input_direction = Input.get_axis("move_left", "move_right")
+	if not walk_sound.playing:
+		walk_sound.play()
 	
 	# 移动逻辑
 	if input_direction != 0:
@@ -397,6 +400,18 @@ func update_walk(delta: float):
 	if Input.is_action_just_pressed("summon") and can_summon:
 		try_summon_shangyang()
 		return
+
+
+func _ensure_walk_sound_loop() -> void:
+	if walk_sound == null or walk_sound.stream == null:
+		return
+	var stream := walk_sound.stream
+	if stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+	elif stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamWAV:
+		(stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 func update_jump_ascend(delta: float):
 	# 处理水平移动

@@ -8,6 +8,7 @@ extends CharacterBody2D
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var trigger_sound: AudioStreamPlayer = $TriggerSound
 
 var _is_destroying: bool = false
 var _is_falling: bool = false
@@ -37,6 +38,7 @@ func _physics_process(delta: float) -> void:
 func _start_spawn() -> void:
 	_is_falling = false
 	velocity = Vector2.ZERO
+	_play_trigger_sound()
 	animation_player.play("be created")
 
 
@@ -67,6 +69,7 @@ func _start_disappear() -> void:
 		else:
 			collision_shape.disabled = true
 	animation_player.play("disappear")
+	_play_trigger_sound()
 	var length := animation_player.current_animation_length
 	if length <= 0.0:
 		queue_free()
@@ -88,3 +91,9 @@ func _on_lifetime_timeout() -> void:
 	if _is_destroying:
 		return
 	_start_disappear()
+
+
+func _play_trigger_sound() -> void:
+	if trigger_sound == null or trigger_sound.stream == null:
+		return
+	trigger_sound.play()

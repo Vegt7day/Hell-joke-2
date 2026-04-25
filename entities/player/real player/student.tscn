@@ -4,14 +4,17 @@
 [ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="2_dnbur"]
 [ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="2_vmijo"]
 [ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_dnbur"]
+[ext_resource type="AudioStream" uid="uid://dg8oigfgb8yh7" path="res://assets/walk.mp3" id="4_avp68"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_cdn5u"]
+[ext_resource type="AudioStream" uid="uid://dj5saoxegjvkl" path="res://assets/jump.mp3" id="4_ic7vs"]
 [ext_resource type="PackedScene" uid="uid://lmhmviqigfpb" path="res://system/ui/status_panel.tscn" id="5_ic7vs"]
 [ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://system/ui/按e提示.png" id="6_avp68"]
 [ext_resource type="Texture2D" uid="uid://075guroroax5" path="res://entities/player/real player/新主角.png" id="6_vmijo"]
+[ext_resource type="AudioStream" uid="uid://bjok8hm3ypsbf" path="res://assets/draw.mp3" id="9_cdn5u"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dnbur"]
-radius = 5.999998
-height = 30.000008
+radius = 6.000001
+height = 30.000004
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2xjcy"]
 atlas = ExtResource("6_avp68")
@@ -367,6 +370,8 @@ metadata/_edit_vertical_guides_ = [15.0]
 position = Vector2(21, -2)
 
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
+stream = ExtResource("4_avp68")
+stream = ExtResource("4_avp68")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=969579881]
 position = Vector2(15, -15)
@@ -377,10 +382,11 @@ shape = SubResource("CapsuleShape2D_dnbur")
 position = Vector2(29, -18)
 
 [node name="jump" type="AudioStreamPlayer" parent="." unique_id=538191384]
-stream = ExtResource("3_dnbur")
+stream = ExtResource("4_ic7vs")
 
 [node name="attack" type="AudioStreamPlayer" parent="." unique_id=1491403653]
 stream = ExtResource("3_dnbur")
+volume_db = -16.845
 
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]
 max_health = 1000
@@ -412,3 +418,6 @@ position = Vector2(29, -18)
 
 [node name="Marker2D3" type="Marker2D" parent="." unique_id=1700378005]
 position = Vector2(1, -18)
+
+[node name="common" type="AudioStreamPlayer" parent="." unique_id=1947778410]
+stream = ExtResource("9_cdn5u")
