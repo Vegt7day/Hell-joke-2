@@ -140,7 +140,7 @@ _data = {
 
 [node name="Windows" type="StaticBody2D" unique_id=1643735838]
 collision_mask = 0
-collision_priority = 0.1
+collision_priority = 10.0
 script = ExtResource("3_win")
 is_open = false
 

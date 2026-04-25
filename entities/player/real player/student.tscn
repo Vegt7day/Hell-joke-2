@@ -9,8 +9,9 @@
 [ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://system/ui/按e提示.png" id="6_avp68"]
 [ext_resource type="Texture2D" uid="uid://075guroroax5" path="res://entities/player/real player/新主角.png" id="6_vmijo"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uvoxf"]
-size = Vector2(12, 31.5)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dnbur"]
+radius = 5.999998
+height = 30.000008
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2xjcy"]
 atlas = ExtResource("6_avp68")
@@ -368,8 +369,9 @@ position = Vector2(21, -2)
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=969579881]
-position = Vector2(15, -16)
-shape = SubResource("RectangleShape2D_uvoxf")
+position = Vector2(15, -15)
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("CapsuleShape2D_dnbur")
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=609831371]
 position = Vector2(29, -18)

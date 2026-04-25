@@ -3,9 +3,9 @@ extends CharacterBody2D
 
 # 移动参数
 @export var move_speed: float = 200.0
-@export var jump_velocity: float = -300.0
+@export var jump_velocity: float = -360.0
 @export var acceleration: float = 40.0
-@export var friction: float = 10.0
+@export var friction: float = 40.0
 @export var attack_duration: float = 0.3
 @export var attack_shoot_delay: float = 0.2
 

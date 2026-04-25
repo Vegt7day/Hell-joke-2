@@ -71,7 +71,7 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 	if not target_open:
 		push_players_out()
 	door_is_processing = true
-	if target_open:
+	if not target_open:
 		animation_player.play("open")
 		collision_shape.disabled = true
 		print("门正在打开 - 颜色:", current_color)
