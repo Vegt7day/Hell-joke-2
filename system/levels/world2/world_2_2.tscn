@@ -1,0 +1,111 @@
+[gd_scene format=4 uid="uid://ttbe3tlsfdkt"]
+
+[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="1_k3mch"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="2_m504i"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="3_xw0yo"]
+[ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="4_si414"]
+[ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="5_emqep"]
+[ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="6_33jmp"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_si414"]
+texture = ExtResource("2_m504i")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_emqep"]
+texture = ExtResource("3_xw0yo")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_33jmp"]
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
+sources/0 = SubResource("TileSetAtlasSource_si414")
+sources/1 = SubResource("TileSetAtlasSource_emqep")
+
+[node name="world2-2" type="Node2D" unique_id=217958986]
+
+[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("1_k3mch")]
+
+[node name="door" parent="." unique_id=1915584955 instance=ExtResource("5_emqep")]
+position = Vector2(192, -32)
+
+[node name="开关" parent="." unique_id=1076644298 instance=ExtResource("4_si414")]
+position = Vector2(-32, -64)
+
+[node name="Windows" parent="." unique_id=1643735838 instance=ExtResource("6_33jmp")]
+position = Vector2(384, -32)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1444510533]
+tile_map_data = PackedByteArray("AAAAAP7/AQAAAAAAAAAAAP//AQAAAAEAAAABAP7/AQABAAAAAAABAP//AQABAAEAAAACAP7/AQAAAAAAAAACAP//AQAAAAEAAAADAP7/AQABAAAAAAADAP//AQABAAEAAAAEAP7/AQAAAAAAAAAEAP//AQAAAAEAAAAFAP7/AQABAAAAAAAFAP//AQABAAEAAAAGAP7/AQAAAAAAAAAGAP//AQAAAAEAAAAHAP7/AQABAAAAAAAHAP//AQABAAEAAAAIAP7/AQAAAAAAAAAIAP//AQAAAAEAAAAJAP7/AQABAAAAAAAJAP//AQABAAEAAAAKAP7/AQAAAAAAAAAKAP//AQAAAAEAAAALAP7/AQABAAAAAAALAP//AQABAAEAAAAMAP7/AQAAAAAAAAAMAP//AQAAAAEAAAANAP7/AQABAAAAAAANAP//AQABAAEAAAAOAP7/AQAAAAAAAAAOAP//AQAAAAEAAAAPAP7/AQABAAAAAAAPAP//AQABAAEAAAAQAP7/AQAAAAAAAAAQAP//AQAAAAEAAAARAP7/AQABAAAAAAARAP//AQABAAEAAAAGAOz/AQAAAAAAAAAGAO3/AQAAAAEAAAAHAOz/AQABAAAAAAAHAO3/AQABAAEAAAAIAOz/AQAAAAAAAAAIAO3/AQAAAAEAAAAJAOz/AQABAAAAAAAJAO3/AQABAAEAAAAKAOz/AQAAAAAAAAAKAO3/AQAAAAEAAAALAOz/AQABAAAAAAALAO3/AQABAAEAAAAMAOz/AQAAAAAAAAAMAO3/AQAAAAEAAAANAOz/AQABAAAAAAANAO3/AQABAAEAAAAOAOz/AQAAAAAAAAAOAO3/AQAAAAEAAAAPAOz/AQABAAAAAAAPAO3/AQABAAEAAAAmAP7/AQAAAAAAAAAmAP//AQAAAAEAAAAnAP7/AQABAAAAAAAnAP//AQABAAEAAAAoAP7/AQAAAAAAAAAoAP//AQAAAAEAAAApAP7/AQABAAAAAAApAP//AQABAAEAAAAgAP7/AQAAAAAAAAAgAP//AQAAAAEAAAAhAP7/AQABAAAAAAAhAP//AQABAAEAAAAiAP7/AQAAAAAAAAAiAP//AQAAAAEAAAAjAP7/AQABAAAAAAAjAP//AQABAAEAAAAkAP7/AQAAAAAAAAAkAP//AQAAAAEAAAAlAP7/AQABAAAAAAAlAP//AQABAAEAAAAqAP7/AQAAAAAAAAAqAP//AQAAAAEAAAArAP7/AQABAAAAAAArAP//AQABAAEAAAAsAP7/AQAAAAAAAAAsAP//AQAAAAEAAAAtAP7/AQABAAAAAAAtAP//AQABAAEAAAAuAP7/AQAAAAAAAAAuAP//AQAAAAEAAAAvAP7/AQABAAAAAAAvAP//AQABAAEAAAAwAP7/AQAAAAAAAAAwAP//AQAAAAEAAAAxAP7/AQABAAAAAAAxAP//AQABAAEAAAAyAP7/AQAAAAAAAAAyAP//AQAAAAEAAAAzAP7/AQABAAAAAAAzAP//AQABAAEAAAA0AP7/AQAAAAAAAAA0AP//AQAAAAEAAAA1AP7/AQABAAAAAAA1AP//AQABAAEAAAA=")
+tile_set = SubResource("TileSet_33jmp")
+
+[node name="door2" parent="." unique_id=1111303413 instance=ExtResource("5_emqep")]
+position = Vector2(192, -64)
+
+[node name="door3" parent="." unique_id=1525197776 instance=ExtResource("5_emqep")]
+position = Vector2(192, -96)
+
+[node name="door4" parent="." unique_id=474508655 instance=ExtResource("5_emqep")]
+position = Vector2(192, -128)
+
+[node name="Windows2" parent="." unique_id=624194016 instance=ExtResource("6_33jmp")]
+position = Vector2(416, -32)
+
+[node name="Windows3" parent="." unique_id=1509581597 instance=ExtResource("6_33jmp")]
+position = Vector2(448, -32)
+
+[node name="Windows4" parent="." unique_id=1490187553 instance=ExtResource("6_33jmp")]
+position = Vector2(480, -32)
+
+[node name="开关2" parent="." unique_id=1114449235 instance=ExtResource("4_si414")]
+position = Vector2(-32, -96)
+initial_color = "绿"
+
+[node name="开关2" parent="开关2" unique_id=1967187273 instance=ExtResource("4_si414")]
+position = Vector2(672, 0)
+initial_color = "绿"
+
+[node name="Windows5" parent="." unique_id=1198147318 instance=ExtResource("6_33jmp")]
+position = Vector2(256, -288)
+initial_color = "绿"
+
+[node name="Windows6" parent="." unique_id=649927887 instance=ExtResource("6_33jmp")]
+position = Vector2(352, -224)
+initial_color = "绿"
+
+[node name="Windows7" parent="." unique_id=892272604 instance=ExtResource("6_33jmp")]
+position = Vector2(448, -160)
+initial_color = "绿"
+
+[node name="Windows8" parent="." unique_id=1789112492 instance=ExtResource("6_33jmp")]
+position = Vector2(544, -96)
+initial_color = "绿"
+
+[node name="door5" parent="." unique_id=714461979 instance=ExtResource("5_emqep")]
+position = Vector2(736, -32)
+initial_color = "绿"
+
+[node name="door6" parent="." unique_id=1241433693 instance=ExtResource("5_emqep")]
+position = Vector2(736, -64)
+initial_color = "绿"
+
+[node name="door7" parent="." unique_id=775626010 instance=ExtResource("5_emqep")]
+position = Vector2(736, -96)
+initial_color = "绿"
+
+[node name="door8" parent="." unique_id=147076832 instance=ExtResource("5_emqep")]
+position = Vector2(736, -128)
+initial_color = "绿"

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cgvhtihkphxn1"]
+
+[ext_resource type="Texture2D" uid="uid://dei6m667i8tb4" path="res://system/可交互物/水.png" id="1_om5tm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m5nc4"]
+atlas = ExtResource("1_om5tm")
+
+[sub_resource type="Animation" id="Animation_m65kv"]
+resource_name = "add_water"
+
+[sub_resource type="Animation" id="Animation_4mt13"]
+resource_name = "lose_water"
+
+[sub_resource type="Animation" id="Animation_hsv0v"]
+resource_name = "with_water_idle"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lkbo5"]
+_data = {
+&"add_water": SubResource("Animation_m65kv"),
+&"lose_water": SubResource("Animation_4mt13"),
+&"with_water_idle": SubResource("Animation_hsv0v")
+}
+
+[node name="bucket" type="StaticBody2D" unique_id=669743261]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=821578870]
+texture = SubResource("AtlasTexture_m5nc4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=393416462]
+libraries/ = SubResource("AnimationLibrary_lkbo5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1436692806]

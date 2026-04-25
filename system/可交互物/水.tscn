@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://du2s1gdqmp4hk"]
+
+[ext_resource type="Texture2D" uid="uid://dei6m667i8tb4" path="res://system/可交互物/水.png" id="1_l1p8m"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dcifr"]
+atlas = ExtResource("1_l1p8m")
+
+[sub_resource type="Animation" id="Animation_vftau"]
+resource_name = "be created"
+
+[sub_resource type="Animation" id="Animation_815rm"]
+resource_name = "disappear"
+
+[sub_resource type="Animation" id="Animation_hhabd"]
+resource_name = "fall"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_eowga"]
+_data = {
+&"be created": SubResource("Animation_vftau"),
+&"disappear": SubResource("Animation_815rm"),
+&"fall": SubResource("Animation_hhabd")
+}
+
+[node name="水" type="CharacterBody2D" unique_id=788229609]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1256718070]
+texture = SubResource("AtlasTexture_dcifr")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2078150934]
+libraries/ = SubResource("AnimationLibrary_eowga")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1956484002]

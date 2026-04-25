@@ -109,7 +109,9 @@ func _collect_overlapping_players() -> Array[Node2D]:
 	query.collide_with_bodies = true
 	var hits := space_state.intersect_shape(query, 16)
 	for hit in hits:
-		var collider :CollisionObject2D = hit.get("collider")
+		if not hit.has("collider"):
+			continue
+		var collider = hit["collider"]
 		if not (collider is Node2D):
 			continue
 		var body := collider as Node2D

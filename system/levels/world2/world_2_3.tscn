@@ -1,0 +1,62 @@
+[gd_scene format=4 uid="uid://b6ubg33ffka11"]
+
+[ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="1_ds7wl"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="2_mnuwj"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="3_qovbt"]
+[ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="4_mnuwj"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nf153"]
+texture = ExtResource("2_mnuwj")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f0gjl"]
+texture = ExtResource("3_qovbt")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_gtqfr"]
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
+sources/0 = SubResource("TileSetAtlasSource_nf153")
+sources/1 = SubResource("TileSetAtlasSource_f0gjl")
+
+[node name="Node2D" type="Node2D" unique_id=679792777]
+
+[node name="Game" parent="." unique_id=1668650706 instance=ExtResource("1_ds7wl")]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1084697677]
+tile_map_data = PackedByteArray("AAAAAP7/AQAAAAAAAAAAAP//AQAAAAEAAAABAP7/AQABAAAAAAABAP//AQABAAEAAAACAP7/AQAAAAAAAAACAP//AQAAAAEAAAADAP7/AQABAAAAAAADAP//AQABAAEAAAAEAP7/AQAAAAAAAAAEAP//AQAAAAEAAAAFAP7/AQABAAAAAAAFAP//AQABAAEAAAAGAP7/AQAAAAAAAAAGAP//AQAAAAEAAAAHAP7/AQABAAAAAAAHAP//AQABAAEAAAAIAP7/AQAAAAAAAAAIAP//AQAAAAEAAAAJAP7/AQABAAAAAAAJAP//AQABAAEAAAAKAP7/AQAAAAAAAAAKAP//AQAAAAEAAAALAP7/AQABAAAAAAALAP//AQABAAEAAAAMAP7/AQAAAAAAAAAMAP//AQAAAAEAAAANAP7/AQABAAAAAAANAP//AQABAAEAAAAOAP7/AQAAAAAAAAAOAP//AQAAAAEAAAAPAP7/AQABAAAAAAAPAP//AQABAAEAAAAQAP7/AQAAAAAAAAAQAP//AQAAAAEAAAARAP7/AQABAAAAAAARAP//AQABAAEAAAAGAOz/AQAAAAAAAAAGAO3/AQAAAAEAAAAHAOz/AQABAAAAAAAHAO3/AQABAAEAAAAIAOz/AQAAAAAAAAAIAO3/AQAAAAEAAAAJAOz/AQABAAAAAAAJAO3/AQABAAEAAAAKAOz/AQAAAAAAAAAKAO3/AQAAAAEAAAALAOz/AQABAAAAAAALAO3/AQABAAEAAAAMAOz/AQAAAAAAAAAMAO3/AQAAAAEAAAANAOz/AQABAAAAAAANAO3/AQABAAEAAAAOAOz/AQAAAAAAAAAOAO3/AQAAAAEAAAAPAOz/AQABAAAAAAAPAO3/AQABAAEAAAAmAP7/AQAAAAAAAAAmAP//AQAAAAEAAAAnAP7/AQABAAAAAAAnAP//AQABAAEAAAAoAP7/AQAAAAAAAAAoAP//AQAAAAEAAAApAP7/AQABAAAAAAApAP//AQABAAEAAAAgAP7/AQAAAAAAAAAgAP//AQAAAAEAAAAhAP7/AQABAAAAAAAhAP//AQABAAEAAAAiAP7/AQAAAAAAAAAiAP//AQAAAAEAAAAjAP7/AQABAAAAAAAjAP//AQABAAEAAAAkAP7/AQAAAAAAAAAkAP//AQAAAAEAAAAlAP7/AQABAAAAAAAlAP//AQABAAEAAAAqAP7/AQAAAAAAAAAqAP//AQAAAAEAAAArAP7/AQABAAAAAAArAP//AQABAAEAAAAsAP7/AQAAAAAAAAAsAP//AQAAAAEAAAAtAP7/AQABAAAAAAAtAP//AQABAAEAAAAuAP7/AQAAAAAAAAAuAP//AQAAAAEAAAAvAP7/AQABAAAAAAAvAP//AQABAAEAAAAwAP7/AQAAAAAAAAAwAP//AQAAAAEAAAAxAP7/AQABAAAAAAAxAP//AQABAAEAAAAyAP7/AQAAAAAAAAAyAP//AQAAAAEAAAAzAP7/AQABAAAAAAAzAP//AQABAAEAAAA0AP7/AQAAAAAAAAA0AP//AQAAAAEAAAA1AP7/AQABAAAAAAA1AP//AQABAAEAAAA=")
+tile_set = SubResource("TileSet_gtqfr")
+
+[node name="player" parent="." unique_id=396663958 instance=ExtResource("4_mnuwj")]
+position = Vector2(32, -32)
+
+[node name="Camera2D" type="Camera2D" parent="player" unique_id=1280500715]
+position = Vector2(32, 0)
+process_callback = 0
+limit_left = -10000009
+limit_top = -9999665
+limit_right = 1143
+limit_bottom = 643
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_horizontal_offset = -1.0
+drag_left_margin = 0.04
+drag_top_margin = 0.01
+drag_right_margin = 0.04
+drag_bottom_margin = 0.07
+editor_draw_drag_margin = true

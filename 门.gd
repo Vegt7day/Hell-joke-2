@@ -40,7 +40,7 @@ func _ready():
 			print("警告：未知颜色", current_color, "，使用默认白色")
 	
 	# 初始化门的状态
-	if is_open:
+	if not is_open:
 		# 设置为打开状态：显示最后一帧，禁用碰撞
 		sprite_2d.frame = 4
 		collision_shape.disabled = true
