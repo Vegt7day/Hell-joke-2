@@ -11,6 +11,9 @@ extends Node2D
 var _start_node: Node2D
 var _end_node: Node2D
 var _is_bound: bool = false
+## 末端不再跟随节点时，用世界空间下「起点→终点」的向量（与解绑瞬间一致）
+var _end_frozen: bool = false
+var _frozen_vector_world: Vector2 = Vector2.ZERO
 ## 1 = 完全连到末端；0 = 收在起点（用于「伸出绳子」演出）
 var _extend_progress: float = 1.0
 
@@ -25,10 +28,28 @@ func _ready() -> void:
 func bind_endpoints(start_node: Node2D, end_node: Node2D, custom_start_offset: Vector2 = Vector2.ZERO, custom_end_offset: Vector2 = Vector2.ZERO, initial_extend: float = 0.0) -> void:
 	_start_node = start_node
 	_end_node = end_node
+	_end_frozen = false
+	_frozen_vector_world = Vector2.ZERO
 	start_offset = custom_start_offset
 	end_offset = custom_end_offset
 	_is_bound = _start_node != null and _end_node != null
 	set_extend_progress(initial_extend)
+
+
+## 解绑末端节点，但保持相对起点的世界空间向量（长度与方向）与解绑瞬间一致；之后仅随起点（马）平移。
+func unbind_end_keep_vector_from_start() -> void:
+	if _start_node == null or not is_instance_valid(_start_node):
+		return
+	if _end_frozen:
+		return
+	if _end_node == null or not is_instance_valid(_end_node):
+		return
+	var from := _start_node.global_position + start_offset
+	var to := _end_node.global_position + end_offset
+	_frozen_vector_world = to - from
+	_end_node = null
+	_end_frozen = true
+	_update_line_now()
 
 
 func set_extend_progress(p: float) -> void:
@@ -39,14 +60,24 @@ func set_extend_progress(p: float) -> void:
 func _process(_delta: float) -> void:
 	if not _is_bound:
 		return
+	if _start_node == null or not is_instance_valid(_start_node):
+		return
+	if not _end_frozen and (_end_node == null or not is_instance_valid(_end_node)):
+		return
 	_update_line_now()
 
 
 func _update_line_now() -> void:
-	if line_2d == null or _start_node == null or _end_node == null:
+	if line_2d == null or _start_node == null or not is_instance_valid(_start_node):
 		return
 	var from := _start_node.global_position + start_offset
-	var to := _end_node.global_position + end_offset
-	var full := to - from
+	var full: Vector2
+	if _end_frozen:
+		full = _frozen_vector_world
+	elif _end_node != null and is_instance_valid(_end_node):
+		var to := _end_node.global_position + end_offset
+		full = to - from
+	else:
+		return
 	line_2d.global_position = from
 	line_2d.points = PackedVector2Array([Vector2.ZERO, full * _extend_progress])

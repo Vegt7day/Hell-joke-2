@@ -62,6 +62,12 @@ signal intro_timeline_finished
 ## Boss 血量归零时五马四散逃离
 @export var scatter_flee_duration: float = 1.15
 @export var scatter_flee_distance: float = 760.0
+## 无商鞅、五马拉玩家时：绳末端相对主角根节点的本地偏移（顺序同 `_get_five_horses_ordered`：主马、灰、白、黑、红）。
+@export var player_fatal_rope_end_offset_0: Vector2 = Vector2(12, 2-32)
+@export var player_fatal_rope_end_offset_1: Vector2 = Vector2(15, 26-32)
+@export var player_fatal_rope_end_offset_2: Vector2 = Vector2(24, 15-32)
+@export var player_fatal_rope_end_offset_3: Vector2 = Vector2(9, 15-32)
+@export var player_fatal_rope_end_offset_4: Vector2 = Vector2(18, 2-32)
 
 var current_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
 
@@ -576,6 +582,11 @@ func _set_horse_movement(node: Node, enabled: bool) -> void:
 		node.call("set_movement_enabled", enabled)
 
 
+func _zero_velocity_if_characterbody2d(node: Node2D) -> void:
+	if node != null and node is CharacterBody2D:
+		(node as CharacterBody2D).velocity = Vector2.ZERO
+
+
 ## call_deferred(含 await 的函数) 在首次 yield 后协程会丢；用 0s timer 的 timeout 启动。
 ## 必须把「异步方法」直接连到 signal（见 launcher），勿用 lambda 里 Callable.call(async)，否则会丢掉协程状态。
 func _queue_async_on_timer(launcher: Callable) -> void:
@@ -894,7 +905,11 @@ func _run_player_fatal_ropes_pull() -> void:
 
 	var ropes: Array[Node2D] = []
 	var end_offsets: Array[Vector2] = [
-		Vector2.ZERO, Vector2(8, 0), Vector2(-8, 0), Vector2(0, 10), Vector2(0, -10),
+		player_fatal_rope_end_offset_0,
+		player_fatal_rope_end_offset_1,
+		player_fatal_rope_end_offset_2,
+		player_fatal_rope_end_offset_3,
+		player_fatal_rope_end_offset_4,
 	]
 	for i in horses.size():
 		var horse2 := horses[i] as Node2D
@@ -911,17 +926,27 @@ func _run_player_fatal_ropes_pull() -> void:
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_player)
 	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
 
+	for rope_u in ropes:
+		if rope_u != null and is_instance_valid(rope_u) and rope_u.has_method("unbind_end_keep_vector_from_start"):
+			rope_u.call("unbind_end_keep_vector_from_start")
+
+	# 拉玩家：五马、玩家、绳端点共用同一位移向量与时长 → 同向、同速（匀速）；拉扯前清零速度避免物理与 tween 打架。
 	var unified_dir := Vector2(1.0, 0.15).normalized()
 	var D := final_warn_horse_pull_duration
 	var dist := limb_pull_travel_distance + limb_outscreen_margin
+	var pull_delta := unified_dir * dist
+	for h0 in horses:
+		_zero_velocity_if_characterbody2d(h0)
+	_zero_velocity_if_characterbody2d(player)
+
 	var tw := create_tween()
 	tw.set_parallel(true)
 	for horse3 in horses:
 		if horse3:
-			var ht := horse3.global_position + unified_dir * dist
-			tw.tween_property(horse3, NodePath("global_position"), ht, D).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	var pt := player.global_position + unified_dir * dist
-	tw.tween_property(player, NodePath("global_position"), pt, D).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			var ht := horse3.global_position + pull_delta
+			tw.tween_property(horse3, NodePath("global_position"), ht, D).set_trans(Tween.TRANS_LINEAR)
+	var pt := player.global_position + pull_delta
+	tw.tween_property(player, NodePath("global_position"), pt, D).set_trans(Tween.TRANS_LINEAR)
 	await tw.finished
 
 	for rope2 in ropes:

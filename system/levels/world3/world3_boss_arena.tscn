@@ -63,23 +63,24 @@ position = Vector2(256, 400)
 position = Vector2(880, 360)
 
 [node name="SiSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011717]
-position = Vector2(720, 320)
+position = Vector2(960, 416)
 
 [node name="GreySpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=1082722615]
-position = Vector2(720, 400)
+position = Vector2(736, 416)
 
 [node name="WhiteSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=1441980419]
-position = Vector2(760, 400)
+position = Vector2(768, 416)
 
 [node name="BlackSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=1473673033]
-position = Vector2(800, 400)
+position = Vector2(800, 416)
 
 [node name="RedSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=557095672]
-position = Vector2(840, 400)
+position = Vector2(896, 416)
 
 [node name="PropsSpawn" type="Node2D" parent="Bosses" unique_id=1333474675]
 
 [node name="RopesRoot" type="Node2D" parent="Bosses/PropsSpawn" unique_id=1097546033]
+position = Vector2(192, -64)
 
 [node name="ProjectilesRoot" type="Node2D" parent="Bosses/PropsSpawn" unique_id=1941922303]
 
