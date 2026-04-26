@@ -17,10 +17,111 @@ tracks/0/path = NodePath("Sprite2D:hframes")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0009999999),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [42, 42]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:region_rect")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0009999999),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 6720, 160), Rect2(0, 0, 6720, 160)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollisionShape2D:shape")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [35]
+"values": [SubResource("RectangleShape2D_wa22q")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CollisionShape2D:shape:size")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(94, 126)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CollisionShape2D:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(50, -63)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("CollisionShape2D:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("DialogMarker:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(98, -96)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Sprite2D:frame")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [53]
+}
+
+[sub_resource type="Animation" id="Animation_sqpc5"]
+resource_name = "be_pull"
+length = 1.2
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:hframes")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [54]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -32,7 +133,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Rect2(0, 0, 5600, 160)]
+"values": [Rect2(0, 0, 8640, 160)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -41,70 +142,10 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.90000004, 1, 1.0969286),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [29]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("CollisionShape2D:shape")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [SubResource("RectangleShape2D_wa22q")]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("CollisionShape2D:shape:size")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(94, 126)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("CollisionShape2D:position")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(50, -63)]
-}
-tracks/6/type = "value"
-tracks/6/imported = false
-tracks/6/enabled = true
-tracks/6/path = NodePath("CollisionShape2D:rotation")
-tracks/6/interp = 1
-tracks/6/loop_wrap = true
-tracks/6/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.7853982]
-}
-tracks/7/type = "value"
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/path = NodePath("DialogMarker:position")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(98, -96)]
+"values": [42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
 }
 
 [sub_resource type="Animation" id="Animation_bob5k"]
@@ -746,9 +787,51 @@ tracks/5/keys = {
 "values": [Vector2(30, 67), Vector2(30, 33), Vector2(12, 14), Vector2(0, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_iqbif"]
+resource_name = "ready_to_pull"
+length = 0.01
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:hframes")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [54]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [41]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:region_rect")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 8640, 160)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sqpc5"]
 _data = {
 &"RESET": SubResource("Animation_mmhi5"),
+&"be_pull": SubResource("Animation_sqpc5"),
 &"common": SubResource("Animation_bob5k"),
 &"disable": SubResource("Animation_wa22q"),
 &"get_1": SubResource("Animation_bg5pc"),
@@ -758,7 +841,8 @@ _data = {
 &"less_1": SubResource("Animation_6vitj"),
 &"less_2": SubResource("Animation_giy7f"),
 &"less_3": SubResource("Animation_o8rys"),
-&"less_4": SubResource("Animation_qskp7")
+&"less_4": SubResource("Animation_qskp7"),
+&"ready_to_pull": SubResource("Animation_iqbif")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_story_ix"]
@@ -773,10 +857,10 @@ script = ExtResource("1_iv8hp")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1433168498]
 position = Vector2(51, -80)
 texture = ExtResource("2_bob5k")
-hframes = 35
-frame = 29
+hframes = 42
+frame = 41
 region_enabled = true
-region_rect = Rect2(0, 0, 5600, 160)
+region_rect = Rect2(0, 0, 6720, 160)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2138925070]
 libraries/ = SubResource("AnimationLibrary_sqpc5")
@@ -785,7 +869,6 @@ libraries/ = SubResource("AnimationLibrary_sqpc5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1727462827]
 position = Vector2(50, -63)
-rotation = 0.7853982
 scale = Vector2(0.9999999, 0.9999999)
 shape = SubResource("RectangleShape2D_wa22q")
 
@@ -806,16 +889,16 @@ position = Vector2(98, -96)
 [node name="LimbMarkers" type="Node2D" parent="." unique_id=337722901]
 
 [node name="HeadMarker" type="Marker2D" parent="LimbMarkers" unique_id=965110341]
-position = Vector2(51, -113)
+position = Vector2(51, -145)
 
 [node name="LeftHandMarker" type="Marker2D" parent="LimbMarkers" unique_id=139995034]
-position = Vector2(20, -78)
+position = Vector2(20, -110)
 
 [node name="RightHandMarker" type="Marker2D" parent="LimbMarkers" unique_id=186146284]
-position = Vector2(86, -77)
+position = Vector2(86, -110)
 
 [node name="LeftFootMarker" type="Marker2D" parent="LimbMarkers" unique_id=173303594]
-position = Vector2(18, -14)
+position = Vector2(18, -46)
 
 [node name="RightFootMarker" type="Marker2D" parent="LimbMarkers" unique_id=174280514]
-position = Vector2(83, -15)
+position = Vector2(83, -46)

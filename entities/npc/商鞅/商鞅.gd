@@ -30,6 +30,7 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var story_interact: ShangYangStoryInteract = $StoryInteract
 @onready var limb_markers_root: Node2D = $LimbMarkers
+@onready var body_collision: CollisionShape2D = $CollisionShape2D
 
 # 私有变量
 var _current_state: STATE = STATE.IDLE
@@ -112,7 +113,7 @@ func _initialize_summoned_mode():
 		animation_player.play("idle")
 
 func setup_summoned_for_boss_fatal_warning() -> void:
-	"""Boss 20% 预警 UI 期间被玩家召唤：立即为仅「商鞅」一帧态（与分尸演出 force 一致），不播 common。"""
+	"""Boss 20% 预警 UI 期间被玩家召唤：进入 ready_to_pull 动画态，不播 common。"""
 	_boss_fatal_warning_summon_applied = true
 	current_mode = MODE.SUMMONED
 	add_to_group("shangyang_player_summon")
@@ -123,10 +124,8 @@ func setup_summoned_for_boss_fatal_warning() -> void:
 	_thresholds_passed.clear()
 	if animation_player and animation_player.is_playing():
 		animation_player.stop()
-	if sprite:
-		sprite.frame = 35
-	if animation_player and animation_player.has_animation("idle"):
-		animation_player.play("idle")
+	if animation_player and animation_player.has_animation("ready_to_pull"):
+		animation_player.play("ready_to_pull")
 
 
 func switch_to_summoned_mode():
@@ -522,11 +521,16 @@ func _process(delta):
 
 
 func force_initial_story_form() -> void:
-	# Boss 演出时固定显示「商鞅」初始形态（19帧），不播放其它动画。
+	# Boss 演出时固定显示「商鞅」待拉扯态，不播放其它动画。
 	if animation_player and animation_player.is_playing():
 		animation_player.stop()
-	if sprite:
-		sprite.frame = 19
+	if animation_player and animation_player.has_animation("ready_to_pull"):
+		animation_player.play("ready_to_pull")
+
+
+func play_be_pull_animation() -> void:
+	if animation_player and animation_player.has_animation("be_pull"):
+		animation_player.play("be_pull")
 
 
 func enter_post_boss_pull_story_state() -> void:

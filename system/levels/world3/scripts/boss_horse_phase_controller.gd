@@ -76,6 +76,8 @@ var _summoned_sy_during_warning: Node2D = null
 var _fatal_warning_watch_active: bool = false
 ## 致命序列：预警开始前或预警 UI 期间场上曾存在可识别的商鞅（静态路径/召唤组），用于放宽「走商鞅分尸时间线」判定。
 var _fatal_sy_seen_before_or_during_warning: bool = false
+## 预警期间召唤商鞅时预生成的肢体（到连绳时复用）
+var _warning_spawned_limbs: Array[Node2D] = []
 var _relimb_timeline_started: bool = false
 var _pending_minor_switch_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
 
@@ -87,6 +89,23 @@ const _TIMELINE_RELIMB_PATH := "res://assets/Dialogic/level2/重拾五肢.dtl"
 
 func is_summon_during_fatal_warning_window() -> bool:
 	return _fatal_warning_watch_active
+
+
+func on_warning_summoned_shangyang_ready(shangyang: Node2D) -> void:
+	if not _fatal_warning_watch_active:
+		return
+	if not is_instance_valid(shangyang):
+		return
+	_warning_spawned_limbs = _filter_valid_limbs(_warning_spawned_limbs)
+	if _warning_spawned_limbs.size() >= 5:
+		return
+	var ropes_root := get_node_or_null(ropes_root_path) as Node2D
+	if ropes_root == null:
+		return
+	var markers := _collect_shangyang_markers(shangyang)
+	if markers.size() < 5:
+		return
+	_warning_spawned_limbs = _spawn_shangyang_limbs(ropes_root, markers)
 
 
 func _ready() -> void:
@@ -819,7 +838,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 			_set_horse_movement(horse, true)
 		return
 
-	var limbs := _spawn_shangyang_limbs(ropes_root, limb_markers)
+	var limbs := _consume_warning_spawned_limbs_or_spawn(ropes_root, limb_markers)
 	if limbs.size() < 5:
 		push_warning("[BossPhase] 商鞅肢体对象生成不足 5。")
 		for horse in horses:
@@ -840,7 +859,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_shangyang)
 	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
-	await _tween_pull_horses_then_limbs(pairs, main)
+	await _tween_pull_horses_then_limbs(pairs, main, shangyang)
 
 	for rope in ropes:
 		if is_instance_valid(rope):
@@ -1084,6 +1103,23 @@ func _spawn_shangyang_limbs(parent: Node2D, markers: Array[Node2D]) -> Array[Nod
 	return result
 
 
+func _filter_valid_limbs(limbs: Array[Node2D]) -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for l in limbs:
+		if l != null and is_instance_valid(l):
+			out.append(l)
+	return out
+
+
+func _consume_warning_spawned_limbs_or_spawn(parent: Node2D, markers: Array[Node2D]) -> Array[Node2D]:
+	_warning_spawned_limbs = _filter_valid_limbs(_warning_spawned_limbs)
+	if _warning_spawned_limbs.size() >= 5:
+		var reused := _warning_spawned_limbs
+		_warning_spawned_limbs = []
+		return reused
+	return _spawn_shangyang_limbs(parent, markers)
+
+
 func _pair_horses_to_limbs_by_nearest(horses: Array[Node2D], limbs: Array[Node2D]) -> Array[Dictionary]:
 	var pairs: Array[Dictionary] = []
 	var remaining := limbs.duplicate()
@@ -1114,11 +1150,12 @@ func _spawn_rope_between(parent: Node2D, horse: Node2D, limb: Node2D) -> Node2D:
 		return null
 	parent.add_child(rope)
 	if rope.has_method("bind_endpoints"):
-		rope.call("bind_endpoints", horse, limb, Vector2.ZERO, Vector2.ZERO, 0.0)
+		# 视觉校正：绳子瞄准点在肢体锚点基础上下移 32 像素。
+		rope.call("bind_endpoints", horse, limb, Vector2.ZERO, Vector2(0, 32), 0.0)
 	return rope
 
 
-func _tween_pull_horses_then_limbs(pairs: Array[Dictionary], main_horse: Node2D) -> void:
+func _tween_pull_horses_then_limbs(pairs: Array[Dictionary], main_horse: Node2D, shangyang: Node2D = null) -> void:
 	var D := final_warn_horse_pull_duration
 	var delay := clampf(final_warn_limb_follow_delay_seconds, 0.0, maxf(D - 0.05, 0.0))
 	var limb_dur := maxf(D - delay, 0.05)
@@ -1147,6 +1184,15 @@ func _tween_pull_horses_then_limbs(pairs: Array[Dictionary], main_horse: Node2D)
 	print("[BossPhase] _tween_pull_horses_then_limbs: 已添加 %d 组马+肢体（同一并行 tween）" % n_pairs)
 	if n_pairs == 0:
 		return
+	if is_instance_valid(shangyang) and shangyang.has_method("play_be_pull_animation"):
+		var t := get_tree().create_timer(delay)
+		t.timeout.connect(
+			func() -> void:
+				if is_instance_valid(shangyang):
+					shangyang.call("play_be_pull_animation")
+		,
+			CONNECT_ONE_SHOT
+		)
 	print("[BossPhase] _tween_pull_horses_then_limbs: 等待合并 tween.finished …")
 	await tw.finished
 	print("[BossPhase] _tween_pull_horses_then_limbs: 合并 tween 已全部结束")

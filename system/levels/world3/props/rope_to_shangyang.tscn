@@ -1,28 +1,29 @@
-[gd_scene load_steps=1 format=3 uid="uid://fr0p3sh4ngy4ng1"]
+[gd_scene format=3 uid="uid://cpkxkw3kkandi"]
 
-[ext_resource type="Script" path="res://system/levels/world3/props/rope_to_shangyang.gd" id="1_rope"]
+[ext_resource type="Script" uid="uid://c0gimu5jnnfce" path="res://system/levels/world3/props/rope_to_shangyang.gd" id="1_rope"]
 
-[node name="RopeToShangyang" type="Node2D"]
+[node name="RopeToShangyang" type="Node2D" unique_id=1843280768]
 script = ExtResource("1_rope")
 
-[node name="Line2D" type="Line2D" parent="."]
+[node name="Line2D" type="Line2D" parent="." unique_id=174808229]
 points = PackedVector2Array(0, 0, 64, 0, 64, 32)
 width = 3.0
 default_color = Color(0.35, 0.28, 0.22, 1)
 
-[node name="AnchorsHint" type="Node2D" parent="."]
+[node name="AnchorsHint" type="Node2D" parent="." unique_id=506397499]
+position = Vector2(0, 32)
 
-[node name="Head" type="Marker2D" parent="AnchorsHint"]
-position = Vector2(0, -40)
+[node name="Head" type="Marker2D" parent="AnchorsHint" unique_id=356931933]
+position = Vector2(0, -81)
 
-[node name="LimbL" type="Marker2D" parent="AnchorsHint"]
-position = Vector2(-24, 16)
+[node name="LimbL" type="Marker2D" parent="AnchorsHint" unique_id=410458574]
+position = Vector2(-31, -46)
 
-[node name="LimbR" type="Marker2D" parent="AnchorsHint"]
-position = Vector2(24, 16)
+[node name="LimbR" type="Marker2D" parent="AnchorsHint" unique_id=369123631]
+position = Vector2(35, -46)
 
-[node name="LegL" type="Marker2D" parent="AnchorsHint"]
-position = Vector2(-12, 40)
+[node name="LegL" type="Marker2D" parent="AnchorsHint" unique_id=1318624431]
+position = Vector2(-33, 18)
 
-[node name="LegR" type="Marker2D" parent="AnchorsHint"]
-position = Vector2(12, 40)
+[node name="LegR" type="Marker2D" parent="AnchorsHint" unique_id=1757443078]
+position = Vector2(32, 18)

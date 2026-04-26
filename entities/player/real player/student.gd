@@ -577,6 +577,13 @@ func _boss_fatal_summon_warning_active() -> bool:
 	return bool(ctrl.call("is_summon_during_fatal_warning_window"))
 
 
+func _notify_boss_warning_summon_ready(shangyang: ShangYang) -> void:
+	var ctrl := get_tree().get_first_node_in_group("boss_phase_controller")
+	if ctrl == null or not ctrl.has_method("on_warning_summoned_shangyang_ready"):
+		return
+	ctrl.call("on_warning_summoned_shangyang_ready", shangyang)
+
+
 func try_summon_shangyang():
 	"""尝试召唤商鞅"""
 	if not can_summon_shangyang_now():
@@ -615,6 +622,7 @@ func execute_summon():
 	
 	if boss_fatal_warn and shangyang.has_method("setup_summoned_for_boss_fatal_warning"):
 		shangyang.setup_summoned_for_boss_fatal_warning()
+		_notify_boss_warning_summon_ready(shangyang)
 	else:
 		shangyang.switch_to_summoned_mode()
 	
