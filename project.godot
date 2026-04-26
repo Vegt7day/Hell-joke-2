@@ -41,9 +41,11 @@ directories/dtl_directory={
 "tip_开关与门1": "res://assets/tip_开关与门1.dtl",
 "什么？！": "res://assets/什么？！.dtl",
 "哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl",
+"商鞅五马分尸": "res://assets/Dialogic/level2/商鞅五马分尸.dtl",
 "商鞅提出要求": "res://assets/Dialogic/level2/商鞅提出要求.dtl",
 "回去看商鞅": "res://assets/Dialogic/level2/回去看商鞅.dtl",
-"获得商鞅能力": "res://assets/Dialogic/level2/获得商鞅能力.dtl"
+"获得商鞅能力": "res://assets/Dialogic/level2/获得商鞅能力.dtl",
+"重拾五肢": "res://assets/Dialogic/level2/重拾五肢.dtl"
 }
 layout/style_directory={
 "": "res://assets/bubble.tres",

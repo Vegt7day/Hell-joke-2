@@ -786,7 +786,7 @@ libraries/ = SubResource("AnimationLibrary_sqpc5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1727462827]
 position = Vector2(50, -63)
 rotation = 0.7853982
-scale = Vector2(0.99999994, 0.99999994)
+scale = Vector2(0.9999999, 0.9999999)
 shape = SubResource("RectangleShape2D_wa22q")
 
 [node name="StoryInteract" type="Area2D" parent="." unique_id=1861250903]
@@ -802,3 +802,20 @@ shape = SubResource("RectangleShape2D_story_ix")
 
 [node name="DialogMarker" type="Marker2D" parent="." unique_id=2107278150]
 position = Vector2(98, -96)
+
+[node name="LimbMarkers" type="Node2D" parent="." unique_id=337722901]
+
+[node name="HeadMarker" type="Marker2D" parent="LimbMarkers" unique_id=965110341]
+position = Vector2(51, -113)
+
+[node name="LeftHandMarker" type="Marker2D" parent="LimbMarkers" unique_id=139995034]
+position = Vector2(20, -78)
+
+[node name="RightHandMarker" type="Marker2D" parent="LimbMarkers" unique_id=186146284]
+position = Vector2(86, -77)
+
+[node name="LeftFootMarker" type="Marker2D" parent="LimbMarkers" unique_id=173303594]
+position = Vector2(18, -14)
+
+[node name="RightFootMarker" type="Marker2D" parent="LimbMarkers" unique_id=174280514]
+position = Vector2(83, -15)

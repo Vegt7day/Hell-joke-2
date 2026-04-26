@@ -6,27 +6,28 @@
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_oqs2n"]
 atlas = ExtResource("1_m3iy3")
-region = Rect2(384, 0, 384, 64)
+region = Rect2(394, 22, 364, 20)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dueyw"]
 atlas = ExtResource("1_m3iy3")
-region = Rect2(0, 0, 384, 64)
+region = Rect2(21, 26, 342, 12)
 
 [node name="boss_health_bar" type="Node2D" unique_id=862236894]
-position = Vector2(576, 0)
+position = Vector2(320, -32)
 script = ExtResource("1_oqs2n")
 metadata/_edit_vertical_guides_ = [1152.0]
 
 [node name="healthbar" type="TextureProgressBar" parent="." unique_id=2037119586]
 offset_left = -192.0
-offset_top = 65.0
+offset_top = 64.0
 offset_right = 192.0
-offset_bottom = 129.0
+offset_bottom = 128.0
 max_value = 1.0
 step = 0.0
 value = 1.0
 texture_over = SubResource("AtlasTexture_oqs2n")
 texture_progress = SubResource("AtlasTexture_dueyw")
+texture_progress_offset = Vector2(11, 4)
 metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1052797338]

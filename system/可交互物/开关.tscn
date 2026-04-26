@@ -166,4 +166,3 @@ libraries/ = SubResource("AnimationLibrary_5um43")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=865360964]
 position = Vector2(15, -15.5)
 shape = SubResource("CircleShape2D_7bjq7")
-

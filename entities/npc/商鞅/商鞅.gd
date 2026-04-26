@@ -29,6 +29,7 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var story_interact: ShangYangStoryInteract = $StoryInteract
+@onready var limb_markers_root: Node2D = $LimbMarkers
 
 # 私有变量
 var _current_state: STATE = STATE.IDLE
@@ -51,6 +52,10 @@ var _npc_exiting_after_reward: bool = false
 var _disable_destroy_sequence_started: bool = false
 ## 正在等 Dialogic 全局 timeline_ended，以结束「回去看商鞅」
 var _listening_return_sy_timeline: bool = false
+## Boss 五马分尸演出后：无碰撞、不受击、不挡子弹，仅作布景
+var _ghost_after_boss_pull: bool = false
+## Boss 20% 预警期间由玩家召唤：已用 setup_summoned_for_boss_fatal_warning 初始化，_ready 里勿再跑 common
+var _boss_fatal_warning_summon_applied: bool = false
 
 # 动画名称映射
 var _damage_animations: Array[String] = ["less_1", "less_2", "less_3", "less_4"]
@@ -71,12 +76,16 @@ func _ready():
 		_initialize_story_mode()
 		if story_interact:
 			story_interact.set_interact_enabled(false)
+	elif _boss_fatal_warning_summon_applied:
+		# 预警期间召唤：已由 setup_summoned_for_boss_fatal_warning 配好，不再播 common
+		pass
 	else:
 		# 召唤模式：先执行common动作
 		_initialize_summoned_mode()
 
 func _initialize_story_mode():
 	"""初始化剧情模式"""
+	remove_from_group("shangyang_player_summon")
 	sprite.frame = 19
 	_current_state = STATE.IDLE
 	_story_form_index = 3
@@ -86,6 +95,7 @@ func _initialize_story_mode():
 
 func _initialize_summoned_mode():
 	"""初始化召唤模式"""
+	add_to_group("shangyang_player_summon")
 	_current_state = STATE.COMMON
 	_current_form = 0
 	_is_dead = false
@@ -101,14 +111,34 @@ func _initialize_summoned_mode():
 		_current_state = STATE.IDLE
 		animation_player.play("idle")
 
+func setup_summoned_for_boss_fatal_warning() -> void:
+	"""Boss 20% 预警 UI 期间被玩家召唤：立即为仅「商鞅」一帧态（与分尸演出 force 一致），不播 common。"""
+	_boss_fatal_warning_summon_applied = true
+	current_mode = MODE.SUMMONED
+	add_to_group("shangyang_player_summon")
+	_current_state = STATE.IDLE
+	_current_form = 0
+	_is_dead = false
+	health = max_health
+	_thresholds_passed.clear()
+	if animation_player and animation_player.is_playing():
+		animation_player.stop()
+	if sprite:
+		sprite.frame = 35
+	if animation_player and animation_player.has_animation("idle"):
+		animation_player.play("idle")
+
+
 func switch_to_summoned_mode():
 	"""切换到被召唤模式"""
 	current_mode = MODE.SUMMONED
 	_initialize_summoned_mode()
+	add_to_group("shangyang_player_summon")
 
 func switch_to_story_mode():
 	"""切换到剧情模式"""
 	current_mode = MODE.STORY
+	remove_from_group("shangyang_player_summon")
 	_initialize_story_mode()
 
 func can_accept_limb_pickup() -> bool:
@@ -376,6 +406,8 @@ func take_damage(damage_amount: float):
 	Args:
 		damage_amount: 伤害值
 	"""
+	if _ghost_after_boss_pull:
+		return
 	if _is_dead or current_mode != MODE.SUMMONED or _current_state == STATE.COMMON:
 		# 在common动画播放期间不接受伤害
 		return
@@ -467,7 +499,7 @@ func _on_animation_finished(anim_name: String):
 			elif _is_dead:
 				# 如果已经死亡，销毁节点
 				print("血量归零，销毁商鞅节点")
-				queue_free()
+				safe_destroy()
 		
 		STATE.TRANSITION:
 			# 形态切换动画播放完成
@@ -487,6 +519,41 @@ func _on_animation_finished(anim_name: String):
 func _process(delta):
 	"""每帧更新，用于调试和状态监测"""
 	pass  # 可以根据需要添加逻辑
+
+
+func force_initial_story_form() -> void:
+	# Boss 演出时固定显示「商鞅」初始形态（19帧），不播放其它动画。
+	if animation_player and animation_player.is_playing():
+		animation_player.stop()
+	if sprite:
+		sprite.frame = 19
+
+
+func enter_post_boss_pull_story_state() -> void:
+	_ghost_after_boss_pull = true
+	collision_layer = 0
+	collision_mask = 0
+	for c in get_children():
+		if c is CollisionShape2D:
+			(c as CollisionShape2D).set_deferred(&"disabled", true)
+		elif c is CollisionPolygon2D:
+			(c as CollisionPolygon2D).set_deferred(&"disabled", true)
+	if story_interact:
+		story_interact.set_interact_enabled(false)
+		story_interact.monitoring = false
+		story_interact.monitorable = false
+		story_interact.collision_layer = 0
+		story_interact.collision_mask = 0
+
+
+func get_limb_marker_nodes() -> Array[Node2D]:
+	var markers: Array[Node2D] = []
+	if limb_markers_root == null:
+		return markers
+	for c in limb_markers_root.get_children():
+		if c is Node2D:
+			markers.append(c as Node2D)
+	return markers
 
 
 func apply_story_progress_without_cutscene(saved_pickup_count: int) -> void:
@@ -537,6 +604,8 @@ func get_status() -> Dictionary:
 # 安全销毁函数
 func safe_destroy():
 	"""安全销毁节点，避免在动画播放中销毁"""
+	if _ghost_after_boss_pull:
+		return
 	if animation_player.is_playing():
 		# 如果正在播放动画，等待动画完成
 		await animation_player.animation_finished

@@ -22,6 +22,9 @@ extends CharacterBody2D
 @export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
 @export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
 
+## 单次攻击消耗的墨水（与 ATTACK_SHOOT 中扣除量一致）
+const ATTACK_INK_COST: int = 15
+
 ## world2 剧情完成后解锁；由存档恢复
 var shangyang_summon_unlocked: bool = false
 
@@ -241,8 +244,8 @@ func enter_state(state: PlayerState):
 			
 		PlayerState.ATTACK_SHOOT:
 			# 发射子弹
-			if stats.ink >= 15:
-				stats.ink -= 15
+			if stats.ink >= ATTACK_INK_COST:
+				stats.ink -= ATTACK_INK_COST
 				shoot()
 			# 启动攻击延迟计时器
 			attack_delay_timer.start()
@@ -354,12 +357,12 @@ func update_idle(delta: float):
 		return
 	
 	# 检查攻击
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
+	if Input.is_action_just_pressed("attack") and can_attack_now():
 		start_attack()
 		return
 	
 	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon:
+	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
 		try_summon_shangyang()
 		return
 	
@@ -392,12 +395,12 @@ func update_walk(delta: float):
 		return
 	
 	# 检查攻击
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
+	if Input.is_action_just_pressed("attack") and can_attack_now():
 		start_attack()
 		return
 	
 	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon:
+	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
 		try_summon_shangyang()
 		return
 
@@ -436,12 +439,12 @@ func update_jump_ascend(delta: float):
 		return
 		
 	# 检查攻击
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
+	if Input.is_action_just_pressed("attack") and can_attack_now():
 		start_attack()
 		return
 	
 	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon:
+	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
 		try_summon_shangyang()
 		return
 
@@ -464,12 +467,12 @@ func update_jump_fall(delta: float):
 		return
 	
 	# 检查攻击
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0:
+	if Input.is_action_just_pressed("attack") and can_attack_now():
 		start_attack()
 		return
 	
 	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon:
+	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
 		try_summon_shangyang()
 		return
 
@@ -520,8 +523,42 @@ func can_jump() -> bool:
 	# 检查是否可以进行跳跃
 	return is_on_floor()
 
+
+func has_active_summoned_shangyang() -> bool:
+	for n in get_tree().get_nodes_in_group("shangyang_player_summon"):
+		if n is ShangYang and is_instance_valid(n):
+			return true
+	return false
+
+
+func can_attack_now() -> bool:
+	if not enable_input_control:
+		return false
+	if attack_cooldown > 0:
+		return false
+	if stats.ink < ATTACK_INK_COST:
+		return false
+	return true
+
+
+func can_summon_shangyang_now() -> bool:
+	if not enable_input_control:
+		return false
+	if not shangyang_summon_unlocked:
+		return false
+	if not can_summon:
+		return false
+	if stats.ink < summon_ink_cost:
+		return false
+	if shangyang_summon_scene == null:
+		return false
+	if has_active_summoned_shangyang():
+		return false
+	return true
+
+
 func start_attack():
-	if stats.ink <= 0 or attack_cooldown > 0:
+	if not can_attack_now():
 		return
 	
 	# 切换到攻击状态
@@ -533,13 +570,16 @@ func unlock_shangyang_summon() -> void:
 	shangyang_summon_unlocked = true
 
 
+func _boss_fatal_summon_warning_active() -> bool:
+	var ctrl := get_tree().get_first_node_in_group("boss_phase_controller")
+	if ctrl == null or not ctrl.has_method("is_summon_during_fatal_warning_window"):
+		return false
+	return bool(ctrl.call("is_summon_during_fatal_warning_window"))
+
+
 func try_summon_shangyang():
 	"""尝试召唤商鞅"""
-	if not shangyang_summon_unlocked:
-		return
-	if not can_summon or stats.ink < summon_ink_cost or not shangyang_summon_scene:
-		# 如果墨水不足、冷却中或没有设置商鞅场景
-		print("无法召唤商鞅：墨水不足、冷却中或未设置召唤场景")
+	if not can_summon_shangyang_now():
 		return
 	
 	# 扣除墨水
@@ -565,15 +605,18 @@ func execute_summon():
 	
 	# 计算召唤位置
 	var summon_position = calculate_summon_position()
-	
+	var boss_fatal_warn := _boss_fatal_summon_warning_active()
+
 	# 设置商鞅位置
 	shangyang.global_position = summon_position
 	
 	# 添加到场景
 	get_parent().add_child(shangyang)
 	
-	# 切换到被召唤模式
-	shangyang.switch_to_summoned_mode()
+	if boss_fatal_warn and shangyang.has_method("setup_summoned_for_boss_fatal_warning"):
+		shangyang.setup_summoned_for_boss_fatal_warning()
+	else:
+		shangyang.switch_to_summoned_mode()
 	
 	print("成功召唤商鞅在位置: %s" % str(summon_position))
 
@@ -631,11 +674,11 @@ func _physics_process(delta):
 		_contact_triggers.back().interact()
 	
 	# 处理攻击输入
-	if Input.is_action_just_pressed("attack") and attack_cooldown <= 0 and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
+	if Input.is_action_just_pressed("attack") and can_attack_now() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START and current_state != PlayerState.STUNNED:
 		start_attack()
 	
 	# 处理召唤输入
-	if Input.is_action_just_pressed("summon") and can_summon and stats.ink >= summon_ink_cost and current_state != PlayerState.SUMMON_START:
+	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now() and current_state != PlayerState.SUMMON_START and current_state != PlayerState.STUNNED:
 		try_summon_shangyang()
 	
 	# 应用移动
