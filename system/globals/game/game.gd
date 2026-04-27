@@ -10,6 +10,13 @@ func _ready() -> void:
 	color_rect.color.a = 0
 	print("游戏管理器初始化完成")
 
+
+func _is_autoload_game() -> bool:
+	var tree := get_tree()
+	if tree == null:
+		return false
+	return get_parent() == tree.root and name == "Game"
+
 func change_scene(path: String, params: Dictionary = {}) -> void:
 	MechanismLinkBus.clear_last_states()
 	var tree := get_tree()
@@ -228,13 +235,9 @@ func load_game(reset_current_scene: bool = false) -> void:
 	print("玩家方向: ", player_direction)
 
 	if reset_current_scene:
-		var tree := get_tree()
-		tree.paused = false
-		var cur := tree.current_scene
-		if cur != null:
-			tree.root.remove_child(cur)
-			cur.queue_free()
-			await tree.process_frame
+		# 读档已走 reload_scene_from_save（不保存当前场景状态）；
+		# 这里不再手动销毁 current_scene，避免当前调用者随场景一起被释放导致 get_tree() 失效。
+		pass
 	
 	var load_params := {
 		"direction": player_direction,
@@ -289,6 +292,9 @@ func new_game() -> void:
 	change_scene("res://system/levels/world.tscn", {})
 
 func _unhandled_input(event: InputEvent) -> void:
+	# 场景内若实例化了 Game 节点，只允许 Autoload(/root/Game)处理全局存读档输入，避免重入读档卡住。
+	if not _is_autoload_game():
+		return
 	if event.is_action_pressed("ui_cancel"):
 		print("保存游戏")
 		save_game()

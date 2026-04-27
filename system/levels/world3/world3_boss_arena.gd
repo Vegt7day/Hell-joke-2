@@ -6,6 +6,7 @@ extends Node2D
 @onready var boss_si: Node2D = $Bosses/BossSi
 @onready var minors_root: Node2D = $Bosses/Minors
 @onready var phase_controller: Node = $Systems/PhaseController
+@onready var random_piece_builder: Node = $Systems/RandomPieceBuilder
 var _pending_shared_hp_override_for_save: int = -1
 
 
@@ -32,6 +33,8 @@ func to_dict() -> Dictionary:
 	for i in bosses_root.get_node("PropsSpawn").get_children():
 		if i is BossDamageInteractable:
 			out["interactables"][String(i.name)] = (i as BossDamageInteractable).export_save_state()
+	if random_piece_builder != null and random_piece_builder.has_method("export_builder_state"):
+		out["random_piece_builder"] = random_piece_builder.call("export_builder_state")
 	return out
 
 
@@ -55,6 +58,9 @@ func from_dict(dict: Dictionary) -> void:
 	for i in bosses_root.get_node("PropsSpawn").get_children():
 		if i is BossDamageInteractable and int_map.has(String(i.name)):
 			(i as BossDamageInteractable).apply_save_state(int_map[String(i.name)])
+	var rpb_state: Variant = dict.get("random_piece_builder", {})
+	if rpb_state is Dictionary and random_piece_builder != null and random_piece_builder.has_method("apply_builder_state"):
+		random_piece_builder.call("apply_builder_state", rpb_state)
 
 
 func update_player(position: Vector2, direction: int = 1) -> void:

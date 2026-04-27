@@ -244,4 +244,86 @@
 
 ---
 
-如果你确认这份方案方向正确，下一步我可以基于此文档直接开始实现 `world3_random_piece_builder.gd` 和 `world3` 场景接入。
+## 八、分步实施计划（执行版）
+
+为了避免一次性改动过大，建议分 5 步推进，每步可单独验收。
+
+### Step 1：基础骨架接入（已开始）
+
+- 目标：
+  - 在 `world3` 场景接入随机拼接控制器节点
+  - 增加运行时锚点与容器节点（`RandomPiecesStart` / `RandomPiecesRuntime`）
+  - 完成配置校验日志（不做实际生成）
+- 代码点：
+  - `system/levels/world3/scripts/world3_random_piece_builder.gd`
+  - `system/levels/world3/world3_boss_arena.tscn`
+- 验收：
+  - 进场时看到 builder 初始化日志
+  - 缺少配置时出现 warning
+  - 不影响现有 Boss 战流程
+
+### Step 2：固定顺序拼接（无随机）
+
+- 目标：
+  - 先按固定列表生成 2~3 段，验证 `start -> over` 对齐逻辑
+- 当前实现进度：
+  - 已完成 `world3_random_piece_builder.gd` 的固定顺序实例化与对齐代码
+  - 已支持缺失 `start/over` 时跳过并警告
+  - 待你在 Inspector 配置 `piece_pool` 后做实机场景验收
+- 验收：
+  - 模块无缝对接
+  - 运行时容器能统一管理实例
+
+### Step 3：随机与种子
+
+- 目标：
+  - 接入随机抽取、允许/禁止重复、固定 seed 可复现
+- 当前实现进度：
+  - 已完成 `World3RandomPieceBuilder` 的随机抽取逻辑
+  - 已支持 `allow_repeat_piece` 开关（可重复/不重复抽取）
+  - 已支持 `use_fixed_seed/fixed_seed`（固定 seed 复现）
+  - 已在日志输出本次 seed 与抽取模块序列
+- 验收：
+  - 固定 seed 下重复进入结果一致
+  - 非固定 seed 下顺序变化
+
+### Step 4：双层 Area 流式加载
+
+- 目标：
+  - 外圈预加载 `{i-1,i,i+1}`
+  - 内圈回收非邻居段
+- 当前实现进度：
+  - 已切换为“初始仅加载起始邻域（0/1）”，不再开局全量实例化
+  - 已实现外圈 `ensure_neighbors_loaded(i)` / 内圈 `trim_to_neighbors(i)`
+  - 已加 `last_outer_index/last_inner_index` 防抖
+  - 已预留分段运行时状态缓存钩子：
+    - `export_piece_runtime_state()`
+    - `apply_piece_runtime_state(state)`
+- 验收：
+  - 常驻段数稳定在 2~3
+  - 不会误清理 world3 固有节点
+
+### Step 5：心剑间隔放置 + 存读档一致性
+
+- 目标：
+  - 每隔一个模块在 `attack` 放置心剑
+  - 存档保存模块序列/seed 与交互状态，读档完全恢复
+- 当前实现进度：
+  - 已在 `World3RandomPieceBuilder` 加入按索引规则生成心剑（`heart_interactable_scene` + 间隔参数）
+  - 已支持心剑状态缓存（段卸载前采集，重载后恢复）
+  - 已新增 builder 状态导出/恢复接口：
+    - `export_builder_state()`
+    - `apply_builder_state(state)`
+  - `world3_boss_arena.to_dict/from_dict` 已接入 builder 状态的存读
+- 验收：
+  - 读档后布局与触发状态一致
+
+---
+
+### 当前进度记录
+
+- [x] Step 1 已开始并接入基础骨架
+- [~] Step 2 固定顺序拼接（代码完成，待配置模块后验收）
+- [~] Step 3 随机与种子（代码完成，待你实机验收）
+- [~] Step 4 双层 Area 流式加载（代码完成，待你实机验收）
+- [~] Step 5 心剑与存读档一致（代码完成，待你实机验收）
