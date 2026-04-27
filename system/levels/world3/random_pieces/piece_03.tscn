@@ -12,12 +12,12 @@ size = Vector2(768, 256)
 [node name="Piece03" type="Node2D" unique_id=889165973]
 
 [node name="start" type="Marker2D" parent="." unique_id=1949732832]
-position = Vector2(1408, 0)
 
 [node name="attack" type="Marker2D" parent="." unique_id=1155483239]
 position = Vector2(768, -32)
 
 [node name="over" type="Marker2D" parent="." unique_id=226817700]
+position = Vector2(1408, 0)
 
 [node name="OuterStreamingArea" type="Area2D" parent="." unique_id=133891343]
 position = Vector2(320, 0)

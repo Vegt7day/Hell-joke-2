@@ -294,11 +294,11 @@ func _move_to_position(target: Vector2, duration: float) -> void:
 
 
 func _camera_viewport_world_x_range() -> Vector2:
-	var cam := get_viewport().get_camera_2d()
-	if cam == null:
-		return Vector2(-100000.0, 100000.0)
 	var vp := get_viewport()
 	if vp == null:
+		return Vector2(-100000.0, 100000.0)
+	var cam := vp.get_camera_2d()
+	if cam == null:
 		return Vector2(-100000.0, 100000.0)
 	var size := vp.get_visible_rect().size
 	var center := cam.get_screen_center_position()
@@ -319,18 +319,23 @@ func _is_in_skill_cast_horizontal_band(subject: Node2D) -> bool:
 
 
 func _await_subject_in_skill_cast_horizontal_band(subject: Node2D) -> void:
+	var tree := get_tree()
 	while is_instance_valid(subject):
+		if tree == null:
+			return
+		if not is_inside_tree():
+			return
 		if _is_in_skill_cast_horizontal_band(subject):
 			return
-		await get_tree().physics_frame
+		await tree.physics_frame
 
 
 func _is_outside_camera_bounds() -> bool:
-	var cam := get_viewport().get_camera_2d()
-	if cam == null:
-		return false
 	var vp := get_viewport()
 	if vp == null:
+		return false
+	var cam := vp.get_camera_2d()
+	if cam == null:
 		return false
 	var size := vp.get_visible_rect().size
 	var center := cam.get_screen_center_position()

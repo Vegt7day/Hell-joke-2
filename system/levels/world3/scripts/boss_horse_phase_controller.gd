@@ -76,6 +76,8 @@ signal intro_timeline_finished
 @export var fatal_pull_surround_rush_duration: float = 0.85
 ## 商鞅线：伸绳期间摄像机（玩家子节点 Camera2D）缓慢移向商鞅的时长；与绳伸长并行
 @export var fatal_sy_camera_pan_seconds: float = 2.0
+## 五马拉商鞅：围拢/镜头锚点相对商鞅根坐标的偏移（右 +X，上 -Y）
+@export var fatal_sy_pull_horses_anchor_offset: Vector2 = Vector2(32, -32)
 
 var current_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
 
@@ -513,6 +515,8 @@ func _apply_grey_solo_spawn(minors: Node2D, grey_spawn: Node2D, from_left_side: 
 	# 回场前先切到灰马自己的表现，避免沿用上一匹马的颜色。
 	_play_minor_jump(grey, &"MinorGrey")
 	await _move_node(grey, grey_spawn.global_position, horse_switch_duration)
+	_set_horse_movement(grey, true)
+	_play_minor_travel_loop_anim(grey, &"MinorGrey")
 	_active_minor_name = &"MinorGrey"
 
 
@@ -560,6 +564,7 @@ func _run_minor_switch(target_phase: BossHorseTypes.BossPhase) -> void:
 		_play_minor_jump(next_minor, next_name)
 		await _move_node(next_minor, next_spawn.global_position, horse_switch_duration)
 		_set_horse_movement(next_minor, true)
+		_play_minor_travel_loop_anim(next_minor, next_name)
 		_active_minor_name = next_name
 
 	request_phase(target_phase)
@@ -634,6 +639,28 @@ func _play_minor_jump(minor: Node2D, minor_name: StringName) -> void:
 		&"MinorRed":
 			if ap.has_animation(&"red_jump"):
 				ap.play(&"red_jump")
+
+
+## 入场/换马 tween 结束后：左移行走对应的循环动作（灰马有专用 grey_run）
+func _play_minor_travel_loop_anim(minor: Node2D, minor_name: StringName) -> void:
+	var ap := minor.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if ap == null:
+		return
+	match minor_name:
+		&"MinorGrey":
+			if ap.has_animation(&"grey_run"):
+				ap.play(&"grey_run")
+		&"MinorWhite":
+			if ap.has_animation(&"white_jump"):
+				ap.play(&"white_jump")
+		&"MinorBlack":
+			if ap.has_animation(&"black_jump"):
+				ap.play(&"black_jump")
+		&"MinorRed":
+			if ap.has_animation(&"red_jump"):
+				ap.play(&"red_jump")
+		_:
+			pass
 
 
 func _move_pair(first: Node2D, first_target: Vector2, second: Node2D, second_target: Vector2, duration: float) -> void:
@@ -932,7 +959,8 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 			_set_horse_movement(horse, true)
 		return
 
-	await _tween_fatal_pull_horses_surround(shangyang.global_position, horses, main, minors)
+	var sy_pull_anchor := shangyang.global_position + fatal_sy_pull_horses_anchor_offset
+	await _tween_fatal_pull_horses_surround(sy_pull_anchor, horses, main, minors)
 
 	var pairs := _pair_horses_to_limbs_by_nearest(horses, limbs)
 	var ropes: Array[Node2D] = []
@@ -961,7 +989,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	if cam_sy != null:
 		saved_cam_pos_sy = cam_sy.position
 		if player_sy != null:
-			cam_target_sy = shangyang.global_position - player_sy.global_position
+			cam_target_sy = sy_pull_anchor - player_sy.global_position
 
 	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds, cam_sy, cam_target_sy, fatal_sy_camera_pan_seconds)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_shangyang)

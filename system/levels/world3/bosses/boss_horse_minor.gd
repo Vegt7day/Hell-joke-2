@@ -143,11 +143,11 @@ func set_movement_enabled(enabled: bool) -> void:
 
 
 func _camera_viewport_world_x_range() -> Vector2:
-	var cam := get_viewport().get_camera_2d()
-	if cam == null:
-		return Vector2(-100000.0, 100000.0)
 	var vp := get_viewport()
 	if vp == null:
+		return Vector2(-100000.0, 100000.0)
+	var cam := vp.get_camera_2d()
+	if cam == null:
 		return Vector2(-100000.0, 100000.0)
 	var size := vp.get_visible_rect().size
 	var center := cam.get_screen_center_position()
@@ -166,11 +166,11 @@ func _is_in_skill_cast_horizontal_band() -> bool:
 
 
 func _is_outside_camera_bounds() -> bool:
-	var cam := get_viewport().get_camera_2d()
-	if cam == null:
-		return false
 	var vp := get_viewport()
 	if vp == null:
+		return false
+	var cam := vp.get_camera_2d()
+	if cam == null:
 		return false
 	var size := vp.get_visible_rect().size
 	var center := cam.get_screen_center_position()

@@ -79,6 +79,13 @@ func _find_stats_node():
 				stats = child
 				print("找到Stats节点:", child.name)
 				break
+	# 主马等：Stats 在 CharacterBody2D 根上，血条在 CanvasLayer 子树下
+	if not stats and get_parent() != null and get_parent().get_parent() != null:
+		var horse_root := get_parent().get_parent()
+		var st := horse_root.get_node_or_null("Stats") as Stats
+		if st != null:
+			stats = st
+			print("找到Stats节点(马根):", st.name)
 	
 	# 在场景中查找
 	if not stats:

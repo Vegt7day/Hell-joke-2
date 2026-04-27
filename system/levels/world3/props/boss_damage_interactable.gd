@@ -91,9 +91,11 @@ func export_save_state() -> Dictionary:
 
 func apply_save_state(state: Dictionary) -> void:
 	_used = bool(state.get("used", false))
-	monitoring = not _used
-	monitorable = not _used
+	var active := not _used
+	# 在 body_entered / 物理 flush 期间不能同步改 monitoring，否则引擎报错
+	set_deferred("monitoring", active)
+	set_deferred("monitorable", active)
 	if _used:
-		_play_if_exists(post_hurt_idle_anim_name)
+		call_deferred("_play_if_exists", post_hurt_idle_anim_name)
 	else:
-		_play_if_exists(idle_anim_name)
+		call_deferred("_play_if_exists", idle_anim_name)
