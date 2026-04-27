@@ -6,6 +6,14 @@ extends CharacterBody2D
 @export var cast_check_interval: float = 0.2
 @export var move_left_speed: float = 90.0
 @export var respawn_margin: float = 120.0
+@export var offscreen_respawn_delay_seconds: float = 1.0
+## 传送回屏幕右侧时，Y 定位在摄像机下 1/4 高度（基于可视半高的一半）。
+@export var respawn_y_quarter_down_factor: float = 0.5
+## Y 轴追踪：纯跟随 + 延后（非 PID）
+@export var y_follow_full_tilt_distance: float = 220.0
+@export var y_follow_lag_seconds: float = 0.45
+## X 轴始终向左；当越过玩家后不再改变 X 方向（不转向右）
+@export var stop_x_adjust_after_pass_player: bool = true
 ## 灰马技能：朝左冲刺
 @export var grey_dash_distance: float = 220.0
 @export var grey_dash_duration: float = 0.32
@@ -41,6 +49,8 @@ var _cooldown_left: float = 0.0
 var _shared_skill_cooldown: float = 10.0
 var _unlocked_skills: Array[BossHorseTypes.HorseId] = [BossHorseTypes.HorseId.GREY]
 var _movement_enabled: bool = true
+var _offscreen_elapsed: float = 0.0
+var _smoothed_y_cmd: float = 0.0
 
 
 func _ready() -> void:
@@ -108,13 +118,20 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if not _movement_enabled:
 		velocity = Vector2.ZERO
+		_offscreen_elapsed = 0.0
 		return
-	velocity = Vector2.LEFT * move_left_speed
+	if _is_outside_camera_bounds():
+		_offscreen_elapsed += delta
+		if _offscreen_elapsed >= offscreen_respawn_delay_seconds:
+			_respawn_to_camera_right_quarter_down()
+			_offscreen_elapsed = 0.0
+	else:
+		_offscreen_elapsed = 0.0
+	velocity = _compute_pid_tracking_velocity(delta)
 	move_and_slide()
-	_wrap_to_right_if_out_of_view()
 
 
-func take_damage(damage_amount: float) -> void:
+func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
 	if is_summoned_clone:
 		return
 	# 主马与四马共享同一血条：统一走 PhaseController 结算。
@@ -270,10 +287,61 @@ func _move_to_position(target: Vector2, duration: float) -> void:
 	_movement_enabled = prev_move
 
 
-func _wrap_to_right_if_out_of_view() -> void:
-	var bounds := _get_view_bounds_x()
-	if global_position.x < bounds.x - respawn_margin:
-		global_position.x = bounds.y + respawn_margin
+func _is_outside_camera_bounds() -> bool:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return false
+	var vp := get_viewport()
+	if vp == null:
+		return false
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	var half_h := size.y * 0.5 * cam.zoom.y
+	if global_position.x < center.x - half_w - respawn_margin:
+		return true
+	if global_position.x > center.x + half_w + respawn_margin:
+		return true
+	if global_position.y < center.y - half_h - respawn_margin:
+		return true
+	if global_position.y > center.y + half_h + respawn_margin:
+		return true
+	return false
+
+
+func _respawn_to_camera_right_quarter_down() -> void:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	var half_h := size.y * 0.5 * cam.zoom.y
+	global_position.x = center.x + half_w + respawn_margin
+	global_position.y = center.y + half_h * clampf(respawn_y_quarter_down_factor, 0.0, 1.0)
+	_smoothed_y_cmd = 0.0
+
+
+func _compute_pid_tracking_velocity(delta: float) -> Vector2:
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var x_cmd := -1.0
+	if stop_x_adjust_after_pass_player and player != null and global_position.x <= player.global_position.x:
+		x_cmd = -1.0
+	var desired_y_cmd := 0.0
+	if player != null:
+		var err := player.global_position.y - global_position.y
+		var denom := maxf(1.0, y_follow_full_tilt_distance)
+		desired_y_cmd = clampf(err / denom, -1.0, 1.0)
+	var follow_lag := maxf(0.01, y_follow_lag_seconds)
+	var t := clampf(delta / follow_lag, 0.0, 1.0)
+	_smoothed_y_cmd = lerpf(_smoothed_y_cmd, desired_y_cmd, t)
+	var cmd := Vector2(x_cmd, _smoothed_y_cmd)
+	if cmd.length_squared() <= 0.0001:
+		cmd = Vector2.LEFT
+	return cmd.normalized() * move_left_speed
 
 
 func _get_view_bounds_x() -> Vector2:

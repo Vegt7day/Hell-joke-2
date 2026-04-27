@@ -14,7 +14,7 @@ func _ready() -> void:
 	_resolve_phase_controller()
 
 
-func take_damage(damage_amount: float) -> void:
+func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
 	if _phase_controller == null:
 		_resolve_phase_controller()
 	if _phase_controller and _phase_controller.has_method("apply_shared_damage"):

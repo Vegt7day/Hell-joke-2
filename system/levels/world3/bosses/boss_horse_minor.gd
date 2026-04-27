@@ -12,8 +12,9 @@ const _ATLAS_RED := preload("res://system/levels/world3/bosses/红马.png")
 ## 小黑马召唤的分身：小黑马外观、仅左移循环，不放技能。
 @export var is_summoned_clone: bool = false
 @export var suppress_clone_ready_anim: bool = false
-@export var move_left_speed: float = 82.0
+@export var move_left_speed: float = 210.0
 @export var respawn_margin: float = 120.0
+@export var offscreen_respawn_delay_seconds: float = 0.5
 @export var auto_use_skill: bool = true
 @export var grey_dash_distance: float = 180.0
 @export var grey_dash_duration: float = 0.28
@@ -40,6 +41,7 @@ var _is_casting_skill: bool = false
 var _skill_cooldown_left: float = 0.0
 var _black_minor_summon_accum: float = 0.0
 var _black_summon_locked: bool = false
+var _offscreen_elapsed: float = 0.0
 
 
 func _ready() -> void:
@@ -60,7 +62,7 @@ func _ready() -> void:
 	refresh_visual_to_horse_id()
 
 
-func take_damage(damage_amount: float) -> void:
+func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
 	if is_summoned_clone:
 		return
 	# 四马受击也要扣同一 Boss 血条。
@@ -75,10 +77,17 @@ func take_damage(damage_amount: float) -> void:
 func _physics_process(delta: float) -> void:
 	if not _movement_enabled or _is_casting_skill:
 		velocity = Vector2.ZERO
+		_offscreen_elapsed = 0.0
 		return
 	velocity = Vector2.LEFT * move_left_speed
 	move_and_slide()
-	_wrap_to_right_if_out_of_view()
+	if _is_outside_camera_bounds():
+		_offscreen_elapsed += delta
+		if _offscreen_elapsed >= offscreen_respawn_delay_seconds:
+			_respawn_to_camera_right_at_player_y()
+			_offscreen_elapsed = 0.0
+	else:
+		_offscreen_elapsed = 0.0
 
 
 func _process(delta: float) -> void:
@@ -126,10 +135,41 @@ func set_movement_enabled(enabled: bool) -> void:
 		velocity = Vector2.ZERO
 
 
-func _wrap_to_right_if_out_of_view() -> void:
-	var bounds := _get_view_bounds_x()
-	if global_position.x < bounds.x - respawn_margin:
-		global_position.x = bounds.y + respawn_margin
+func _is_outside_camera_bounds() -> bool:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return false
+	var vp := get_viewport()
+	if vp == null:
+		return false
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	var half_h := size.y * 0.5 * cam.zoom.y
+	if global_position.x < center.x - half_w - respawn_margin:
+		return true
+	if global_position.x > center.x + half_w + respawn_margin:
+		return true
+	if global_position.y < center.y - half_h - respawn_margin:
+		return true
+	if global_position.y > center.y + half_h + respawn_margin:
+		return true
+	return false
+
+
+func _respawn_to_camera_right_at_player_y() -> void:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	global_position.x = center.x + half_w + respawn_margin
+	var target_y := _get_player_position_or_fallback(global_position).y
+	global_position.y = target_y
 
 
 func _get_view_bounds_x() -> Vector2:

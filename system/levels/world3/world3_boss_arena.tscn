@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="7_f8sp1"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="8_bch5w"]
 [ext_resource type="Script" uid="uid://blc6s1vtdeew5" path="res://system/levels/world3/scripts/shangyang_dialog_proxy.gd" id="10_syproxy"]
-[ext_resource type="PackedScene" uid="uid://b73i341h2qq3x" path="res://system/levels/world3/props/boss_damage_interactable.tscn" id="11_interact_target"]
 [ext_resource type="PackedScene" uid="uid://bxem2tyx8ink3" path="res://system/levels/world3/random_pieces/piece_02.tscn" id="11_vcjgv"]
 [ext_resource type="PackedScene" uid="uid://cfk805wfw6xxc" path="res://system/levels/world3/random_pieces/piece_03.tscn" id="12_qq75a"]
 [ext_resource type="PackedScene" uid="uid://dfhlt4swsqw4a" path="res://system/levels/world3/random_pieces/piece_04.tscn" id="13_gj035"]
@@ -100,24 +99,10 @@ position = Vector2(992, 480)
 
 [node name="RandomPiecesRuntime" type="Node2D" parent="Bosses/PropsSpawn" unique_id=635813714]
 
-[node name="DamageInteractable01" parent="Bosses/PropsSpawn" unique_id=1895496344 instance=ExtResource("11_interact_target")]
-position = Vector2(0, 288)
-
-[node name="BossDamageInteractable" parent="Bosses/PropsSpawn" unique_id=417998075 instance=ExtResource("11_interact_target")]
-position = Vector2(352, 320)
-
-[node name="BossDamageInteractable2" parent="Bosses/PropsSpawn" unique_id=2002523705 instance=ExtResource("11_interact_target")]
-position = Vector2(192, 256)
-
-[node name="BossDamageInteractable3" parent="Bosses/PropsSpawn" unique_id=1446735979 instance=ExtResource("11_interact_target")]
-position = Vector2(32, 448)
-
-[node name="BossDamageInteractable4" parent="Bosses/PropsSpawn" unique_id=2066816814 instance=ExtResource("11_interact_target")]
-position = Vector2(480, 288)
-
 [node name="MainHorse" parent="Bosses" unique_id=760878487 instance=ExtResource("3_main")]
 unique_name_in_owner = true
 position = Vector2(640, 448)
+scale = Vector2(1, 1.0048534)
 move_left_speed = 250.0
 
 [node name="BossSi" parent="Bosses" unique_id=1886780310 instance=ExtResource("4_si")]

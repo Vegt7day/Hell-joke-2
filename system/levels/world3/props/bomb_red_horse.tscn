@@ -182,6 +182,7 @@ script = ExtResource("1_bomb")
 shape = SubResource("CircleShape2D_bomb")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1525824933]
+position = Vector2(32, -32)
 texture = SubResource("AtlasTexture_1f7bg")
 hframes = 13
 region_enabled = true

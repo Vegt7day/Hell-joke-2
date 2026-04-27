@@ -17,7 +17,7 @@ size = Vector2(960, 420)
 position = Vector2(1408, 0)
 
 [node name="attack" type="Marker2D" parent="." unique_id=76409908]
-position = Vector2(544, -32)
+position = Vector2(672, -256)
 
 [node name="over" type="Marker2D" parent="." unique_id=1289241506]
 
@@ -41,6 +41,7 @@ position = Vector2(800, -96)
 position = Vector2(832, -96)
 
 [node name="OuterStreamingArea" type="Area2D" parent="." unique_id=222249564]
+visible = false
 position = Vector2(704, -128)
 collision_layer = 0
 collision_mask = 2
@@ -49,6 +50,7 @@ collision_mask = 2
 shape = SubResource("RectangleShape2D_outer")
 
 [node name="InnerStreamingArea" type="Area2D" parent="." unique_id=574729847]
+visible = false
 position = Vector2(704, -128)
 collision_layer = 0
 collision_mask = 2

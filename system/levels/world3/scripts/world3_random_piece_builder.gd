@@ -23,6 +23,7 @@ var _selected_pool_indices: Array[int] = []
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _piece_runtime_state_cache: Dictionary = {} # index(int) -> Dictionary
 var _current_generation_seed: int = 0
+var _current_center_piece_index: int = 0
 
 func _ready() -> void:
 	var start_marker: Marker2D = get_node_or_null(random_pieces_start_path) as Marker2D
@@ -52,6 +53,7 @@ func _build_sequence_with_seed(start_marker: Marker2D, runtime_root: Node2D) -> 
 	_last_outer_index = -999999
 	_last_inner_index = -999999
 	_piece_runtime_state_cache.clear()
+	_current_center_piece_index = 0
 	var count: int = max(1, piece_count)
 	if not allow_repeat_piece:
 		count = min(count, piece_pool.size())
@@ -96,6 +98,7 @@ func _build_sequence_with_seed(start_marker: Marker2D, runtime_root: Node2D) -> 
 	# Step4: 初始仅加载起始邻域（0 与 1），避免一次性全生成占内存。
 	ensure_neighbors_loaded(0)
 	trim_to_neighbors(0)
+	_current_center_piece_index = 0
 	print("[RandomPieceBuilder] Step4 初始邻域加载完成：seed=%d 选中序列=%s 计划=%d 初始活跃=%d" % [
 		_current_generation_seed,
 		str(_selected_pool_indices),
@@ -147,6 +150,7 @@ func apply_generation_from_indices(indices: Array, seed_opt: int = 0) -> void:
 	_active_piece_nodes.clear()
 	_selected_pool_indices.clear()
 	_piece_runtime_state_cache.clear()
+	_current_center_piece_index = 0
 	if seed_opt != 0:
 		_rng.seed = seed_opt
 		_current_generation_seed = seed_opt
@@ -176,6 +180,7 @@ func apply_generation_from_indices(indices: Array, seed_opt: int = 0) -> void:
 		preview.queue_free()
 	ensure_neighbors_loaded(0)
 	trim_to_neighbors(0)
+	_current_center_piece_index = 0
 
 
 func _clear_runtime_root(runtime_root: Node2D) -> void:
@@ -218,6 +223,7 @@ func _on_outer_streaming_body_entered(body: Node, index: int) -> void:
 	if _last_outer_index == index:
 		return
 	_last_outer_index = index
+	_current_center_piece_index = index
 	ensure_neighbors_loaded(index)
 
 
@@ -227,6 +233,7 @@ func _on_inner_streaming_body_entered(body: Node, index: int) -> void:
 	if _last_inner_index == index:
 		return
 	_last_inner_index = index
+	_current_center_piece_index = index
 	trim_to_neighbors(index)
 
 
@@ -319,6 +326,7 @@ func export_builder_state() -> Dictionary:
 		"seed": int(_rng.seed),
 		"selected_pool_indices": _selected_pool_indices.duplicate(),
 		"piece_runtime_state_cache": cache_export,
+		"current_center_piece_index": _current_center_piece_index,
 	}
 
 
@@ -334,5 +342,10 @@ func apply_builder_state(state: Dictionary) -> void:
 			_piece_runtime_state_cache[int(str(key))] = (cache_raw as Dictionary)[key]
 	var seq: Variant = state.get("selected_pool_indices", [])
 	var seed_opt := int(state.get("seed", 0))
+	var saved_center_idx := int(state.get("current_center_piece_index", 0))
 	if seq is Array:
 		apply_generation_from_indices(seq as Array, seed_opt)
+		var center_idx := clampi(saved_center_idx, 0, max(_planned_piece_scenes.size() - 1, 0))
+		_current_center_piece_index = center_idx
+		ensure_neighbors_loaded(center_idx)
+		trim_to_neighbors(center_idx)
