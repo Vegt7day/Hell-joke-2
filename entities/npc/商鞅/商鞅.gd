@@ -575,6 +575,33 @@ func apply_story_progress_without_cutscene(saved_pickup_count: int) -> void:
 		_snap_get_animation_to_end(idx)
 
 
+func export_story_progress_state() -> Dictionary:
+	return {
+		"limb_pickup_count": _limb_pickup_count,
+		"story_form_index": _story_form_index,
+	}
+
+
+func apply_story_progress_state(state: Dictionary) -> void:
+	if current_mode != MODE.STORY:
+		return
+	_limb_pickup_count = clampi(int(state.get("limb_pickup_count", _limb_pickup_count)), 0, 5)
+	var form_idx := clampi(int(state.get("story_form_index", _story_form_index)), 0, 3)
+	_story_form_index = form_idx
+	match form_idx:
+		3:
+			if animation_player and animation_player.is_playing():
+				animation_player.stop()
+			sprite.frame = 19
+			_current_state = STATE.IDLE
+		2:
+			_snap_get_animation_to_end(0)
+		1:
+			_snap_get_animation_to_end(1)
+		0:
+			_snap_get_animation_to_end(2)
+
+
 func _snap_get_animation_to_end(animation_index: int) -> void:
 	if animation_index < 0 or animation_index >= _get_animations.size():
 		return
@@ -588,8 +615,6 @@ func _snap_get_animation_to_end(animation_index: int) -> void:
 		animation_player.seek(anim.length, true)
 	_current_state = STATE.IDLE
 	_story_form_index = 2 - animation_index
-	if animation_player.has_animation("idle"):
-		animation_player.play("idle")
 
 # 调试函数
 func get_status() -> Dictionary:

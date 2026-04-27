@@ -196,11 +196,17 @@ func start_dialogue():
 		printerr("无法创建Dialogic对话")
 		_on_intro_dialogue_ended()
 		return
-	
-	add_child(dialog)
+
+	# Dialogic.start 返回的布局节点可能已在树内，避免重复 add_child
+	if dialog.get_parent() == null:
+		get_tree().current_scene.add_child(dialog)
 	current_dialog = dialog
-	
-	dialog.connect("event_end", Callable(self, "_on_intro_dialogue_ended"))
+
+	# 使用 Dialogic 全局 timeline_ended，而不是布局节点不存在的 event_end
+	var dlg := DialogicUtil.autoload()
+	if dlg:
+		if not dlg.timeline_ended.is_connected(_on_intro_dialogue_ended):
+			dlg.timeline_ended.connect(_on_intro_dialogue_ended, CONNECT_ONE_SHOT)
 	DialogicUtil.autoload().signal_event.connect(receive)
 	
 	print("对话已启动")
@@ -346,10 +352,17 @@ func play_ending_dialogue(is_victory: bool):
 		printerr("无法创建结局对话")
 		show_level_result()
 		return
-	
-	add_child(dialog)
+
+	# Dialogic.start 返回的布局节点可能已在树内，避免重复 add_child
+	if dialog.get_parent() == null:
+		get_tree().current_scene.add_child(dialog)
 	current_dialog = dialog
-	dialog.connect("event_end", Callable(self, "_on_ending_dialogue_ended"))
+
+	# 结局同样监听 timeline_ended
+	var dlg := DialogicUtil.autoload()
+	if dlg:
+		if not dlg.timeline_ended.is_connected(_on_ending_dialogue_ended):
+			dlg.timeline_ended.connect(_on_ending_dialogue_ended, CONNECT_ONE_SHOT)
 	
 	print("结局对话已启动")
 

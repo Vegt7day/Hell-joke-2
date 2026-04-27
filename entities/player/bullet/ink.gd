@@ -97,7 +97,10 @@ func _handle_collision(collision: KinematicCollision2D):
 	
 	# 如果有碰撞对象，可以传递伤害
 	var collider = collision.get_collider()
-	if collider and collider.has_method("take_damage"):
+	# World3 马战：墨水对主马/驷马/小马不造成伤害（仅过滤该分组，不影响其他 Boss/机关）。
+	if collider is Node and (collider as Node).is_in_group("boss_horse_shared_target"):
+		pass
+	elif collider and collider.has_method("take_damage"):
 		collider.take_damage(damage)
 	
 	# 启动消失动画计时器，0.6秒后销毁子弹

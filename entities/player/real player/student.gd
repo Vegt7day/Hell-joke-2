@@ -121,7 +121,7 @@ func _ready():
 		animation_complete_connected = true
 	
 	# 等待一帧，让物理系统完全初始化
-	await get_tree().process_frame
+	await get_tree().physics_frame
 	
 	# 强制进行一次物理检测
 	move_and_slide()

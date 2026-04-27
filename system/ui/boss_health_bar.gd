@@ -15,6 +15,10 @@ extends Node2D
 var is_initialized: bool = false
 var retry_count: int = 0
 var is_visible: bool = true
+var _health_tween: Tween = null
+
+@export var drop_tween_duration: float = 0.45
+@export var heal_tween_duration: float = 0.2
 
 func _ready() -> void:
 	# 如果启用自动初始化，则开始初始化
@@ -89,13 +93,17 @@ func update_health() -> void:
 		return
 	
 	# 计算生命值百分比
-	var percentage := stats.health / float(stats.max_health)
+	var percentage: float = stats.health / float(stats.max_health)
 	
 	# 确保百分比在0-1范围内
 	percentage = clamp(percentage, 0.0, 1.0)
-	
-	# 更新血条值
-	health_bar.value = percentage 
+	var from_value: float = health_bar.value
+	if _health_tween != null and is_instance_valid(_health_tween):
+		_health_tween.kill()
+	var duration: float = drop_tween_duration if percentage < from_value else heal_tween_duration
+	duration = maxf(duration, 0.01)
+	_health_tween = create_tween()
+	_health_tween.tween_property(health_bar, "value", percentage, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	
 
 func initialize_stats() -> void:

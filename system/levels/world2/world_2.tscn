@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://dt75fgerevtc5" path="res://system/levels/world2/world_2_1.tscn" id="10_t3csa"]
 [ext_resource type="PackedScene" uid="uid://ttbe3tlsfdkt" path="res://system/levels/world2/world_2_2.tscn" id="11_6hyit"]
 [ext_resource type="PackedScene" uid="uid://b6ubg33ffka11" path="res://system/levels/world2/world_2_3.tscn" id="12_u3b1l"]
+[ext_resource type="PackedScene" uid="uid://dai5yhdyjeq8s" path="res://system/levels/world3/props/save_point_interactable.tscn" id="13_dt1td"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8yweu"]
 texture = ExtResource("2_o4usy")
@@ -195,3 +196,15 @@ position = Vector2(-800, 128)
 
 [node name="Node2D" parent="." unique_id=679792777 instance=ExtResource("12_u3b1l")]
 position = Vector2(64, 128)
+
+[node name="SavePointInteractable" parent="." unique_id=1344360068 instance=ExtResource("13_dt1td")]
+position = Vector2(-1056, 224)
+
+[node name="SavePointInteractable2" parent="." unique_id=1643310339 instance=ExtResource("13_dt1td")]
+position = Vector2(-704, 64)
+
+[node name="SavePointInteractable3" parent="." unique_id=1044228143 instance=ExtResource("13_dt1td")]
+position = Vector2(256, 64)
+
+[node name="SavePointInteractable4" parent="." unique_id=1572046820 instance=ExtResource("13_dt1td")]
+position = Vector2(1024, 64)

@@ -86,6 +86,9 @@ var _fatal_sy_seen_before_or_during_warning: bool = false
 var _warning_spawned_limbs: Array[Node2D] = []
 var _relimb_timeline_started: bool = false
 var _pending_minor_switch_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
+var _external_damage_busy: bool = false
+var _queued_external_damage_percent: float = 0.2
+var _queued_external_damage_source: String = "interaction_target"
 
 const _TIMELINE_SY_PULL := "商鞅五马分尸"
 const _TIMELINE_RELIMB := "重拾五肢"
@@ -317,6 +320,48 @@ func apply_shared_damage(damage_amount: float, source_name: String = "unknown") 
 	print("[BossPhase] 共享受伤 source=", source_name, " damage=", damage_amount, " hp=", before, " -> ", _main_stats.health)
 
 
+func trigger_external_percent_damage(percent: float = 0.2, source_name: String = "interaction_target") -> void:
+	if _main_stats == null:
+		push_warning("[BossPhase] 外部扣血触发失败：共享血条未初始化。source=%s" % source_name)
+		return
+	if _external_damage_busy:
+		print("[BossPhase] 外部扣血请求被忽略（忙碌中）。source=", source_name)
+		return
+	_queued_external_damage_percent = clampf(percent, 0.01, 1.0)
+	_queued_external_damage_source = source_name
+	_queue_async_on_timer(Callable(self, "_external_percent_damage_launcher"))
+
+
+func _external_percent_damage_launcher() -> void:
+	await _run_external_percent_damage_sequence(_queued_external_damage_percent, _queued_external_damage_source)
+
+
+func _run_external_percent_damage_sequence(percent: float, source_name: String) -> void:
+	if _main_stats == null or _main_stats.max_health <= 0:
+		return
+	_external_damage_busy = true
+	var main_horse := get_node_or_null(main_horse_path) as Node2D
+	var visual := main_horse as CanvasItem
+	var base_scale := main_horse.scale if main_horse != null else Vector2.ONE
+	var base_modulate := visual.modulate if visual != null else Color(1, 1, 1, 1)
+	if main_horse != null:
+		var tw := create_tween()
+		tw.set_parallel(true)
+		tw.tween_property(main_horse, NodePath("scale"), base_scale * 1.08, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		if visual != null:
+			tw.tween_property(visual, NodePath("modulate"), Color(1.0, 0.45, 0.45, 1.0), 0.08).set_trans(Tween.TRANS_LINEAR)
+		await tw.finished
+		var tw_back := create_tween()
+		tw_back.set_parallel(true)
+		tw_back.tween_property(main_horse, NodePath("scale"), base_scale, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		if visual != null:
+			tw_back.tween_property(visual, NodePath("modulate"), base_modulate, 0.18).set_trans(Tween.TRANS_LINEAR)
+		await tw_back.finished
+	var damage_amount: int = max(1, int(round(float(_main_stats.max_health) * clampf(percent, 0.01, 1.0))))
+	apply_shared_damage(damage_amount, source_name)
+	_external_damage_busy = false
+
+
 func get_shared_stats() -> Stats:
 	return _main_stats
 
@@ -544,7 +589,6 @@ func _spawn_marker_for_minor(minor_name: StringName) -> Node2D:
 func _play_minor_jump(minor: Node2D, minor_name: StringName) -> void:
 	if minor.has_method("refresh_visual_to_horse_id"):
 		minor.call("refresh_visual_to_horse_id")
-		return
 	var ap := minor.get_node_or_null("AnimationPlayer") as AnimationPlayer
 	if ap == null:
 		return

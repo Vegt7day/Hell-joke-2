@@ -14,6 +14,7 @@ var _listening_intro_timeline: bool = false
 var _limbs_collected_names: Array[String] = []
 var sy_npc_removed: bool = false
 var _sy_awaiting_interact_restore: bool = false
+var _sy_story_state_from_save: Dictionary = {}
 ## 本场景已播放完成的时间线 / 演出键（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
 
@@ -99,8 +100,11 @@ func _ready() -> void:
 func _world2_quest_setup() -> void:
 	_restore_limbs_from_save()
 	await get_tree().process_frame
-	if is_instance_valid(shangyang_npc) and shangyang_npc.has_method("apply_story_progress_without_cutscene"):
-		shangyang_npc.apply_story_progress_without_cutscene(_limbs_collected_names.size())
+	if is_instance_valid(shangyang_npc):
+		if not _sy_story_state_from_save.is_empty() and shangyang_npc.has_method("apply_story_progress_state"):
+			shangyang_npc.apply_story_progress_state(_sy_story_state_from_save)
+		elif shangyang_npc.has_method("apply_story_progress_without_cutscene"):
+			shangyang_npc.apply_story_progress_without_cutscene(_limbs_collected_names.size())
 	if _sy_awaiting_interact_restore and is_instance_valid(shangyang_npc):
 		shangyang_npc.restore_post_get3_waiting_interact()
 	_register_dialogic_characters()
@@ -181,7 +185,8 @@ func _start_intro_dialog() -> void:
 		mark_dialog_timeline_completed(INTRO_TIMELINE)
 		_on_intro_dialog_finished()
 		return
-	get_tree().current_scene.add_child(dialog)
+	if dialog.get_parent() == null:
+		get_tree().current_scene.add_child(dialog)
 	_intro_dialog_node = dialog
 
 
@@ -203,10 +208,14 @@ func to_dict() -> Dictionary:
 	var awaiting_interact := false
 	if is_instance_valid(shangyang_npc) and shangyang_npc.has_method("is_awaiting_story_interact"):
 		awaiting_interact = shangyang_npc.is_awaiting_story_interact()
+	var sy_story_state := {}
+	if is_instance_valid(shangyang_npc) and shangyang_npc.has_method("export_story_progress_state"):
+		sy_story_state = shangyang_npc.export_story_progress_state()
 	return {
 		"enemies_alive": enemies_alive,
 		"sy_intro_done": has_completed_timeline(INTRO_TIMELINE),
 		"sy_limbs_collected": _limbs_collected_names.duplicate(),
+		"sy_story_state": sy_story_state,
 		"sy_npc_removed": sy_npc_removed,
 		"sy_awaiting_sy_interact": awaiting_interact,
 		"completed_timelines": _completed_timelines.duplicate(),
@@ -229,6 +238,7 @@ func from_dict(dict: Dictionary) -> void:
 		_limbs_collected_names.append(String(x))
 	_infer_cutscene_completions_from_saved_limbs()
 	_intro_completed = has_completed_timeline(INTRO_TIMELINE)
+	_sy_story_state_from_save = dict.get("sy_story_state", {})
 	sy_npc_removed = dict.get("sy_npc_removed", false)
 	_sy_awaiting_interact_restore = dict.get("sy_awaiting_sy_interact", false)
 

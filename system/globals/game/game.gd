@@ -178,7 +178,7 @@ func save_game() -> void:
 	
 	print("游戏已保存: ", scene_name)
 
-func load_game() -> void:
+func load_game(reset_current_scene: bool = false) -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		print("存档文件不存在")
 		return
@@ -226,13 +226,58 @@ func load_game() -> void:
 	print("场景: ", data.scene)
 	print("玩家位置: ", player_position)
 	print("玩家方向: ", player_direction)
+
+	if reset_current_scene:
+		var tree := get_tree()
+		tree.paused = false
+		var cur := tree.current_scene
+		if cur != null:
+			tree.root.remove_child(cur)
+			cur.queue_free()
+			await tree.process_frame
 	
 	var load_params := {
 		"direction": player_direction,
 		"position": player_position,
 		"shangyang_summon_unlocked": player_data.get("shangyang_summon_unlocked", false)
 	}
-	change_scene(data.scene, load_params)
+	await reload_scene_from_save(data.scene, load_params)
+
+
+func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
+	# 读档专用：不保存当前场景状态，直接按存档重建目标场景并恢复数据。
+	MechanismLinkBus.clear_last_states()
+	var tree := get_tree()
+	if tree == null:
+		push_error("读档失败：SceneTree 不可用")
+		return
+	tree.paused = true
+	if color_rect != null:
+		var fade_out := create_tween()
+		fade_out.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		fade_out.tween_property(color_rect, "color:a", 1, 0.2)
+		await fade_out.finished
+	tree.change_scene_to_file(path)
+	await _wait_for_scene_load(tree, 30)
+	if tree.current_scene == null:
+		push_error("读档失败：目标场景未加载")
+		tree.paused = false
+		return
+	var new_name := tree.current_scene.scene_file_path.get_file().get_basename()
+	if new_name in world_states and tree.current_scene.has_method("from_dict"):
+		tree.current_scene.from_dict(world_states[new_name])
+		print("读档恢复场景状态: ", new_name)
+	if params.has("position") and params.has("direction") and tree.current_scene.has_method("update_player"):
+		tree.current_scene.update_player(params.position, params.direction)
+	if params.has("shangyang_summon_unlocked"):
+		var pn := _find_player_node_under_scene(tree.current_scene)
+		if pn is Player:
+			(pn as Player).shangyang_summon_unlocked = bool(params["shangyang_summon_unlocked"])
+	tree.paused = false
+	if color_rect != null:
+		await tree.process_frame
+		var fade_in := create_tween()
+		fade_in.tween_property(color_rect, "color:a", 0, 0.2)
 
 func new_game() -> void:
 	# 新游戏：在进入关卡前清空会话状态（勿依赖 change_scene 的 params，避免与步骤 8 的 from_dict 顺序纠缠）
@@ -247,3 +292,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		print("保存游戏")
 		save_game()
+	elif event is InputEventKey:
+		var key_event := event as InputEventKey
+		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_R:
+			print("读取存档")
+			load_game(true)
