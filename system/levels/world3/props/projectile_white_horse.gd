@@ -1,18 +1,28 @@
-extends Area2D
-## 白马「剑」：先播 `ready`，再沿 X 轴朝主角方向直线飞行，离开视野后销毁。
+extends CharacterBody2D
+## 白马「剑」：`CharacterBody2D` + `move_and_collide`，高速下不易穿模；先播 `ready`，再沿 X 飞向主角，命中玩家播 `over` 后销毁。
 
 @export var fly_speed: float = 420.0
 @export var despawn_margin: float = 80.0
+@export var hit_damage: float = 10.0
+## 整剑（碰撞体 + 子节点）绕根节点 X 翻转；与 `_fly_dir_x` 相反以贴合当前美术朝向，仍反了可在 Inspector 乘 -1。
+@export var root_facing_multiplier: float = 1.0
 
 @onready var _animation_player: AnimationPlayer = $AnimationPlayer
 var _fly_dir_x: float = -1.0
+var _hit_consumed: bool = false
 
 
 func _ready() -> void:
 	add_to_group("boss_white_horse_projectile")
-	_resolve_fly_direction()
+	motion_mode = MOTION_MODE_FLOATING
+	velocity = Vector2.ZERO
 	set_physics_process(false)
-	if _animation_player and _animation_player.has_animation(&"ready"):
+	# 等一帧：父节点在 add_child 返回后才写 global_position。
+	await get_tree().process_frame
+	_resolve_fly_direction()
+	# 必须在播 ready 之前翻根节点，否则向右飞时前几帧动画仍是未镜像的。
+	_apply_root_facing_to_player_x()
+	if _animation_player != null and _animation_player.has_animation(&"ready"):
 		_animation_player.play(&"ready")
 		var len := _animation_player.get_animation(&"ready").length
 		if len <= 0.0:
@@ -22,7 +32,16 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	global_position.x += _fly_dir_x * fly_speed * delta
+	if _hit_consumed:
+		return
+	var motion := Vector2(_fly_dir_x * fly_speed * delta, 0.0)
+	var collision := move_and_collide(motion)
+	if collision != null:
+		var collider: Object = collision.get_collider()
+		if collider is Node and (collider as Node).is_in_group("player"):
+			_hit_consumed = true
+			_run_hit_and_despawn(collider as Node2D)
+			return
 	var bounds := _get_view_bounds_x()
 	if global_position.x < bounds.x - despawn_margin:
 		queue_free()
@@ -50,3 +69,29 @@ func _resolve_fly_direction() -> void:
 		_fly_dir_x = 1.0
 	else:
 		_fly_dir_x = -1.0
+
+
+func _apply_root_facing_to_player_x() -> void:
+	var base_x: float = absf(scale.x)
+	if base_x < 0.0001:
+		base_x = 1.0
+	# 美术默认朝 -X 时，移动朝 +X 需 scale.x 为负；与 fly 同号会画反，故取反。
+	scale.x = base_x * root_facing_multiplier * (-_fly_dir_x)
+
+
+func _run_hit_and_despawn(body: Node2D) -> void:
+	set_physics_process(false)
+	velocity = Vector2.ZERO
+	set_deferred("collision_layer", 0)
+	set_deferred("collision_mask", 0)
+	if is_instance_valid(body) and body.has_method("take_damage"):
+		body.call("take_damage", hit_damage)
+	if _animation_player != null and _animation_player.has_animation(&"over"):
+		_animation_player.play(&"over")
+		var over_len: float = _animation_player.get_animation(&"over").length
+		if over_len <= 0.0:
+			over_len = 0.3
+		await get_tree().create_timer(over_len).timeout
+	else:
+		await get_tree().create_timer(0.12).timeout
+	queue_free()

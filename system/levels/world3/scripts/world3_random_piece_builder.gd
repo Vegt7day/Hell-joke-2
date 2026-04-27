@@ -26,6 +26,7 @@ var _current_generation_seed: int = 0
 var _current_center_piece_index: int = 0
 
 func _ready() -> void:
+	add_to_group("world3_random_piece_builder")
 	var start_marker: Marker2D = get_node_or_null(random_pieces_start_path) as Marker2D
 	var runtime_root: Node2D = get_node_or_null(pieces_runtime_root_path) as Node2D
 	if start_marker == null:
@@ -149,7 +150,8 @@ func apply_generation_from_indices(indices: Array, seed_opt: int = 0) -> void:
 	_planned_piece_positions.clear()
 	_active_piece_nodes.clear()
 	_selected_pool_indices.clear()
-	_piece_runtime_state_cache.clear()
+	# 不清空 _piece_runtime_state_cache：apply_builder_state 会先写入读档缓存，
+	# 若此处 clear 会丢掉心剑等运行时状态。
 	_current_center_piece_index = 0
 	if seed_opt != 0:
 		_rng.seed = seed_opt
@@ -311,6 +313,16 @@ func _attach_heart_interactable_if_needed(index: int, piece: Node2D) -> void:
 		var hst: Variant = saved.get("heart_interactable", {})
 		if hst is Dictionary:
 			(heart as BossDamageInteractable).apply_save_state(hst as Dictionary)
+
+
+func mark_heart_used_on_piece_index(index: int) -> void:
+	if index < 0:
+		return
+	var merged: Dictionary = {}
+	if _piece_runtime_state_cache.has(index) and _piece_runtime_state_cache[index] is Dictionary:
+		merged = (_piece_runtime_state_cache[index] as Dictionary).duplicate(true)
+	merged["heart_interactable"] = {"used": true}
+	_piece_runtime_state_cache[index] = merged
 
 
 func export_builder_state() -> Dictionary:

@@ -54,10 +54,10 @@ tracks/3/path = NodePath("CollisionShape2D:shape:radius")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [62.03225]
+"values": [62.03225, 6.0]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -66,10 +66,10 @@ tracks/4/path = NodePath("CollisionShape2D:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(16, -16)]
 }
 
 [sub_resource type="Animation" id="Animation_44gdj"]
@@ -119,10 +119,10 @@ tracks/3/path = NodePath("CollisionShape2D:shape:radius")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [62.03225, 28.160255, 13.341664]
+"times": PackedFloat32Array(0, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [22.0, 30.416443, 26.6, 28.160255, 6.0]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -131,10 +131,10 @@ tracks/4/path = NodePath("CollisionShape2D:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(0, 0)]
+"values": [Vector2(17, -16), Vector2(16, -16)]
 }
 
 [sub_resource type="Animation" id="Animation_r8sva"]
@@ -182,7 +182,7 @@ script = ExtResource("1_bomb")
 shape = SubResource("CircleShape2D_bomb")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1525824933]
-position = Vector2(32, -32)
+position = Vector2(16, -16)
 texture = SubResource("AtlasTexture_1f7bg")
 hframes = 13
 region_enabled = true

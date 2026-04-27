@@ -21,11 +21,14 @@ func _ready() -> void:
 func interact() -> void:
 	if _used:
 		return
+	# 须在关闭 monitoring 之前取重叠体，否则 get_overlapping_bodies() 为空
+	var player := _overlapping_player()
 	_used = true
 	monitoring = false
 	monitorable = false
-	var player := _overlapping_player()
 	if player != null:
+		if player.has_method("trigger_hit_shake_only"):
+			player.trigger_hit_shake_only()
 		player.unregister_interactable(self)
 	super.interact()
 	if animation_player != null and animation_player.has_animation(hurt_anim_name):
@@ -41,7 +44,8 @@ func interact() -> void:
 				var scn := get_tree().current_scene
 				if scn != null and scn.has_method("set_pending_shared_hp_override_for_save"):
 					scn.call("set_pending_shared_hp_override_for_save", predicted_hp)
-				Game.save_game()
+				_mark_piece_heart_used_state_before_save()
+				Game.save_game("heart")
 		phase.call("trigger_external_percent_damage", damage_percent, String(name))
 	_play_if_exists(post_hurt_idle_anim_name)
 
@@ -63,6 +67,20 @@ func _overlapping_player() -> Player:
 func _play_if_exists(anim_name: StringName) -> void:
 	if animation_player != null and animation_player.has_animation(anim_name):
 		animation_player.play(anim_name)
+
+
+func _mark_piece_heart_used_state_before_save() -> void:
+	var piece := get_parent() as Node
+	if piece == null or not piece.has_meta("piece_index"):
+		return
+	var idx := int(piece.get_meta("piece_index"))
+	var builder := get_tree().get_first_node_in_group("world3_random_piece_builder")
+	if builder == null:
+		var scn := get_tree().current_scene
+		if scn != null:
+			builder = scn.get_node_or_null("Systems/RandomPieceBuilder")
+	if builder != null and builder.has_method("mark_heart_used_on_piece_index"):
+		builder.call("mark_heart_used_on_piece_index", idx)
 
 
 func export_save_state() -> Dictionary:

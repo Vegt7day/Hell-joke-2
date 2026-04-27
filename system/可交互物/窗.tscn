@@ -140,6 +140,7 @@ _data = {
 
 [node name="Windows" type="StaticBody2D" unique_id=1643735838]
 collision_mask = 0
+collision_priority = 0.4
 script = ExtResource("3_win")
 is_open = false
 
@@ -165,4 +166,3 @@ libraries/ = SubResource("AnimationLibrary_1ff2v")
 
 [node name="SwitchChannelListener" type="Node" parent="." unique_id=444957683]
 script = ExtResource("2_rp01u")
-

@@ -391,7 +391,6 @@ volume_db = -16.845
 max_health = 1000
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=298142384]
-visible = false
 
 [node name="status panel" parent="CanvasLayer" unique_id=43131948 instance=ExtResource("5_ic7vs")]
 

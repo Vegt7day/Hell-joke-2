@@ -180,8 +180,8 @@ position = Vector2(0, 24)
 [node name="CinematicAnchor" type="Marker2D" parent="." unique_id=1733208102]
 
 [node name="HitboxPlaceholder" type="Area2D" parent="." unique_id=533537618]
-collision_layer = 0
-collision_mask = 0
+collision_layer = 4
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxPlaceholder" unique_id=203933532]
 position = Vector2(32, -32)

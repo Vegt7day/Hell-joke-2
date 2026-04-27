@@ -14,7 +14,11 @@ const _ATLAS_RED := preload("res://system/levels/world3/bosses/红马.png")
 @export var suppress_clone_ready_anim: bool = false
 @export var move_left_speed: float = 210.0
 @export var respawn_margin: float = 120.0
+## 离开摄像机可视区后，累计该秒数再传送到屏幕右侧外（与主马一致；其余传送参数不变）
 @export var offscreen_respawn_delay_seconds: float = 0.5
+## 仅当 X 在视口左缘向内与右缘向内之间时才开始放技能 / 累计小黑马召唤间隔
+@export var skill_cast_inset_from_left_px: float = 256.0
+@export var skill_cast_inset_from_right_px: float = 16.0
 @export var auto_use_skill: bool = true
 @export var grey_dash_distance: float = 180.0
 @export var grey_dash_duration: float = 0.28
@@ -96,7 +100,8 @@ func _process(delta: float) -> void:
 	if horse_id == BossHorseTypes.HorseId.BLACK and _movement_enabled and visible:
 		if _black_summon_locked:
 			return
-		_black_minor_summon_accum += delta
+		if _is_in_skill_cast_horizontal_band():
+			_black_minor_summon_accum += delta
 		if _black_minor_summon_accum >= black_minor_summon_interval:
 			_black_minor_summon_accum = 0.0
 			call_deferred("_spawn_black_minor_clone")
@@ -111,6 +116,8 @@ func _process(delta: float) -> void:
 		return
 	if _skill_cooldown_left > 0.0:
 		_skill_cooldown_left -= delta
+		return
+	if not _is_in_skill_cast_horizontal_band():
 		return
 	if horse_id == BossHorseTypes.HorseId.GREY:
 		call_deferred("_cast_grey_dash_skill")
@@ -133,6 +140,29 @@ func set_movement_enabled(enabled: bool) -> void:
 	_movement_enabled = enabled
 	if not enabled:
 		velocity = Vector2.ZERO
+
+
+func _camera_viewport_world_x_range() -> Vector2:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return Vector2(-100000.0, 100000.0)
+	var vp := get_viewport()
+	if vp == null:
+		return Vector2(-100000.0, 100000.0)
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	return Vector2(center.x - half_w, center.x + half_w)
+
+
+func _is_in_skill_cast_horizontal_band() -> bool:
+	var xr := _camera_viewport_world_x_range()
+	var x := global_position.x
+	var lo := xr.x + skill_cast_inset_from_left_px
+	var hi := xr.y - skill_cast_inset_from_right_px
+	if hi < lo:
+		return false
+	return x >= lo and x <= hi
 
 
 func _is_outside_camera_bounds() -> bool:
@@ -253,7 +283,8 @@ func _spawn_white_sword() -> void:
 	if sword == null:
 		return
 	root.add_child(sword)
-	sword.global_position = spawn.global_position
+	var py: float = _get_player_position_or_fallback(spawn.global_position).y - 16.0
+	sword.global_position = Vector2(spawn.global_position.x, py)
 	if white_sword_spawn_delay > 0.0:
 		await get_tree().create_timer(white_sword_spawn_delay).timeout
 
@@ -292,6 +323,8 @@ func refresh_visual_to_horse_id() -> void:
 
 func _spawn_black_minor_clone() -> void:
 	if _black_summon_locked:
+		return
+	if not _is_in_skill_cast_horizontal_band():
 		return
 	_black_summon_locked = true
 	var root := get_parent() as Node2D

@@ -13,6 +13,8 @@ signal intro_timeline_finished
 @export var minors_path: NodePath = NodePath("../../Bosses/Minors")
 @export var grey_spawn_path: NodePath = NodePath("../../Bosses/SpawnMarkers/GreySpawn")
 @export var main_horse_spawn_path: NodePath = NodePath("../../Bosses/SpawnMarkers/MainHorseSpawn")
+@export var dynamic_minor_scene: PackedScene = preload("res://system/levels/world3/bosses/boss_horse_minor.tscn")
+@export var use_dynamic_minor_spawn: bool = true
 
 @export var main_skill_shared_cooldown: float = 10.0
 
@@ -22,7 +24,8 @@ signal intro_timeline_finished
 @export var intro_entry_duration: float = 1.1
 @export var intro_main_jump_beat_seconds: float = 0.25
 @export var si_exit_screen_offset: Vector2 = Vector2(-1400, 0)
-@export var si_exit_duration: float = 1.4
+## 驷马沿 offset 离场 tween 时长；越长越慢。原 1.4s 约 1000px/s；现为 1/4 速度 → 5.6s。
+@export var si_exit_duration: float = 5.6
 @export var grey_entry_offset: Vector2 = Vector2(-420, 0)
 
 ## 换马流程：当前马先离场，下一匹从临近侧回场（当前用平移模拟小跳前进）
@@ -68,6 +71,11 @@ signal intro_timeline_finished
 @export var player_fatal_rope_end_offset_2: Vector2 = Vector2(24, 15-32)
 @export var player_fatal_rope_end_offset_3: Vector2 = Vector2(9, 15-32)
 @export var player_fatal_rope_end_offset_4: Vector2 = Vector2(18, 2-32)
+## 20% 致命拉扯：五马先冲到目标（玩家/商鞅）周围该半径（像素）再连绳
+@export var fatal_pull_surround_radius_px: float = 96.0
+@export var fatal_pull_surround_rush_duration: float = 0.85
+## 商鞅线：伸绳期间摄像机（玩家子节点 Camera2D）缓慢移向商鞅的时长；与绳伸长并行
+@export var fatal_sy_camera_pan_seconds: float = 2.0
 
 var current_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
 
@@ -89,6 +97,12 @@ var _pending_minor_switch_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossP
 var _external_damage_busy: bool = false
 var _queued_external_damage_percent: float = 0.2
 var _queued_external_damage_source: String = "interaction_target"
+var _minor_name_to_horse_id: Dictionary = {
+	"MinorGrey": BossHorseTypes.HorseId.GREY,
+	"MinorWhite": BossHorseTypes.HorseId.WHITE,
+	"MinorBlack": BossHorseTypes.HorseId.BLACK,
+	"MinorRed": BossHorseTypes.HorseId.RED,
+}
 
 const _TIMELINE_SY_PULL := "商鞅五马分尸"
 const _TIMELINE_RELIMB := "重拾五肢"
@@ -119,6 +133,9 @@ func on_warning_summoned_shangyang_ready(shangyang: Node2D) -> void:
 
 func _ready() -> void:
 	add_to_group("boss_phase_controller")
+	var minors_root := get_node_or_null(minors_path) as Node2D
+	if use_dynamic_minor_spawn and minors_root != null:
+		_clear_all_minors_runtime(minors_root)
 	var main_horse := get_node_or_null(main_horse_path) as Node
 	if main_horse:
 		_main_stats = main_horse.get_node_or_null("Stats") as Stats
@@ -349,7 +366,13 @@ func _run_external_percent_damage_sequence(percent: float, source_name: String) 
 		tw.set_parallel(true)
 		tw.tween_property(main_horse, NodePath("scale"), base_scale * 1.08, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		if visual != null:
-			tw.tween_property(visual, NodePath("modulate"), Color(1.0, 0.45, 0.45, 1.0), 0.08).set_trans(Tween.TRANS_LINEAR)
+			var flash := Color(
+				clampf(base_modulate.r * 2.15, 0.0, 2.8),
+				clampf(base_modulate.g * 2.15, 0.0, 2.8),
+				clampf(base_modulate.b * 2.15, 0.0, 2.8),
+				base_modulate.a
+			)
+			tw.tween_property(visual, NodePath("modulate"), flash, 0.08).set_trans(Tween.TRANS_LINEAR)
 		await tw.finished
 		var tw_back := create_tween()
 		tw_back.set_parallel(true)
@@ -422,10 +445,13 @@ func _run_boss_intro_timeline() -> void:
 
 	await _move_pair(main, target_main_pos, si, target_si_pos, intro_entry_duration)
 
-	for c in minors.get_children():
-		if c is Node:
-			c.visible = false
-			(c as Node).process_mode = Node.PROCESS_MODE_DISABLED
+	if use_dynamic_minor_spawn:
+		_clear_all_minors_runtime(minors)
+	else:
+		for c in minors.get_children():
+			if c is Node:
+				c.visible = false
+				(c as Node).process_mode = Node.PROCESS_MODE_DISABLED
 
 	if skip_intro_timeline:
 		await _apply_grey_solo_spawn(minors, grey_spawn, false)
@@ -475,7 +501,7 @@ func _run_boss_intro_timeline() -> void:
 
 
 func _apply_grey_solo_spawn(minors: Node2D, grey_spawn: Node2D, from_left_side: bool) -> void:
-	var grey := minors.get_node_or_null("MinorGrey") as Node2D
+	var grey := _get_or_spawn_minor(minors, &"MinorGrey")
 	if grey == null or grey_spawn == null:
 		return
 	if from_left_side:
@@ -513,14 +539,17 @@ func _run_minor_switch(target_phase: BossHorseTypes.BossPhase) -> void:
 
 	var current_minor := minors.get_node_or_null(String(_active_minor_name)) as Node2D
 	var next_name := _phase_to_minor_name(target_phase)
-	var next_minor := minors.get_node_or_null(String(next_name)) as Node2D
+	var next_minor := _get_or_spawn_minor(minors, next_name)
 	var next_spawn := _spawn_marker_for_minor(next_name)
 
 	if current_minor:
 		_set_horse_movement(current_minor, false)
 		await _move_node(current_minor, current_minor.global_position + horse_switch_exit_offset, horse_switch_duration)
-		current_minor.visible = false
-		current_minor.process_mode = Node.PROCESS_MODE_DISABLED
+		if use_dynamic_minor_spawn:
+			current_minor.queue_free()
+		else:
+			current_minor.visible = false
+			current_minor.process_mode = Node.PROCESS_MODE_DISABLED
 
 	if next_minor and next_spawn:
 		next_minor.global_position = next_spawn.global_position + horse_switch_entry_offset
@@ -807,6 +836,7 @@ func _after_sy_pull_start_finale_siege() -> void:
 	var minors := get_node_or_null(minors_path) as Node2D
 	if main == null or minors == null:
 		return
+	_ensure_all_minors_present(minors)
 	var horses := _get_five_horses_ordered(main, minors)
 	if horses.size() < 5:
 		return
@@ -835,6 +865,7 @@ func _scatter_horses_flee_async() -> void:
 	var minors := get_node_or_null(minors_path) as Node2D
 	if main == null or minors == null:
 		return
+	_ensure_all_minors_present(minors)
 	var horses := _get_five_horses_ordered(main, minors)
 	if horses.is_empty():
 		return
@@ -872,6 +903,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	if shangyang == null or ropes_root == null or minors == null or main == null:
 		push_warning("[BossPhase] 20%商鞅牵引演出缺节点，已跳过。")
 		return
+	_ensure_all_minors_present(minors)
 
 	if shangyang.has_method("force_initial_story_form"):
 		shangyang.call("force_initial_story_form")
@@ -900,7 +932,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 			_set_horse_movement(horse, true)
 		return
 
-	await _tween_finale_horses_enter_scene(horses, main, minors, shangyang.global_position)
+	await _tween_fatal_pull_horses_surround(shangyang.global_position, horses, main, minors)
 
 	var pairs := _pair_horses_to_limbs_by_nearest(horses, limbs)
 	var ropes: Array[Node2D] = []
@@ -911,7 +943,27 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 		if rope:
 			ropes.append(rope)
 
-	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds)
+	if ropes.is_empty():
+		push_warning("[BossPhase] 商鞅绳未生成，跳过伸绳、镜头与玩家锁定。")
+		for horse in horses:
+			_set_horse_movement(horse, true)
+		return
+
+	var player_sy := get_tree().get_first_node_in_group("player") as Node2D
+	var saved_input_sy: Variant = null
+	if player_sy != null and "enable_input_control" in player_sy:
+		saved_input_sy = player_sy.get("enable_input_control")
+		player_sy.set("enable_input_control", false)
+
+	var cam_sy := _get_player_camera2d()
+	var saved_cam_pos_sy := Vector2.ZERO
+	var cam_target_sy := Vector2.ZERO
+	if cam_sy != null:
+		saved_cam_pos_sy = cam_sy.position
+		if player_sy != null:
+			cam_target_sy = shangyang.global_position - player_sy.global_position
+
+	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds, cam_sy, cam_target_sy, fatal_sy_camera_pan_seconds)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_shangyang)
 	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
 	await _tween_pull_horses_then_limbs(pairs, main, shangyang)
@@ -919,6 +971,11 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	for rope in ropes:
 		if is_instance_valid(rope):
 			rope.queue_free()
+
+	if cam_sy != null:
+		cam_sy.position = saved_cam_pos_sy
+	if player_sy != null and saved_input_sy != null:
+		player_sy.set("enable_input_control", saved_input_sy)
 
 
 func _run_player_fatal_ropes_pull() -> void:
@@ -929,23 +986,24 @@ func _run_player_fatal_ropes_pull() -> void:
 	if ropes_root == null or minors == null or main == null or player == null:
 		push_warning("[BossPhase] 无商鞅时的玩家牵引演出缺节点，已跳过。")
 		return
+	_ensure_all_minors_present(minors)
 
 	var horses := _get_five_horses_ordered(main, minors)
 	if horses.size() < 5:
 		push_warning("[BossPhase] 马匹数量不足 5，无法执行五绳拉玩家。")
 		return
 
-	var saved_input: Variant = null
-	if "enable_input_control" in player:
-		saved_input = player.get("enable_input_control")
-		player.set("enable_input_control", false)
-
 	for horse in horses:
 		_set_horse_movement(horse, false)
 
 	_apply_finale_minor_horse_colors_and_refresh()
 
-	await _tween_finale_horses_enter_scene(horses, main, minors, player.global_position)
+	await _tween_fatal_pull_horses_surround(player.global_position, horses, main, minors)
+
+	var saved_input: Variant = null
+	if "enable_input_control" in player:
+		saved_input = player.get("enable_input_control")
+		player.set("enable_input_control", false)
 
 	var ropes: Array[Node2D] = []
 	var end_offsets: Array[Vector2] = [
@@ -965,6 +1023,14 @@ func _run_player_fatal_ropes_pull() -> void:
 		if rope.has_method("bind_endpoints"):
 			rope.call("bind_endpoints", horse2, player, Vector2.ZERO, eo, 0.0)
 		ropes.append(rope)
+
+	if ropes.is_empty():
+		push_warning("[BossPhase] 玩家绳未生成，恢复输入与马移动。")
+		if saved_input != null and "enable_input_control" in player:
+			player.set("enable_input_control", saved_input)
+		for horse in horses:
+			_set_horse_movement(horse, true)
+		return
 
 	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_player)
@@ -1009,6 +1075,7 @@ func _apply_finale_minor_horse_colors_and_refresh() -> void:
 	var minors := get_node_or_null(minors_path) as Node2D
 	if minors == null:
 		return
+	_ensure_all_minors_present(minors)
 	var g := minors.get_node_or_null("MinorGrey")
 	var w := minors.get_node_or_null("MinorWhite")
 	var b := minors.get_node_or_null("MinorBlack")
@@ -1079,6 +1146,33 @@ func _finale_entry_start_pos(rally: Vector2, shang_center: Vector2) -> Vector2:
 	return rally + away
 
 
+func _get_player_camera2d() -> Camera2D:
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	if p == null:
+		return null
+	return p.get_node_or_null("Camera2D") as Camera2D
+
+
+## 五马围到目标周围圆环（半径 fatal_pull_surround_radius_px），再进入连绳
+func _tween_fatal_pull_horses_surround(target_global: Vector2, horses: Array[Node2D], _main: Node2D, _minors: Node2D) -> void:
+	var tw := create_tween()
+	tw.set_parallel(true)
+	var added := 0
+	var n := horses.size()
+	for i in n:
+		var horse := horses[i] as Node2D
+		if horse == null:
+			continue
+		horse.visible = true
+		horse.process_mode = Node.PROCESS_MODE_INHERIT
+		var ang := -PI * 0.5 + TAU * float(i) / float(max(n, 1))
+		var ring := target_global + Vector2(cos(ang), sin(ang)) * fatal_pull_surround_radius_px
+		tw.tween_property(horse, NodePath("global_position"), ring, fatal_pull_surround_rush_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		added += 1
+	if added > 0:
+		await tw.finished
+
+
 func _tween_finale_horses_enter_scene(horses: Array[Node2D], main: Node2D, minors: Node2D, shang_center: Vector2) -> void:
 	var tw := create_tween()
 	tw.set_parallel(true)
@@ -1097,14 +1191,28 @@ func _tween_finale_horses_enter_scene(horses: Array[Node2D], main: Node2D, minor
 		await tw.finished
 
 
-func _tween_rope_extend_all(ropes: Array[Node2D], seconds: float) -> void:
-	if ropes.is_empty():
+func _tween_rope_extend_all(
+	ropes: Array[Node2D],
+	seconds: float,
+	pan_camera: Camera2D = null,
+	camera_end_position_local: Vector2 = Vector2.ZERO,
+	camera_pan_duration: float = -1.0
+) -> void:
+	var has_rope := false
+	for rope in ropes:
+		if rope != null and rope.has_method("set_extend_progress"):
+			has_rope = true
+			break
+	var do_cam := pan_camera != null and camera_pan_duration > 0.0
+	if not has_rope and not do_cam:
 		return
 	var tw := create_tween()
 	tw.set_parallel(true)
 	for rope in ropes:
 		if rope and rope.has_method("set_extend_progress"):
 			tw.tween_method(Callable(rope, "set_extend_progress"), 0.0, 1.0, seconds).set_trans(Tween.TRANS_LINEAR)
+	if do_cam:
+		tw.tween_property(pan_camera, "position", camera_end_position_local, camera_pan_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await tw.finished
 
 
@@ -1299,3 +1407,40 @@ func _pull_dir_for_horse(horse: Node2D, main_horse: Node2D) -> Vector2:
 			BossHorseTypes.HorseId.RED:
 				return Vector2(1.0, 1.0).normalized()
 	return Vector2.RIGHT
+
+
+func _clear_all_minors_runtime(minors: Node2D) -> void:
+	for c in minors.get_children():
+		if c is Node:
+			(c as Node).queue_free()
+
+
+func _ensure_all_minors_present(minors: Node2D) -> void:
+	var order: Array[StringName] = [&"MinorGrey", &"MinorWhite", &"MinorBlack", &"MinorRed"]
+	for nm in order:
+		_get_or_spawn_minor(minors, nm)
+
+
+func _get_or_spawn_minor(minors: Node2D, minor_name: StringName) -> Node2D:
+	if minors == null or minor_name == StringName():
+		return null
+	var existed := minors.get_node_or_null(String(minor_name)) as Node2D
+	if existed != null:
+		return existed
+	if not use_dynamic_minor_spawn:
+		return null
+	if dynamic_minor_scene == null:
+		return null
+	var spawned := dynamic_minor_scene.instantiate() as Node2D
+	if spawned == null:
+		return null
+	spawned.name = String(minor_name)
+	if "horse_id" in spawned:
+		var key := String(minor_name)
+		if _minor_name_to_horse_id.has(key):
+			spawned.set("horse_id", _minor_name_to_horse_id[key])
+	minors.add_child(spawned)
+	spawned.visible = false
+	spawned.process_mode = Node.PROCESS_MODE_DISABLED
+	_set_horse_movement(spawned, false)
+	return spawned

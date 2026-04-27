@@ -6,8 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://dsngwuy2ru4rk" path="res://system/levels/world3/bosses/红马.png" id="4_c2qlg"]
 [ext_resource type="Texture2D" uid="uid://2g7f3paxurdx" path="res://system/levels/world3/bosses/白马.png" id="5_8wa74"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_minor"]
-size = Vector2(32, 32)
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_edf2c"]
+points = PackedVector2Array(10, -18, -23, 16, 6, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7yfle"]
 atlas = ExtResource("2_edf2c")
@@ -812,11 +812,12 @@ _data = {
 [node name="BossHorseMinor" type="CharacterBody2D" unique_id=190626765]
 collision_layer = 4
 collision_mask = 8
+collision_priority = 0.3
 script = ExtResource("1_minor")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=897553087]
-position = Vector2(16, -16)
-shape = SubResource("RectangleShape2D_minor")
+position = Vector2(12, -16)
+shape = SubResource("ConvexPolygonShape2D_edf2c")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2077667840]
 position = Vector2(16, -16)

@@ -6,7 +6,11 @@ extends CharacterBody2D
 @export var cast_check_interval: float = 0.2
 @export var move_left_speed: float = 90.0
 @export var respawn_margin: float = 120.0
-@export var offscreen_respawn_delay_seconds: float = 1.0
+## 离开摄像机可视区后，累计该秒数再传送到屏幕右侧外（其余传送参数仍用 respawn_margin、respawn_y_quarter_down_factor）
+@export var offscreen_respawn_delay_seconds: float = 0.5
+## 仅当角色 X 在「视口左缘向内」与「视口右缘向内」之间时才开始释放技能；否则等下次进入该带再释放
+@export var skill_cast_inset_from_left_px: float = 256.0
+@export var skill_cast_inset_from_right_px: float = 16.0
 ## 传送回屏幕右侧时，Y 定位在摄像机下 1/4 高度（基于可视半高的一半）。
 @export var respawn_y_quarter_down_factor: float = 0.5
 ## Y 轴追踪：纯跟随 + 延后（非 PID）
@@ -192,6 +196,8 @@ func _try_cast_random_skill() -> void:
 		return
 	if _unlocked_skills.is_empty():
 		return
+	if not _is_in_skill_cast_horizontal_band(self):
+		return
 	_is_casting_skill = true
 	var picked := _unlocked_skills[randi() % _unlocked_skills.size()]
 	match picked:
@@ -287,6 +293,38 @@ func _move_to_position(target: Vector2, duration: float) -> void:
 	_movement_enabled = prev_move
 
 
+func _camera_viewport_world_x_range() -> Vector2:
+	var cam := get_viewport().get_camera_2d()
+	if cam == null:
+		return Vector2(-100000.0, 100000.0)
+	var vp := get_viewport()
+	if vp == null:
+		return Vector2(-100000.0, 100000.0)
+	var size := vp.get_visible_rect().size
+	var center := cam.get_screen_center_position()
+	var half_w := size.x * 0.5 * cam.zoom.x
+	return Vector2(center.x - half_w, center.x + half_w)
+
+
+func _is_in_skill_cast_horizontal_band(subject: Node2D) -> bool:
+	if subject == null or not is_instance_valid(subject):
+		return false
+	var xr := _camera_viewport_world_x_range()
+	var x := subject.global_position.x
+	var lo := xr.x + skill_cast_inset_from_left_px
+	var hi := xr.y - skill_cast_inset_from_right_px
+	if hi < lo:
+		return false
+	return x >= lo and x <= hi
+
+
+func _await_subject_in_skill_cast_horizontal_band(subject: Node2D) -> void:
+	while is_instance_valid(subject):
+		if _is_in_skill_cast_horizontal_band(subject):
+			return
+		await get_tree().physics_frame
+
+
 func _is_outside_camera_bounds() -> bool:
 	var cam := get_viewport().get_camera_2d()
 	if cam == null:
@@ -366,6 +404,7 @@ func _spawn_white_swords(spawn_count: int) -> void:
 		root = get_parent() as Node2D
 
 	var count := clampi(spawn_count, 1, 2)
+	var player_y: float = _get_player_position_or_fallback(spawn.global_position).y - 16.0
 	for i in count:
 		if i > 0:
 			await get_tree().create_timer(white_sword_spawn_delay).timeout
@@ -373,7 +412,8 @@ func _spawn_white_swords(spawn_count: int) -> void:
 		if sword == null:
 			continue
 		root.add_child(sword)
-		sword.global_position = spawn.global_position + Vector2(0, -6 * i)
+		# X 仍为召唤点；Y 对齐主角（多把时保留原纵向错开）。
+		sword.global_position = Vector2(spawn.global_position.x, player_y + (-6.0 * float(i)))
 
 
 func _spawn_red_bombs(spawn_count: int) -> void:
@@ -423,6 +463,9 @@ func _run_black_clone_skill_loop(clone: CharacterBody2D) -> void:
 			await get_tree().create_timer(black_clone_cast_interval).timeout
 		if clone == null or not is_instance_valid(clone):
 			return
+		await _await_subject_in_skill_cast_horizontal_band(clone)
+		if clone == null or not is_instance_valid(clone):
+			return
 		var skill := _pick_clone_skill()
 		await _cast_clone_skill(clone, skill)
 		if clone and is_instance_valid(clone) and clone.has_method("set_movement_enabled"):
@@ -465,8 +508,11 @@ func _cast_clone_skill(clone: CharacterBody2D, skill: BossHorseTypes.HorseId) ->
 			await _spawn_white_sword_at(clone.global_position)
 			await _play_optional_on(ap, &"to_black", 0.05)
 		BossHorseTypes.HorseId.RED:
-			# 红马技能占位：分身阶段暂不释放
-			await get_tree().create_timer(0.2).timeout
+			await _play_optional_on(ap, &"to red", 0.05)
+			await _play_optional_on(ap, &"red_ready", 0.05)
+			await _play_optional_on(ap, &"red_call", 0.05)
+			await _spawn_red_bombs(red_bomb_count_per_cast)
+			await _play_optional_on(ap, &"to_black", 0.05)
 		_:
 			pass
 	_restore_clone_idle_jump(ap)
@@ -482,7 +528,8 @@ func _spawn_white_sword_at(spawn_pos: Vector2) -> void:
 	if sword == null:
 		return
 	root.add_child(sword)
-	sword.global_position = spawn_pos
+	var py: float = _get_player_position_or_fallback(spawn_pos).y - 16.0
+	sword.global_position = Vector2(spawn_pos.x, py)
 
 
 func _move_node_to(node: Node2D, target: Vector2, duration: float) -> void:

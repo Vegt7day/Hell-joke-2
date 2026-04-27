@@ -5,8 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://c0k8nly1ooq40" path="res://system/levels/world3/bosses/头马.png" id="2_yq0pa"]
 [ext_resource type="PackedScene" uid="uid://b8qdrsdj7p10h" path="res://system/ui/boss_health_bar.tscn" id="3_bar"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(64, 64)
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_yq0pa"]
+points = PackedVector2Array(18.38478, 66.46805, 58.689873, 26.162956, 22.627422, -28.284275)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ry0xf"]
 atlas = ExtResource("2_yq0pa")
@@ -785,11 +785,14 @@ _data = {
 [node name="BossHorseMain" type="CharacterBody2D" unique_id=574789870]
 collision_layer = 4
 collision_mask = 0
+collision_priority = 0.3
 script = ExtResource("1_main")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=348055896]
-position = Vector2(32, -32)
-shape = SubResource("RectangleShape2D_body")
+position = Vector2(14, -60.000004)
+rotation = 0.7853982
+scale = Vector2(0.9999999, 0.9999999)
+shape = SubResource("ConvexPolygonShape2D_yq0pa")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=868405711]
 position = Vector2(32, -32)
@@ -820,3 +823,4 @@ max_health = 100
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=51446068]
 
 [node name="boss_health_bar" parent="CanvasLayer" unique_id=89791101 instance=ExtResource("3_bar")]
+z_index = 1

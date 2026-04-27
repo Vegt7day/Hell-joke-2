@@ -1,5 +1,10 @@
 extends Node2D
 
+const MAIN_ARENA_HEART_NAME := &"MainArenaHeartInteractable"
+const DEFAULT_MAIN_ARENA_HEART_SCENE := preload("res://system/levels/world3/props/boss_damage_interactable.tscn")
+
+@export var death_y_extra_below_ground: float = 96.0
+@export var main_arena_heart_scene: PackedScene = DEFAULT_MAIN_ARENA_HEART_SCENE
 @onready var player: Node2D = $player
 @onready var bosses_root: Node2D = $Bosses
 @onready var main_horse: Node2D = $Bosses/MainHorse
@@ -8,6 +13,49 @@ extends Node2D
 @onready var phase_controller: Node = $Systems/PhaseController
 @onready var random_piece_builder: Node = $Systems/RandomPieceBuilder
 var _pending_shared_hp_override_for_save: int = -1
+var _death_ground_y: float = 0.0
+var _fall_death_triggered: bool = false
+
+
+func _ready() -> void:
+	if player != null:
+		_death_ground_y = player.global_position.y
+	_fall_death_triggered = false
+	call_deferred("_ensure_main_arena_heart_at_attack_marker")
+
+
+func _ensure_main_arena_heart_at_attack_marker() -> void:
+	var props := bosses_root.get_node_or_null("PropsSpawn") as Node2D
+	if props == null:
+		return
+	var attack_m := props.get_node_or_null("attack") as Marker2D
+	if attack_m == null:
+		return
+	var existing := props.get_node_or_null(String(MAIN_ARENA_HEART_NAME))
+	if existing is BossDamageInteractable:
+		(existing as Node2D).global_position = attack_m.global_position
+		return
+	if main_arena_heart_scene == null:
+		return
+	var heart := main_arena_heart_scene.instantiate() as Node2D
+	if heart == null:
+		return
+	heart.name = String(MAIN_ARENA_HEART_NAME)
+	props.add_child(heart)
+	heart.global_position = attack_m.global_position
+
+
+func _physics_process(_delta: float) -> void:
+	if _fall_death_triggered:
+		return
+	if player == null or not is_instance_valid(Game) or Game.player_stats == null:
+		return
+	if Game.player_stats.health <= 0:
+		return
+	var death_y: float = _death_ground_y + death_y_extra_below_ground
+	if player.global_position.y >= death_y:
+		Game.player_stats.health = 0
+		_fall_death_triggered = true
 
 
 func to_dict() -> Dictionary:
@@ -61,6 +109,7 @@ func from_dict(dict: Dictionary) -> void:
 	var rpb_state: Variant = dict.get("random_piece_builder", {})
 	if rpb_state is Dictionary and random_piece_builder != null and random_piece_builder.has_method("apply_builder_state"):
 		random_piece_builder.call("apply_builder_state", rpb_state)
+	_fall_death_triggered = false
 
 
 func update_player(position: Vector2, direction: int = 1) -> void:

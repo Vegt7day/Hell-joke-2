@@ -33,12 +33,22 @@ var shangyang_summon_unlocked: bool = false
 @export var ink_recovery_interval: float = 0.1
 @export var max_ink: float = 100
 
+## 受击：屏幕震动（指数衰减包络 × 振荡）
+@export var hit_shake_duration: float = 0.38
+@export var hit_shake_amplitude: float = 7.0
+@export var hit_shake_decay: float = 10.0
+@export var hit_shake_omega: float = 42.0
+## 受击：主角 Sprite2D 朝白色插值闪动（0=不变，1=纯白），贴合贴图透明区域
+@export_range(0.0, 1.0) var hit_flash_blend_peak: float = 0.88
+@export_range(0.0, 1.0) var hit_flash_blend_soft: float = 0.52
+@export var hit_flash_pulse_up: float = 0.045
+@export var hit_flash_pulse_down: float = 0.055
+
 @onready var interaction_icon: AnimatedSprite2D = $interactionIcon
 
 # 重力
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @onready var stats: Stats = Game.player_stats
-@onready var player: Player = $"."
 
 # 获取节点
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -80,6 +90,12 @@ var last_shoot_direction: int = 1
 var interacting_with: Array[Interactable] = []
 var _contact_triggers: Array[ContactTrigger] = []
 
+var _hurt_flash_modulate_base: Color = Color.WHITE
+var _shake_tween: Tween
+var _flash_tween: Tween
+var _shake_cam_cached: Camera2D
+var _shake_cam_base_saved: Vector2 = Vector2.ZERO
+
 # 状态机参数
 var attack_cooldown: float = 0.0
 var summon_cooldown_timer: float = 0.0
@@ -114,6 +130,8 @@ func _ready():
 	
 	# 初始化输入控制
 	_init_input_control()
+	if sprite != null:
+		_hurt_flash_modulate_base = sprite.modulate
 	
 	# 连接动画完成信号
 	if not animation_complete_connected:
@@ -774,7 +792,89 @@ func calculate_shoot_position() -> Vector2:
 
 func take_damage(damage_amount: float):
 	stats.health -= damage_amount
-	# 可以在这里添加击退效果
+	if damage_amount > 0.0 and stats.health > 0:
+		_trigger_hit_screen_feedback()
+
+
+func _hurt_flash_modulate_toward_white(base: Color, blend: float) -> Color:
+	var t := clampf(blend, 0.0, 1.0)
+	return Color(lerpf(base.r, 1.0, t), lerpf(base.g, 1.0, t), lerpf(base.b, 1.0, t), base.a)
+
+
+func _kill_hit_shake_tween() -> void:
+	if _shake_tween != null:
+		_shake_tween.kill()
+		_shake_tween = null
+	if is_instance_valid(_shake_cam_cached):
+		_shake_cam_cached.offset = _shake_cam_base_saved
+		_shake_cam_cached = null
+
+
+func _kill_sprite_hurt_flash_tween() -> void:
+	if _flash_tween != null:
+		_flash_tween.kill()
+		_flash_tween = null
+	if sprite != null and is_instance_valid(sprite):
+		sprite.modulate = _hurt_flash_modulate_base
+
+
+## 交互（心剑、存档点等）：仅屏幕震动，不改变主角闪色
+func trigger_hit_shake_only() -> void:
+	_kill_hit_shake_tween()
+	var cam := get_viewport().get_camera_2d() as Camera2D
+	if cam == null:
+		return
+	_shake_cam_cached = cam
+	_shake_cam_base_saved = cam.offset
+	_shake_tween = create_tween()
+	_shake_tween.tween_method(_hit_shake_step, 0.0, 1.0, hit_shake_duration).set_trans(Tween.TRANS_LINEAR)
+	_shake_tween.tween_callback(_hit_shake_reset)
+
+
+func _run_sprite_hurt_flash_pulse() -> void:
+	if sprite == null or not is_instance_valid(sprite):
+		return
+	var base := _hurt_flash_modulate_base
+	sprite.modulate = base
+	var c_peak := _hurt_flash_modulate_toward_white(base, hit_flash_blend_peak)
+	var c_soft := _hurt_flash_modulate_toward_white(base, hit_flash_blend_soft)
+	_flash_tween = create_tween()
+	_flash_tween.tween_property(sprite, "modulate", c_peak, hit_flash_pulse_up)
+	_flash_tween.tween_property(sprite, "modulate", base, hit_flash_pulse_down)
+	_flash_tween.tween_property(sprite, "modulate", c_soft, hit_flash_pulse_up * 0.85)
+	_flash_tween.tween_property(sprite, "modulate", base, hit_flash_pulse_down)
+
+
+func _hit_shake_step(u: float) -> void:
+	var cam := _shake_cam_cached
+	if not is_instance_valid(cam):
+		return
+	var t: float = u * hit_shake_duration
+	var env: float = exp(-hit_shake_decay * t)
+	var ox: float = hit_shake_amplitude * env * sin(hit_shake_omega * t)
+	var oy: float = hit_shake_amplitude * env * cos(hit_shake_omega * t * 1.07)
+	cam.offset = _shake_cam_base_saved + Vector2(ox, oy)
+
+
+func _hit_shake_reset() -> void:
+	if is_instance_valid(_shake_cam_cached):
+		_shake_cam_cached.offset = _shake_cam_base_saved
+	_shake_cam_cached = null
+
+
+func _trigger_hit_screen_feedback() -> void:
+	_kill_hit_shake_tween()
+	_kill_sprite_hurt_flash_tween()
+	if sprite != null and is_instance_valid(sprite):
+		_hurt_flash_modulate_base = sprite.modulate
+	var cam := get_viewport().get_camera_2d() as Camera2D
+	if cam != null:
+		_shake_cam_cached = cam
+		_shake_cam_base_saved = cam.offset
+		_shake_tween = create_tween()
+		_shake_tween.tween_method(_hit_shake_step, 0.0, 1.0, hit_shake_duration).set_trans(Tween.TRANS_LINEAR)
+		_shake_tween.tween_callback(_hit_shake_reset)
+	_run_sprite_hurt_flash_pulse()
 
 func get_health():
 	return stats.health

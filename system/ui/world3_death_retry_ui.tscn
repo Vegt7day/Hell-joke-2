@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://system/ui/world3_death_retry_ui.gd" id="1_ui"]
+
+[node name="World3DeathRetryUI" type="CanvasLayer"]
+layer = 128
+script = ExtResource("1_ui")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DimBG" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="DeadTexture" type="TextureRect" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(180, 120)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="DeadLabel" type="Label" parent="Root/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 56
+text = "死"
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="Root/Center/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BtnHeart" type="Button" parent="Root/Center/VBox/Buttons"]
+custom_minimum_size = Vector2(320, 48)
+layout_mode = 2
+text = "回到上一个心"
+
+[node name="BtnSavePoint" type="Button" parent="Root/Center/VBox/Buttons"]
+custom_minimum_size = Vector2(320, 48)
+layout_mode = 2
+text = "读取上一个存档点"

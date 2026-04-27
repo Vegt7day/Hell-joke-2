@@ -5,9 +5,23 @@ var world_states := {}
 @onready var color_rect: ColorRect = $ColorRect
 @onready var player_stats: Stats = $PlayerStats
 @onready var default_player_stats := player_stats.to_dict()
+const SAVE_SLOT_SAVEPOINT := "savepoint"
+const SAVE_SLOT_HEART := "heart"
+const SAVE_PATH_SAVEPOINT := "user://data_savepoint.sav"
+const SAVE_PATH_HEART := "user://data_heart.sav"
+const WORLD3_BOSS_SCENE_PATH := "res://system/levels/world3/world3_boss_arena.tscn"
+const WORLD3_DEATH_UI_SCENE := preload("res://system/ui/world3_death_retry_ui.tscn")
+var _world3_death_ui_opened: bool = false
+
+## World3 死亡：先全屏白闪再出死亡 UI（Tween 在暂停下仍推进）
+@export var world3_death_flash_peak_alpha: float = 0.92
+@export var world3_death_flash_fade_in: float = 0.07
+@export var world3_death_flash_fade_out: float = 0.32
 
 func _ready() -> void:
 	color_rect.color.a = 0
+	if player_stats != null and not player_stats.health_changed.is_connected(_on_player_stats_changed):
+		player_stats.health_changed.connect(_on_player_stats_changed)
 	print("游戏管理器初始化完成")
 
 
@@ -102,7 +116,6 @@ func _wait_for_scene_load(tree: SceneTree, max_frames: int) -> void:
 	
 	push_error("场景加载超时，等待了" + str(max_frames) + "帧")
 
-const SAVE_PATH := "user://data.sav"
 ## 与 project.godot [autoload] 中名称一致（勿写成 DialogueRegistryManager）
 const DIALOGIC_REGISTRY_PATH := "/root/DialogicRegistry"
 ## 玩家根节点约定组名（与 tip_开.gd 等一致）；由 Player 在 _ready 中入组
@@ -123,7 +136,17 @@ func _find_player_node_under_scene(scene: Node) -> Node:
 	return null
 
 
-func save_game() -> void:
+func _save_path_for_slot(slot: String) -> String:
+	if slot == SAVE_SLOT_HEART:
+		return SAVE_PATH_HEART
+	return SAVE_PATH_SAVEPOINT
+
+
+func has_save(slot: String = SAVE_SLOT_SAVEPOINT) -> bool:
+	return FileAccess.file_exists(_save_path_for_slot(slot))
+
+
+func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 	var scene := get_tree().current_scene
 	if not scene or scene.scene_file_path.is_empty():
 		print("错误：没有有效的当前场景")
@@ -175,7 +198,8 @@ func save_game() -> void:
 	}
 	
 	var json := JSON.stringify(data)
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	var path := _save_path_for_slot(slot)
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		print("存档失败：无法创建文件")
 		return
@@ -183,14 +207,15 @@ func save_game() -> void:
 	file.store_string(json)
 	file = null
 	
-	print("游戏已保存: ", scene_name)
+	print("游戏已保存: ", scene_name, " slot=", slot)
 
-func load_game(reset_current_scene: bool = false) -> void:
-	if not FileAccess.file_exists(SAVE_PATH):
+func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEPOINT) -> void:
+	var path := _save_path_for_slot(slot)
+	if not FileAccess.file_exists(path):
 		print("存档文件不存在")
 		return
 	
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	if not file:
 		print("读取存档失败：无法打开文件")
 		return
@@ -233,6 +258,7 @@ func load_game(reset_current_scene: bool = false) -> void:
 	print("场景: ", data.scene)
 	print("玩家位置: ", player_position)
 	print("玩家方向: ", player_direction)
+	print("存档槽: ", slot)
 
 	if reset_current_scene:
 		# 读档已走 reload_scene_from_save（不保存当前场景状态）；
@@ -244,6 +270,7 @@ func load_game(reset_current_scene: bool = false) -> void:
 		"position": player_position,
 		"shangyang_summon_unlocked": player_data.get("shangyang_summon_unlocked", false)
 	}
+	_world3_death_ui_opened = false
 	await reload_scene_from_save(data.scene, load_params)
 
 
@@ -297,9 +324,89 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("ui_cancel"):
 		print("保存游戏")
-		save_game()
+		save_game(SAVE_SLOT_SAVEPOINT)
 	elif event is InputEventKey:
 		var key_event := event as InputEventKey
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_R:
-			print("读取存档")
-			load_game(true)
+			print("读取存档（SavePoint槽）")
+			load_game(true, SAVE_SLOT_SAVEPOINT)
+
+
+func _is_world3_boss_scene(scene: Node) -> bool:
+	return scene != null and scene.scene_file_path == WORLD3_BOSS_SCENE_PATH
+
+
+func _on_player_stats_changed() -> void:
+	if player_stats == null:
+		return
+	if player_stats.health > 0:
+		return
+	var scene := get_tree().current_scene
+	if not _is_world3_boss_scene(scene):
+		return
+	if _world3_death_ui_opened:
+		return
+	_world3_death_ui_opened = true
+	_open_world3_death_retry_ui()
+
+
+func _play_world3_death_fullscreen_flash() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	var flash_layer := CanvasLayer.new()
+	flash_layer.layer = 200
+	flash_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	var flash := ColorRect.new()
+	flash.color = Color(1, 1, 1, 1)
+	flash.modulate = Color(1, 1, 1, 0)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.offset_left = 0.0
+	flash.offset_top = 0.0
+	flash.offset_right = 0.0
+	flash.offset_bottom = 0.0
+	flash_layer.add_child(flash)
+	tree.root.add_child(flash_layer)
+	var tw := create_tween()
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tw.tween_property(flash, "modulate:a", world3_death_flash_peak_alpha, world3_death_flash_fade_in)
+	tw.tween_property(flash, "modulate:a", 0.0, world3_death_flash_fade_out)
+	await tw.finished
+	flash_layer.queue_free()
+
+
+func _open_world3_death_retry_ui() -> void:
+	if WORLD3_DEATH_UI_SCENE == null:
+		_world3_death_ui_opened = false
+		return
+	var tree := get_tree()
+	if tree == null:
+		_world3_death_ui_opened = false
+		return
+	tree.paused = true
+	await _play_world3_death_fullscreen_flash()
+	var ui := WORLD3_DEATH_UI_SCENE.instantiate() as CanvasLayer
+	if ui == null:
+		tree.paused = false
+		_world3_death_ui_opened = false
+		return
+	tree.root.add_child(ui)
+	if ui.has_method("bind_game"):
+		ui.call("bind_game", self)
+
+
+func on_world3_death_choice_load_heart() -> void:
+	if not has_save(SAVE_SLOT_HEART):
+		print("心剑存档不存在，无法回到上一个心。")
+		return
+	get_tree().paused = false
+	load_game(true, SAVE_SLOT_HEART)
+
+
+func on_world3_death_choice_load_savepoint() -> void:
+	if not has_save(SAVE_SLOT_SAVEPOINT):
+		print("存档点存档不存在，无法读取。")
+		return
+	get_tree().paused = false
+	load_game(true, SAVE_SLOT_SAVEPOINT)
