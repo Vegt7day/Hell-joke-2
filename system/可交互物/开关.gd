@@ -99,7 +99,7 @@ func _trigger_switch():
 func _on_channel_state_changed(ch: StringName, target_on: bool) -> void:
 	if ch != _channel_id:
 		return
-	apply_switch_bus_state(target_on, true)
+	apply_switch_bus_state(target_on, not bool(MechanismLinkBus.is_restoring))
 
 
 func apply_switch_bus_state(target_on: bool, play_anim: bool = true) -> void:

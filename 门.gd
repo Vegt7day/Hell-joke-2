@@ -41,14 +41,14 @@ func _ready():
 			print("警告：未知颜色", current_color, "，使用默认白色")
 	
 	# 初始化门的状态
-	if not is_open:
-		# 设置为打开状态：显示最后一帧，禁用碰撞
+	if is_open:
+		# 打开：显示最后一帧，禁用碰撞
 		sprite_2d.frame = 4
-		collision_shape.disabled = true
-	else:
-		# 设置为关闭状态：显示第0帧，启用碰撞
-		sprite_2d.frame = 0
 		collision_shape.disabled = false
+	else:
+		# 关闭：显示第0帧，启用碰撞
+		sprite_2d.frame = 0
+		collision_shape.disabled = true
 	
 	print("门初始化完成 - 颜色:", current_color, " 状态:", "开" if is_open else "关")
 
@@ -64,22 +64,21 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 		is_open = target_open
 		if target_open:
 			sprite_2d.frame = 4
-			collision_shape.disabled = true
+			collision_shape.disabled = false
 		else:
 			sprite_2d.frame = 0
-			collision_shape.disabled = false
+			collision_shape.disabled = true
 		return
-	if not target_open:
-		push_players_out()
 	door_is_processing = true
 	_play_trigger_sound()
-	if not target_open:
+	if target_open:
 		animation_player.play("open")
-		collision_shape.disabled = true
+		collision_shape.disabled = false
 		print("门正在打开 - 颜色:", current_color)
 	else:
+		push_players_out()
 		animation_player.play("close")
-		collision_shape.disabled = false
+		collision_shape.disabled = true
 		print("门正在关闭 - 颜色:", current_color)
 	is_open = target_open
 	await get_tree().create_timer(0.5).timeout

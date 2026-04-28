@@ -5,7 +5,22 @@ extends Node2D
 @export var auto_initialize: bool = true  # 是否自动初始化
 @export var max_retry_count: int = 10  # 最大重试次数
 @export var retry_delay: float = 0.1  # 重试延迟（秒）
+@export var boss_name_texture: Texture2D:
+	set(v):
+		boss_name_texture = v
+		_apply_boss_name_texture()
+@export var use_animated_name_card: bool = false:
+	set(v):
+		use_animated_name_card = v
+		_apply_name_card_mode()
+@export var boss_name_sprite_frames: SpriteFrames:
+	set(v):
+		boss_name_sprite_frames = v
+		_apply_name_sprite_frames()
+@export var phase_health_thresholds: Array[float] = [0.8, 0.6, 0.4, 0.2]
+@export var phase_animation_names: Array[StringName] = [&"phase_80", &"phase_60", &"phase_40", &"phase_20"]
 @onready var sprite_2d: Sprite2D = $Sprite2D
+@onready var name_animated_sprite: AnimatedSprite2D = $NameAnimatedSprite2D
 
 
 # 节点引用
@@ -16,14 +31,40 @@ var is_initialized: bool = false
 var retry_count: int = 0
 var is_visible: bool = true
 var _health_tween: Tween = null
+var _last_triggered_phase_anim_idx: int = -1
 
 @export var drop_tween_duration: float = 0.45
 @export var heal_tween_duration: float = 0.2
 
 func _ready() -> void:
+	_apply_name_sprite_frames()
+	_apply_boss_name_texture()
+	_apply_name_card_mode()
 	# 如果启用自动初始化，则开始初始化
 	if auto_initialize:
 		call_deferred("initialize_with_retry")
+
+
+func _apply_boss_name_texture() -> void:
+	if sprite_2d == null:
+		return
+	# 未指定时保留场景内默认贴图（老师的怒火）
+	if boss_name_texture != null:
+		sprite_2d.texture = boss_name_texture
+
+
+func _apply_name_sprite_frames() -> void:
+	if name_animated_sprite == null:
+		return
+	if boss_name_sprite_frames != null:
+		name_animated_sprite.sprite_frames = boss_name_sprite_frames
+
+
+func _apply_name_card_mode() -> void:
+	if sprite_2d != null:
+		sprite_2d.visible = not use_animated_name_card and is_visible
+	if name_animated_sprite != null:
+		name_animated_sprite.visible = use_animated_name_card and is_visible
 
 func initialize_with_retry():
 	"""带重试机制的初始化函数"""
@@ -111,6 +152,24 @@ func update_health() -> void:
 	duration = maxf(duration, 0.01)
 	_health_tween = create_tween()
 	_health_tween.tween_property(health_bar, "value", percentage, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_try_play_phase_name_animation(percentage)
+
+
+func _try_play_phase_name_animation(health_percentage: float) -> void:
+	if not use_animated_name_card or name_animated_sprite == null:
+		return
+	if name_animated_sprite.sprite_frames == null:
+		return
+	var max_idx := mini(phase_health_thresholds.size(), phase_animation_names.size()) - 1
+	if max_idx < 0:
+		return
+	for i in range(_last_triggered_phase_anim_idx + 1, max_idx + 1):
+		var threshold := clampf(float(phase_health_thresholds[i]), 0.0, 1.0)
+		if health_percentage <= threshold:
+			var anim := phase_animation_names[i]
+			if name_animated_sprite.sprite_frames.has_animation(anim):
+				name_animated_sprite.play(anim)
+			_last_triggered_phase_anim_idx = i
 	
 
 func initialize_stats() -> void:
@@ -156,10 +215,9 @@ func get_health_percentage() -> float:
 
 func show_health_bar():
 	"""显示血条"""
-	sprite_2d.visible = true
-
 	health_bar.visible = true
 	is_visible = true
+	_apply_name_card_mode()
 
 
 func hide_health_bar():
@@ -167,7 +225,7 @@ func hide_health_bar():
 	health_bar.visible = false
 	is_visible = false
 	print("隐藏Boss血条")
-	sprite_2d.visible = false
+	_apply_name_card_mode()
 
 func toggle_health_bar():
 	"""切换血条显示状态"""

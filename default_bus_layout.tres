@@ -63,7 +63,3 @@ bus/8/mute = false
 bus/8/bypass_fx = false
 bus/8/volume_db = 0.0
 bus/8/send = &"Master"
-[gd_resource type="AudioBusLayout" format=3 uid="uid://0eqpj8e73ii2"]
-
-[resource]
-bus/0/bypass_fx = true

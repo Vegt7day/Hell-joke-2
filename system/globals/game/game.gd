@@ -25,6 +25,17 @@ func _ready() -> void:
 	print("游戏管理器初始化完成")
 
 
+func bind_player_stats_runtime(new_stats: Stats) -> void:
+	# 运行时切换玩家 Stats 数据源时，必须重连 health_changed，否则死亡 UI 不会触发
+	if new_stats == null:
+		return
+	if player_stats != null and player_stats.health_changed.is_connected(_on_player_stats_changed):
+		player_stats.health_changed.disconnect(_on_player_stats_changed)
+	player_stats = new_stats
+	if not player_stats.health_changed.is_connected(_on_player_stats_changed):
+		player_stats.health_changed.connect(_on_player_stats_changed)
+
+
 func _is_autoload_game() -> bool:
 	var tree := get_tree()
 	if tree == null:
@@ -147,9 +158,26 @@ func has_save(slot: String = SAVE_SLOT_SAVEPOINT) -> bool:
 
 
 func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
-	var scene := get_tree().current_scene
+	var tree := get_tree()
+	if tree == null:
+		print("存档失败：SceneTree 不可用")
+		return
+	# 保存期间：暂停世界 + 禁用玩家操控（保存结束后恢复）
+	var paused_before := tree.paused
+	tree.paused = true
+	var scene := tree.current_scene
+	var player_node_for_lock := _find_player_node_under_scene(scene)
+	var input_before: Variant = null
+	if player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+		input_before = player_node_for_lock.get("enable_input_control")
+		player_node_for_lock.set("enable_input_control", false)
+	# 由于本函数无 await，保存写盘完成即立刻恢复 paused/input
+	# 注意：任何早退都必须走到末尾恢复
 	if not scene or scene.scene_file_path.is_empty():
 		print("错误：没有有效的当前场景")
+		if input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+			player_node_for_lock.set("enable_input_control", input_before)
+		tree.paused = paused_before
 		return
 	
 	var scene_name := scene.scene_file_path.get_file().get_basename()
@@ -170,6 +198,7 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 	
 	var player_position = Vector2.ZERO
 	var player_direction = 1
+	var player_camera_local := Vector2.ZERO
 	var summon_unlocked := false
 	
 	var player_node := _find_player_node_under_scene(scene)
@@ -181,11 +210,17 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 			player_direction = player_node.direction
 		if player_node is Player:
 			summon_unlocked = (player_node as Player).shangyang_summon_unlocked
+		var cam := (player_node as Node).get_node_or_null("Camera2D") as Camera2D
+		if cam != null:
+			player_camera_local = cam.position
 	
 	var data := {
 		"world_states": world_states,
 		"character_registry": character_registry_data,
 		"stats": player_stats.to_dict(),
+		"mechanism_bus": MechanismLinkBus.export_state(),
+		"bucket_states": _export_bucket_states(scene),
+		"camera_cue_states": _export_camera_cue_states(scene),
 		"scene": scene.scene_file_path,
 		"player": {
 			"direction": player_direction,
@@ -193,6 +228,7 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 				"x": player_position.x,
 				"y": player_position.y
 			},
+			"camera_local": {"x": player_camera_local.x, "y": player_camera_local.y},
 			"shangyang_summon_unlocked": summon_unlocked
 		}
 	}
@@ -202,12 +238,67 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		print("存档失败：无法创建文件")
+		if input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+			player_node_for_lock.set("enable_input_control", input_before)
+		tree.paused = paused_before
 		return
 	
 	file.store_string(json)
 	file = null
 	
 	print("游戏已保存: ", scene_name, " slot=", slot)
+	if input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+		player_node_for_lock.set("enable_input_control", input_before)
+	tree.paused = paused_before
+
+
+func _export_bucket_states(scene: Node) -> Dictionary:
+	var out := {}
+	if scene == null:
+		return out
+	for n in get_tree().get_nodes_in_group("save_bucket"):
+		if n == null or not is_instance_valid(n):
+			continue
+		# 仅保存当前场景子树内的桶
+		if scene != null and not scene.is_ancestor_of(n):
+			continue
+		if (n as Node).has_method("export_save_state"):
+			out[String(scene.get_path_to(n as Node))] = (n as Node).call("export_save_state")
+	return out
+
+
+func _apply_bucket_states(scene: Node, states: Dictionary) -> void:
+	if scene == null or states == null:
+		return
+	for key in states.keys():
+		var p := NodePath(String(key))
+		var node := scene.get_node_or_null(p)
+		if node != null and (node as Node).has_method("apply_save_state"):
+			(node as Node).call("apply_save_state", states[key])
+
+
+func _export_camera_cue_states(scene: Node) -> Dictionary:
+	var out := {}
+	if scene == null:
+		return out
+	for n in get_tree().get_nodes_in_group("save_camera_cue"):
+		if n == null or not is_instance_valid(n):
+			continue
+		if scene != null and not scene.is_ancestor_of(n):
+			continue
+		if (n as Node).has_method("export_save_state"):
+			out[String(scene.get_path_to(n as Node))] = (n as Node).call("export_save_state")
+	return out
+
+
+func _apply_camera_cue_states(scene: Node, states: Dictionary) -> void:
+	if scene == null or states == null:
+		return
+	for key in states.keys():
+		var p := NodePath(String(key))
+		var node := scene.get_node_or_null(p)
+		if node != null and (node as Node).has_method("apply_save_state"):
+			(node as Node).call("apply_save_state", states[key])
 
 func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 	var path := _save_path_for_slot(slot)
@@ -239,12 +330,19 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	
 	# 恢复玩家状态
 	player_stats.from_dict(data.stats)
+
+	# 记录机关状态：读档切场景时先清空总线，需在新场景加载后再恢复
+	Engine.set_meta("__pending_mechanism_bus_state", data.get("mechanism_bus", {}))
+	Engine.set_meta("__pending_bucket_states", data.get("bucket_states", {}))
+	Engine.set_meta("__pending_camera_cue_states", data.get("camera_cue_states", {}))
 	
 	# 获取玩家位置和方向
 	var player_data = data.get("player", {})
 	var position_data = player_data.get("position", {"x": 0, "y": 0})
 	var player_position = Vector2(position_data.get("x", 0), position_data.get("y", 0))
 	var player_direction = player_data.get("direction", 1)
+	var camera_local_data = player_data.get("camera_local", {"x": 0, "y": 0})
+	var player_camera_local := Vector2(camera_local_data.get("x", 0), camera_local_data.get("y", 0))
 	
 	# 恢复角色注册
 	if data.has("character_registry"):
@@ -268,6 +366,7 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	var load_params := {
 		"direction": player_direction,
 		"position": player_position,
+		"camera_local": player_camera_local,
 		"shangyang_summon_unlocked": player_data.get("shangyang_summon_unlocked", false)
 	}
 	_world3_death_ui_opened = false
@@ -294,11 +393,37 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 		tree.paused = false
 		return
 	var new_name := tree.current_scene.scene_file_path.get_file().get_basename()
+	# 先恢复机关总线状态，让门窗/开关在 _ready 的 deferred_sync_initial_from_bus 中无动画同步
+	if Engine.has_meta("__pending_mechanism_bus_state"):
+		var mb: Variant = Engine.get_meta("__pending_mechanism_bus_state")
+		if mb is Dictionary:
+			MechanismLinkBus.import_state(mb as Dictionary, false)
+		Engine.remove_meta("__pending_mechanism_bus_state")
+	# 先恢复桶状态（尽量在场景脚本 from_dict 之前）
+	if Engine.has_meta("__pending_bucket_states"):
+		var bs: Variant = Engine.get_meta("__pending_bucket_states")
+		if bs is Dictionary:
+			_apply_bucket_states(tree.current_scene, bs as Dictionary)
+		Engine.remove_meta("__pending_bucket_states")
+	# 恢复相机 cue（焦点区/拖拽区）的触发次数
+	if Engine.has_meta("__pending_camera_cue_states"):
+		var cs: Variant = Engine.get_meta("__pending_camera_cue_states")
+		if cs is Dictionary:
+			_apply_camera_cue_states(tree.current_scene, cs as Dictionary)
+		Engine.remove_meta("__pending_camera_cue_states")
 	if new_name in world_states and tree.current_scene.has_method("from_dict"):
 		tree.current_scene.from_dict(world_states[new_name])
 		print("读档恢复场景状态: ", new_name)
+	# 读档后再广播一次总线状态：确保门/窗/开关已连接信号后能同步（恢复期间不播动画）
+	if MechanismLinkBus.has_method("rebroadcast_all_states"):
+		await tree.process_frame
+		MechanismLinkBus.rebroadcast_all_states()
 	if params.has("position") and params.has("direction") and tree.current_scene.has_method("update_player"):
 		tree.current_scene.update_player(params.position, params.direction)
+	if params.has("camera_local"):
+		var pn_cam := _find_player_node_under_scene(tree.current_scene)
+		if pn_cam != null and (pn_cam as Node).has_method("apply_camera_local_position_from_save"):
+			(pn_cam as Node).call("apply_camera_local_position_from_save", params["camera_local"])
 	if params.has("shangyang_summon_unlocked"):
 		var pn := _find_player_node_under_scene(tree.current_scene)
 		if pn is Player:

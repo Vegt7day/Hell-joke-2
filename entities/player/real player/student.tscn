@@ -364,10 +364,18 @@ platform_floor_layers = 4294967231
 script = ExtResource("1_wkr24")
 ink_bullet_scene = ExtResource("2_dnbur")
 shangyang_summon_scene = ExtResource("2_vmijo")
+lookahead_camera_move_speed = 100.0
+lookahead_x_distance = 25.0
+lookahead_x_start_speed = 1.0
+lookahead_y_up_distance = 20.0
+lookahead_y_down_distance = 30.0
 metadata/_edit_vertical_guides_ = [15.0]
 
 [node name="DialogMarker" type="Marker2D" parent="." unique_id=951327035]
 position = Vector2(21, -2)
+
+[node name="CameraAimMarker" type="Marker2D" parent="." unique_id=2063090130]
+position = Vector2(0, -87)
 
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
 stream = ExtResource("4_avp68")
@@ -388,11 +396,14 @@ stream = ExtResource("3_dnbur")
 volume_db = -16.845
 
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]
-max_health = 1000
+max_health = 6
+max_ink = 6.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=298142384]
 
-[node name="status panel" parent="CanvasLayer" unique_id=43131948 instance=ExtResource("5_ic7vs")]
+[node name="status panel" parent="CanvasLayer" unique_id=43131948 node_paths=PackedStringArray("stats") instance=ExtResource("5_ic7vs")]
+stats = NodePath("../../Stats")
+max_hearts_cap = 5
 
 [node name="interactionIcon" type="AnimatedSprite2D" parent="." unique_id=121447576]
 position = Vector2(15, -55.000004)

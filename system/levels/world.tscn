@@ -251,20 +251,6 @@ one_shot = false
 position = Vector2(550, 606)
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
-position = Vector2(16, -31)
-process_callback = 0
-limit_top = -9999667
-limit_right = 1152
-limit_bottom = 641
-position_smoothing_enabled = true
-drag_horizontal_enabled = true
-drag_vertical_enabled = true
-drag_horizontal_offset = -1.0
-drag_left_margin = 0.04
-drag_top_margin = 0.01
-drag_right_margin = 0.04
-drag_bottom_margin = 0.07
-editor_draw_drag_margin = true
 
 [node name="Marker2D5" type="Marker2D" parent="player" unique_id=447389776]
 position = Vector2(14, -8)

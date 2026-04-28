@@ -1,139 +1,23 @@
 [gd_scene format=3 uid="uid://lmhmviqigfpb"]
 
 [ext_resource type="Script" uid="uid://dv5qa18qbluus" path="res://system/ui/status_panel.gd" id="1_rswnf"]
-[ext_resource type="Texture2D" uid="uid://bfm1pts62jioj" path="res://system/ui/ui.png" id="2_qtcyv"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rswnf"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(0, 0, 320, 90)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ysatu"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(326, -2, 105, 92)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_otet3"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(739, 11, 197, 23)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qtcyv"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(739, 55, 197, 23)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rdj4t"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(639, 44, 34, 44)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_mxto2"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(626, -13, 60, 51)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0jv2l"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(680, -23, 38, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_brda4"]
-atlas = ExtResource("2_qtcyv")
-region = Rect2(674, 46, 35, 39)
 
 [node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")
+max_hearts_cap = 10
 
-[node name="外框" type="TextureRect" parent="." unique_id=311222353]
-offset_right = 40.0
-offset_bottom = 40.0
-texture = SubResource("AtlasTexture_rswnf")
-
-[node name="头像" type="TextureRect" parent="外框" unique_id=1098264628]
-z_index = 1
-layout_mode = 0
-offset_left = 7.0
-offset_top = -2.0
-offset_right = 112.0
-offset_bottom = 90.0
-texture = SubResource("AtlasTexture_ysatu")
-
-[node name="HealthBar" type="TextureProgressBar" parent="外框" unique_id=1365006029]
-layout_direction = 3
-layout_mode = 0
-offset_left = -2.0
-offset_top = 6.0
-offset_right = 205.0
-offset_bottom = 50.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-size_flags_stretch_ratio = 0.0
-max_value = 1.0
-step = 0.0
-value = 1.0
-stretch_margin_right = 95
-stretch_margin_bottom = 4
-texture_progress = SubResource("AtlasTexture_otet3")
-texture_progress_offset = Vector2(1, 1)
-
-[node name="EasedHealthBar" type="TextureProgressBar" parent="外框/HealthBar" unique_id=1729769315]
-show_behind_parent = true
-layout_direction = 3
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.033816423
-anchor_top = -0.022727273
-anchor_right = -0.033816423
-anchor_bottom = -0.022727273
-offset_left = -9.0
-offset_top = 1.0
-offset_right = 214.0
-offset_bottom = 45.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-size_flags_stretch_ratio = 0.0
-max_value = 1.0
-step = 0.0
-value = 0.445
-stretch_margin_right = 95
-stretch_margin_bottom = 4
-texture_progress = SubResource("AtlasTexture_qtcyv")
-texture_progress_offset = Vector2(1, 1)
+[node name="Hearts" type="HBoxContainer" parent="." unique_id=1200000002]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 352.0
+offset_bottom = 64.0
+theme_override_constants/separation = 4
 metadata/_edit_use_anchors_ = true
 
-[node name="InkBar" type="TextureProgressBar" parent="外框" unique_id=732746693]
-layout_direction = 3
-layout_mode = 0
-offset_left = -56.0
-offset_top = 37.0
-offset_right = 151.0
+[node name="Inks" type="HBoxContainer" parent="." unique_id=1200000003]
+offset_left = 32.0
+offset_top = 64.0
+offset_right = 352.0
 offset_bottom = 96.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-size_flags_stretch_ratio = 0.0
-max_value = 1.0
-step = 0.0
-value = 0.815
-fill_mode = 3
-stretch_margin_right = 95
-stretch_margin_bottom = 4
-texture_progress = SubResource("AtlasTexture_rdj4t")
-texture_progress_offset = Vector2(1, 1)
-
-[node name="瓶子" type="TextureRect" parent="外框" unique_id=611363329]
-layout_mode = 0
-offset_left = 109.0
-offset_top = 28.0
-offset_right = 169.0
-offset_bottom = 79.0
-texture = SubResource("AtlasTexture_mxto2")
-
-[node name="TextureRect" type="TextureRect" parent="外框" unique_id=1601962238]
-layout_mode = 0
-offset_left = 227.0
-offset_top = 17.0
-offset_right = 267.0
-offset_bottom = 83.0
-texture = SubResource("AtlasTexture_0jv2l")
-
-[node name="TextureRect2" type="TextureRect" parent="外框" unique_id=2096655792]
-layout_mode = 0
-offset_left = 276.0
-offset_top = 40.0
-offset_right = 316.0
-offset_bottom = 80.0
-texture = SubResource("AtlasTexture_brda4")
+theme_override_constants/separation = 4
+metadata/_edit_use_anchors_ = true

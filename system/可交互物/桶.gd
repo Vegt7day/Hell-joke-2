@@ -20,6 +20,7 @@ var _stop_after_current_cycle: bool = false
 
 
 func _ready() -> void:
+	add_to_group("save_bucket")
 	animation_player.animation_finished.connect(_on_animation_finished)
 	_enter_idle()
 
@@ -104,3 +105,30 @@ func _play_trigger_sound() -> void:
 	if trigger_sfx == null:
 		return
 	MechanismSfxBus.request_once(&"bucket_trigger", trigger_sfx)
+
+
+func export_save_state() -> Dictionary:
+	return {
+		"state": int(_state),
+		"auto": _is_auto_cycle_running,
+		"stop_after": _stop_after_current_cycle,
+	}
+
+
+func apply_save_state(state: Dictionary) -> void:
+	if state == null:
+		return
+	_state = BarrelState.WITH_WATER_IDLE
+	var s := int(state.get("state", int(BarrelState.WITH_WATER_IDLE)))
+	if s >= 0 and s <= int(BarrelState.ADDING_WATER):
+		_state = s as BarrelState
+	_is_auto_cycle_running = bool(state.get("auto", false))
+	_stop_after_current_cycle = bool(state.get("stop_after", false))
+	# 强制按状态回放当前动画帧（不触发水生成）
+	match _state:
+		BarrelState.WITH_WATER_IDLE:
+			animation_player.play("with_water_idle")
+		BarrelState.LOSING_WATER:
+			animation_player.play("lose_water", -1.0, 1.0, false)
+		BarrelState.ADDING_WATER:
+			animation_player.play("add_water", -1.0, 1.0, false)

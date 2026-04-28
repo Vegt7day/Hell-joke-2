@@ -177,6 +177,7 @@ _data = {
 collision_layer = 64
 collision_mask = 2
 script = ExtResource("1_bomb")
+explosion_damage = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=315368116]
 shape = SubResource("CircleShape2D_bomb")

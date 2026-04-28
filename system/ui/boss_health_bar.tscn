@@ -12,6 +12,9 @@ region = Rect2(394, 22, 364, 20)
 atlas = ExtResource("1_m3iy3")
 region = Rect2(21, 26, 342, 12)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_boss_name_anim"]
+animations = []
+
 [node name="boss_health_bar" type="Node2D" unique_id=862236894]
 position = Vector2(320, -32)
 script = ExtResource("1_oqs2n")
@@ -33,3 +36,8 @@ metadata/_edit_use_anchors_ = true
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1052797338]
 position = Vector2(1, 69)
 texture = ExtResource("3_dueyw")
+
+[node name="NameAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1900210001]
+visible = false
+position = Vector2(1, 69)
+sprite_frames = SubResource("SpriteFrames_boss_name_anim")

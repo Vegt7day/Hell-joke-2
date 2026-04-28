@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2r42g"]
-size = Vector2(32, 32)
+size = Vector2(3, 43)
 
 [sub_resource type="Animation" id="Animation_hyt57"]
 length = 0.001
@@ -150,7 +150,7 @@ script = ExtResource("1_gxmog")
 script = ExtResource("3_swch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1152197087]
-position = Vector2(16, -16)
+position = Vector2(30.5, -10.5)
 shape = SubResource("RectangleShape2D_2r42g")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=560288617]

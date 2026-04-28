@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="2_stats"]
 [ext_resource type="Texture2D" uid="uid://c0k8nly1ooq40" path="res://system/levels/world3/bosses/头马.png" id="2_yq0pa"]
 [ext_resource type="PackedScene" uid="uid://b8qdrsdj7p10h" path="res://system/ui/boss_health_bar.tscn" id="3_bar"]
+[ext_resource type="Texture2D" uid="uid://dbglv8k87x5ci" path="res://system/ui/马boss名字ui.png" id="5_ry0xf"]
 
 [sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_yq0pa"]
 points = PackedVector2Array(18.38478, 66.46805, 58.689873, 26.162956, 22.627422, -28.284275)
@@ -782,6 +783,102 @@ _data = {
 &"white_call": SubResource("Animation_c040k")
 }
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_3k1s6"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(0, 0, 96, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iydt5"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(112, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mpst7"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(224, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e3wtd"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(336, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkdkw"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(448, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_spd3u"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(560, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ho3pa"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(672, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0jgdn"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(784, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mf42q"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(896, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u8q7q"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(1008, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_50xp7"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(1120, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dvnry"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(1344, 0, 112, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipvso"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(1232, 0, 112, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_c040k"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iydt5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mpst7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e3wtd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dkdkw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_spd3u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ho3pa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0jgdn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mf42q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u8q7q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_50xp7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dvnry")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ipvso")
+}],
+"loop": false,
+"name": &"phase_20",
+"speed": 5.0
+}]
+
 [node name="BossHorseMain" type="CharacterBody2D" unique_id=574789870]
 collision_layer = 4
 collision_mask = 0
@@ -824,3 +921,7 @@ max_health = 100
 
 [node name="boss_health_bar" parent="CanvasLayer" unique_id=89791101 instance=ExtResource("3_bar")]
 z_index = 1
+position = Vector2(320, -31)
+boss_name_texture = SubResource("AtlasTexture_3k1s6")
+use_animated_name_card = true
+boss_name_sprite_frames = SubResource("SpriteFrames_c040k")

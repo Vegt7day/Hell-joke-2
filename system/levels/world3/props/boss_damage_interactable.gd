@@ -37,6 +37,13 @@ func interact() -> void:
 	var phase := _resolve_phase_controller()
 	if phase != null and phase.has_method("trigger_external_percent_damage"):
 		if is_instance_valid(Game) and Game.has_method("save_game") and phase.has_method("get_shared_stats"):
+			# 心/剑交互时把主角回满血，并把满血状态写入 heart 存档
+			if player != null:
+				var heal_id := "boss_damage_interact:%s" % str(get_instance_id())
+				if player.has_method("recover_full_health_once"):
+					player.call("recover_full_health_once", heal_id)
+				elif player.has_method("recover_full_health"):
+					player.call("recover_full_health")
 			var st := phase.call("get_shared_stats") as Stats
 			if st != null and st.max_health > 0:
 				var predicted_drop: int = max(1, int(round(float(st.max_health) * clampf(damage_percent, 0.01, 1.0))))

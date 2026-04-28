@@ -46,7 +46,8 @@ func _deferred_sync_initial_from_bus() -> void:
 func _on_channel_state_changed(ch: StringName, is_open: bool) -> void:
 	if ch != _resolved_channel:
 		return
-	_apply_to_parent(is_open, true)
+	var play_anim := not bool(MechanismLinkBus.is_restoring)
+	_apply_to_parent(is_open, play_anim)
 
 
 func _apply_to_parent(is_open: bool, play_anim: bool) -> void:

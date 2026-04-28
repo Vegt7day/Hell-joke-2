@@ -23,7 +23,7 @@ extends CharacterBody2D
 @export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
 
 ## 单次攻击消耗的墨水（与 ATTACK_SHOOT 中扣除量一致）
-const ATTACK_INK_COST: int = 15
+const ATTACK_INK_COST: int = 1
 
 ## world2 剧情完成后解锁；由存档恢复
 var shangyang_summon_unlocked: bool = false
@@ -48,7 +48,7 @@ var shangyang_summon_unlocked: bool = false
 
 # 重力
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-@onready var stats: Stats = Game.player_stats
+var stats: Stats
 
 # 获取节点
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -95,6 +95,38 @@ var _shake_tween: Tween
 var _flash_tween: Tween
 var _shake_cam_cached: Camera2D
 var _shake_cam_base_saved: Vector2 = Vector2.ZERO
+var _focus_cam_cached: Camera2D
+var _camera_focus_has_control: bool = false
+var _camera_focus_active: bool = false
+var _camera_focus_target_world: Vector2 = Vector2.ZERO
+var _camera_focus_move_speed: float = 220.0
+@onready var _camera_aim_marker: Marker2D = get_node_or_null("CameraAimMarker") as Marker2D
+
+## ===== 相机前瞻（Camera2D.position） =====
+@export var camera_lookahead_enabled: bool = true
+@export var lookahead_camera_move_speed: float = 320.0
+@export var lookahead_x_distance: float = 44.0
+@export var lookahead_x_start_speed: float = 10.0
+@export var lookahead_y_up_distance: float = 26.0
+@export var lookahead_y_down_distance: float = 44.0
+@export var lookahead_y_fall_threshold: float = 10.0
+@export var lookahead_xy_lerp_speed: float = 10.0
+
+var _lookahead_current: Vector2 = Vector2.ZERO
+var _lookahead_wants_fall: bool = false
+
+
+## 读档用：直接写入 Camera2D.position，避免读档时视野从默认位置闪现
+func apply_camera_local_position_from_save(local_pos: Vector2) -> void:
+	var cam := _resolve_player_camera2d()
+	if cam == null:
+		return
+	cam.enabled = true
+	cam.position = local_pos
+	# 同步内部缓存，避免下一帧前瞻/焦点把相机拉走
+	_lookahead_current = Vector2.ZERO
+	_camera_focus_has_control = false
+	_camera_focus_active = false
 
 # 状态机参数
 var attack_cooldown: float = 0.0
@@ -107,9 +139,11 @@ var animation_complete_connected: bool = false  # 动画完成信号连接标志
 var disabled_actions: Dictionary = {}
 var action_callbacks: Dictionary = {}
 var action_presses: Dictionary = {}
+var _last_full_heal_interaction_id: String = ""
 
 func _ready():
 	add_to_group("player")
+	_resolve_and_bind_stats_source()
 	print("=== Player.gd _ready() 开始 ===")
 	print("玩家初始位置:", global_position)
 	print("父节点:", get_parent().name if get_parent() else "无父节点")
@@ -175,6 +209,21 @@ func _ready():
 	
 	print("=== Player.gd _ready() 完成 ===")
 
+
+func _resolve_and_bind_stats_source() -> void:
+	# 统一血量数据源：优先使用玩家场景下的 Stats（便于在角色预制上直接调参），并同步给 Game 全局引用
+	var local_stats := get_node_or_null("Stats") as Stats
+	if local_stats != null:
+		stats = local_stats
+		if is_instance_valid(Game):
+			if Game.has_method("bind_player_stats_runtime"):
+				Game.call("bind_player_stats_runtime", local_stats)
+			else:
+				Game.player_stats = local_stats
+		return
+	if is_instance_valid(Game):
+		stats = Game.player_stats
+
 func init_timers():
 	# 攻击计时器
 	add_child(attack_timer)
@@ -193,7 +242,8 @@ func init_timers():
 	ink_recovery_timer.one_shot = false
 	ink_recovery_timer.wait_time = ink_recovery_interval
 	ink_recovery_timer.timeout.connect(_on_ink_recovery_timer_timeout)
-	ink_recovery_timer.start()
+	# 墨水回复已改为“墨水格恢复动画结束时发放一次攻击用量”，不再使用连续回复计时器
+	ink_recovery_timer.stop()
 	
 	# 召唤延迟计时器
 	add_child(summon_delay_timer)
@@ -712,6 +762,92 @@ func _physics_process(delta):
 	
 	# 更新朝向
 	update_facing()
+	# 可选：仅在相机焦点系统接管时更新 Camera2D.position 偏移
+	_update_camera_bias(delta)
+
+
+func _resolve_player_camera2d() -> Camera2D:
+	if is_instance_valid(_focus_cam_cached):
+		return _focus_cam_cached
+	var local_cam := get_node_or_null("Camera2D") as Camera2D
+	# 这里不强依赖 enabled：不同世界可能未显式设 current/enabled，但节点仍存在。
+	# 当焦点系统接管时，会在 _update_camera_focus_bias 内强制启用以保证生效。
+	if local_cam != null:
+		_focus_cam_cached = local_cam
+		return local_cam
+	var vp := get_viewport()
+	if vp == null:
+		return null
+	var vp_cam := vp.get_camera_2d() as Camera2D
+	if vp_cam != null and vp_cam.get_parent() == self:
+		_focus_cam_cached = vp_cam
+		return vp_cam
+	return null
+
+
+func _update_camera_bias(delta: float) -> void:
+	if not _camera_focus_has_control and not camera_lookahead_enabled:
+		return
+	var cam := _resolve_player_camera2d()
+	if cam == null:
+		_camera_focus_has_control = false
+		_camera_focus_active = false
+		return
+	# 确保本相机成为当前相机，否则 position 偏移不会体现到画面上
+	if not cam.enabled:
+		cam.enabled = true
+	_update_lookahead(delta)
+	var base_world := _camera_aim_marker.global_position if _camera_aim_marker != null else global_position
+	var base_local := _camera_aim_marker.position if _camera_aim_marker != null else Vector2.ZERO
+	var focus_local := Vector2.ZERO
+	if _camera_focus_active:
+		focus_local = _camera_focus_target_world - base_world
+	var desired_local := base_local + focus_local + _lookahead_current
+	var spd := _camera_focus_move_speed if _camera_focus_active else lookahead_camera_move_speed
+	var step := maxf(1.0, spd) * maxf(delta, 0.0)
+	cam.position = cam.position.move_toward(desired_local, step)
+	if not _camera_focus_active and not camera_lookahead_enabled and cam.position.length() <= 0.5:
+		cam.position = Vector2.ZERO
+		_camera_focus_has_control = false
+
+
+func _update_lookahead(delta: float) -> void:
+	if not camera_lookahead_enabled:
+		_lookahead_current = _lookahead_current.move_toward(Vector2.ZERO, maxf(1.0, lookahead_xy_lerp_speed) * delta * 60.0)
+		return
+	var desired_x := 0.0
+	if absf(velocity.x) >= lookahead_x_start_speed:
+		desired_x = signf(velocity.x) * lookahead_x_distance
+	var desired_y := 0.0
+	if is_on_floor():
+		_lookahead_wants_fall = false
+	else:
+		# 上升时给上前瞻；当开始明显下落后切到落地前瞻
+		if velocity.y > lookahead_y_fall_threshold:
+			_lookahead_wants_fall = true
+		elif velocity.y < -lookahead_y_fall_threshold:
+			_lookahead_wants_fall = false
+		desired_y = lookahead_y_down_distance if _lookahead_wants_fall else -lookahead_y_up_distance
+	var desired := Vector2(desired_x, desired_y)
+	# 指数型平滑（帧率无关）
+	var a := 1.0 - exp(-maxf(0.0, lookahead_xy_lerp_speed) * maxf(0.0, delta))
+	_lookahead_current = _lookahead_current.lerp(desired, clampf(a, 0.0, 1.0))
+
+
+## 外部（如 CameraFocusArea）调用：将相机焦点移向一个世界坐标点
+func set_camera_focus_target_world(target_world: Vector2, move_speed: float = 220.0) -> void:
+	_camera_focus_has_control = true
+	_camera_focus_active = true
+	_camera_focus_target_world = target_world
+	_camera_focus_move_speed = maxf(1.0, move_speed)
+
+
+## 外部调用：退出焦点区后回正相机；可传回正速度
+func clear_camera_focus_target(move_speed: float = -1.0) -> void:
+	_camera_focus_active = false
+	_camera_focus_has_control = true
+	if move_speed > 0.0:
+		_camera_focus_move_speed = move_speed
 
 # ========== 计时器回调 ==========
 func _on_attack_timer_timeout():
@@ -791,9 +927,33 @@ func calculate_shoot_position() -> Vector2:
 	)
 
 func take_damage(damage_amount: float):
-	stats.health -= damage_amount
-	if damage_amount > 0.0 and stats.health > 0:
+	if stats == null:
+		return
+	if damage_amount <= 0.0:
+		return
+	# Stats.health 是 int；很多敌方伤害是小数（如 0.05），若直接相减会被截断为 0 导致“被打不掉血”。
+	var damage_i: int = maxi(1, int(ceil(damage_amount)))
+	stats.health -= damage_i
+	if stats.health > 0:
 		_trigger_hit_screen_feedback()
+
+
+## 按需求：仅在特定交互（心/剑、存档点）时调用，瞬间回满血
+func recover_full_health() -> void:
+	recover_full_health_once("__legacy__")
+
+
+## 仅当 interaction_id 与上次不同才会回满一次；用于“单次有效交互仅回满一次”
+func recover_full_health_once(interaction_id: String) -> bool:
+	if stats == null:
+		return false
+	if interaction_id.is_empty():
+		return false
+	if _last_full_heal_interaction_id == interaction_id:
+		return false
+	_last_full_heal_interaction_id = interaction_id
+	stats.health = stats.max_health
+	return true
 
 
 func _hurt_flash_modulate_toward_white(base: Color, blend: float) -> Color:

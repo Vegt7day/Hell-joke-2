@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 @export var fly_speed: float = 420.0
 @export var despawn_margin: float = 80.0
-@export var hit_damage: float = 10.0
+@export var hit_damage: float = 1.0
 ## 整剑（碰撞体 + 子节点）绕根节点 X 翻转；与 `_fly_dir_x` 相反以贴合当前美术朝向，仍反了可在 Inspector 乘 -1。
 @export var root_facing_multiplier: float = 1.0
 
