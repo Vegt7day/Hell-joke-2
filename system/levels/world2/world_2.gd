@@ -55,6 +55,8 @@ func run_shangyang_get_cutscene(sy: ShangYang, anim_index: int) -> void:
 	var cam := player.get_node_or_null("Camera2D") as Camera2D
 	var from_off := Vector2.ZERO
 	var spd := 120.0
+	if player.has_method("set_camera_drag_ignore_player_input"):
+		player.call("set_camera_drag_ignore_player_input", true)
 	if cam != null:
 		from_off = cam.position
 		spd = maxf(cam.position_smoothing_speed, 8.0)
@@ -75,6 +77,8 @@ func run_shangyang_get_cutscene(sy: ShangYang, anim_index: int) -> void:
 		twb.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		twb.tween_property(cam, "position", from_off, dur_back)
 		await twb.finished
+	if player.has_method("set_camera_drag_ignore_player_input"):
+		player.call("set_camera_drag_ignore_player_input", false)
 	if is_instance_valid(sy):
 		mark_dialog_timeline_completed(cut_key)
 		sy.consume_pending_return_sy_dialog()

@@ -70,6 +70,8 @@ func _run_pan_sequence() -> void:
 		return
 	var player_pos := player.global_position
 	var target_world := player_pos + (mk.global_position - player_pos) * clampf(pan_k, 0.0, 1.0)
+	if player.has_method("set_camera_drag_ignore_player_input"):
+		player.call("set_camera_drag_ignore_player_input", true)
 	player.call("set_camera_focus_target_world", target_world, camera_move_speed)
 	var hold := maxf(0.0, hold_seconds)
 	if hold > 0.0:
@@ -77,6 +79,8 @@ func _run_pan_sequence() -> void:
 	if is_instance_valid(player):
 		var speed := clear_move_speed if clear_move_speed > 0.0 else camera_move_speed
 		player.call("clear_camera_focus_target", speed)
+		if player.has_method("set_camera_drag_ignore_player_input"):
+			player.call("set_camera_drag_ignore_player_input", false)
 	_running = false
 
 

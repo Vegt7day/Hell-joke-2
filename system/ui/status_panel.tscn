@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://lmhmviqigfpb"]
 
 [ext_resource type="Script" uid="uid://dv5qa18qbluus" path="res://system/ui/status_panel.gd" id="1_rswnf"]
+[ext_resource type="Script" uid="uid://dpfnky3od7yo8" path="res://system/ui/summon_cooldown_ring.gd" id="2_ring"]
 
 [node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")
@@ -21,3 +22,40 @@ offset_right = 352.0
 offset_bottom = 96.0
 theme_override_constants/separation = 4
 metadata/_edit_use_anchors_ = true
+
+[node name="SummonSkill" type="Control" parent="." unique_id=1200000004]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 32.0
+offset_top = 98.0
+offset_right = 96.0
+offset_bottom = 162.0
+mouse_filter = 2
+
+[node name="Ring" type="Control" parent="SummonSkill" unique_id=1200000005]
+anchors_preset = 0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 52.0
+offset_bottom = 48.0
+script = ExtResource("2_ring")
+radius = 17.0
+ring_bg_color = Color(0.12, 0.12, 0.12, 0.7)
+
+[node name="Placeholder" type="Label" parent="SummonSkill" unique_id=1200000006]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 48.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 24
+text = "商"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GrayMask" type="ColorRect" parent="SummonSkill" unique_id=1200000007]
+layout_mode = 0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+color = Color(0.2, 0.2, 0.2, 0.55)

@@ -404,12 +404,10 @@ func _update_phase_by_hp_percent(hp_percent: float) -> void:
 		_log_phase_once("20%阈值触发")
 		return
 
-	if _is_switching_minor:
-		_queued_target_phase = target_phase
-		return
-
 	if current_phase != target_phase:
-		_start_minor_switch(target_phase)
+		request_phase(target_phase)
+	# 新规则：阶段推进时“新增一种小马，旧的小马继续留场”
+	_apply_cumulative_minors_for_phase(target_phase)
 
 
 func _log_phase(message: String) -> void:
@@ -604,6 +602,40 @@ func _phase_to_minor_name(phase: BossHorseTypes.BossPhase) -> StringName:
 			return &"MinorRed"
 		_:
 			return StringName()
+
+
+func _phase_to_cumulative_minor_names(phase: BossHorseTypes.BossPhase) -> Array[StringName]:
+	match phase:
+		BossHorseTypes.BossPhase.GREY_SOLO:
+			return [&"MinorGrey"]
+		BossHorseTypes.BossPhase.WHITE_SOLO:
+			return [&"MinorGrey", &"MinorWhite"]
+		BossHorseTypes.BossPhase.BLACK_SOLO:
+			return [&"MinorGrey", &"MinorWhite", &"MinorBlack"]
+		BossHorseTypes.BossPhase.RED_SOLO:
+			return [&"MinorGrey", &"MinorWhite", &"MinorBlack", &"MinorRed"]
+		_:
+			return []
+
+
+func _apply_cumulative_minors_for_phase(phase: BossHorseTypes.BossPhase) -> void:
+	var minors := get_node_or_null(minors_path) as Node2D
+	if minors == null:
+		return
+	var should_alive := _phase_to_cumulative_minor_names(phase)
+	if should_alive.is_empty():
+		return
+	for nm in should_alive:
+		var m := _get_or_spawn_minor(minors, nm)
+		if m == null:
+			continue
+		var spawn := _spawn_marker_for_minor(nm)
+		if spawn != null:
+			m.global_position = spawn.global_position
+		m.visible = true
+		m.process_mode = Node.PROCESS_MODE_INHERIT
+		_set_horse_movement(m, true)
+		_play_minor_travel_loop_anim(m, nm)
 
 
 func _spawn_marker_for_minor(minor_name: StringName) -> Node2D:
@@ -992,6 +1024,8 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 			cam_target_sy = sy_pull_anchor - player_sy.global_position
 
 	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds, cam_sy, cam_target_sy, fatal_sy_camera_pan_seconds)
+	# 绳子接触肢体后，停止「跟随商鞅本体」并冻结在当前点位
+	_freeze_limb_following(limbs)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_shangyang)
 	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
 	await _tween_pull_horses_then_limbs(pairs, main, shangyang)
@@ -1297,6 +1331,8 @@ func _spawn_shangyang_limbs(parent: Node2D, markers: Array[Node2D]) -> Array[Nod
 			continue
 		parent.add_child(limb)
 		limb.global_position = marker.global_position
+		if limb.has_method("set_follow_target"):
+			limb.call("set_follow_target", marker)
 		if limb.has_method("apply_limb_visual"):
 			if i == 0:
 				limb.call("apply_limb_visual", 0) # HEAD
@@ -1306,6 +1342,12 @@ func _spawn_shangyang_limbs(parent: Node2D, markers: Array[Node2D]) -> Array[Nod
 				limb.call("apply_limb_visual", 2) # FOOT
 		result.append(limb)
 	return result
+
+
+func _freeze_limb_following(limbs: Array[Node2D]) -> void:
+	for l in limbs:
+		if l != null and is_instance_valid(l) and l.has_method("freeze_follow"):
+			l.call("freeze_follow")
 
 
 func _filter_valid_limbs(limbs: Array[Node2D]) -> Array[Node2D]:

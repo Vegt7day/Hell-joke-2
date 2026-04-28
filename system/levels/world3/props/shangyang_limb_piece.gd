@@ -14,6 +14,9 @@ enum LimbType {
 @export var foot_texture: Texture2D
 
 @onready var sprite: Sprite2D = $Sprite2D
+var _follow_target: Node2D
+var _follow_offset: Vector2 = Vector2.ZERO
+var _follow_enabled: bool = false
 
 
 func _ready() -> void:
@@ -53,3 +56,26 @@ func _pick_texture_by_type(kind: LimbType) -> Texture2D:
 			return foot_texture
 		_:
 			return null
+
+
+func set_follow_target(target: Node2D) -> void:
+	_follow_target = target
+	if _follow_target != null and is_instance_valid(_follow_target):
+		_follow_offset = global_position - _follow_target.global_position
+		_follow_enabled = true
+	else:
+		_follow_enabled = false
+
+
+func freeze_follow() -> void:
+	_follow_enabled = false
+	_follow_target = null
+
+
+func _process(_delta: float) -> void:
+	if not _follow_enabled:
+		return
+	if _follow_target == null or not is_instance_valid(_follow_target):
+		_follow_enabled = false
+		return
+	global_position = _follow_target.global_position + _follow_offset

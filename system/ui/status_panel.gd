@@ -11,6 +11,9 @@ extends Node2D
 
 @onready var hearts_box: HBoxContainer = $Hearts
 @onready var inks_box: HBoxContainer = $Inks
+@onready var summon_skill: Control = $SummonSkill
+@onready var summon_ring: Control = $SummonSkill/Ring
+@onready var summon_mask: ColorRect = $SummonSkill/GrayMask
 
 var _cells: Array[HeartCell] = []
 var _display_health: int = 0
@@ -44,6 +47,7 @@ func _ready() -> void:
 	_display_ink_slots_full = _calc_full_ink_slots_from_stats()
 	_target_ink_slots_full = _display_ink_slots_full
 	_sync_ink_slots_instant(_display_ink_slots_full)
+	_update_summon_skill_ui()
 
 
 func _rebind_stats_next_frame() -> void:
@@ -60,6 +64,11 @@ func _rebind_stats_next_frame() -> void:
 	_display_ink_slots_full = _calc_full_ink_slots_from_stats()
 	_target_ink_slots_full = _display_ink_slots_full
 	_sync_ink_slots_instant(_display_ink_slots_full)
+	_update_summon_skill_ui()
+
+
+func _process(_delta: float) -> void:
+	_update_summon_skill_ui()
 
 
 func _bind_player_stats() -> void:
@@ -366,6 +375,29 @@ func _try_start_recover_chain_on_leftmost_empty() -> void:
 	_recovering_slot = s
 	if _recovering_slot.has_method("start_recover"):
 		_recovering_slot.call("start_recover", {})
+
+
+func _update_summon_skill_ui() -> void:
+	if summon_skill == null:
+		return
+	var p := get_tree().get_first_node_in_group("player")
+	if p == null:
+		if summon_mask != null:
+			summon_mask.visible = true
+		if summon_ring != null and summon_ring.has_method("set"):
+			summon_ring.set("cooldown_ratio", 0.0)
+		return
+	var unlocked := false
+	if "shangyang_summon_unlocked" in p:
+		unlocked = bool(p.get("shangyang_summon_unlocked"))
+	var cooldown_ratio := 0.0
+	if p.has_method("get_summon_cooldown_ratio"):
+		cooldown_ratio = clampf(float(p.call("get_summon_cooldown_ratio")), 0.0, 1.0)
+	var cooling := cooldown_ratio > 0.001
+	if summon_ring != null and summon_ring.has_method("set"):
+		summon_ring.set("cooldown_ratio", cooldown_ratio)
+	if summon_mask != null:
+		summon_mask.visible = (not unlocked) or cooling
 
 
 func _left_neighbor_slot(slot: Node) -> Node:

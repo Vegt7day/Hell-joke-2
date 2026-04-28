@@ -92,8 +92,13 @@ func _trigger_switch():
 	if _channel_id.is_empty():
 		push_warning("开关状态发送失败：未知颜色 %s，无法映射 channel_id" % current_color)
 		return
-	# 同色开关共用一个通道状态：发布目标状态，由总线回调驱动所有同色开关（含自身）统一播放/同步。
-	MechanismLinkBus.publish_channel_state(_channel_id, not is_on)
+	if is_processing:
+		return
+	var target_on := not is_on
+	# 按需求：先播放本开关切换动作，动作完成后再发送总线指令
+	await apply_switch_bus_state(target_on, true)
+	# 同色开关共用一个通道状态：发布目标状态，由总线回调驱动其他同色开关统一播放/同步。
+	MechanismLinkBus.publish_channel_state(_channel_id, target_on)
 
 
 func _on_channel_state_changed(ch: StringName, target_on: bool) -> void:

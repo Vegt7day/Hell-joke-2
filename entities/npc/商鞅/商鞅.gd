@@ -24,6 +24,13 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 @export var current_mode: MODE = MODE.STORY
 @export var max_health: float = 10.0
 @export var health: float = 10.0
+@export var summoned_drain_percent_per_second: float = 0.10
+@export var gravity_scale: float = 1.0
+@export var max_fall_speed: float = 900.0
+@export var hit_knockback_speed_x: float = 120.0
+@export var hit_knockback_decay: float = 700.0
+@export var player_push_factor: float = 0.35
+@export var player_push_max_speed: float = 80.0
 
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D
@@ -57,6 +64,8 @@ var _listening_return_sy_timeline: bool = false
 var _ghost_after_boss_pull: bool = false
 ## Boss 20% 预警期间由玩家召唤：已用 setup_summoned_for_boss_fatal_warning 初始化，_ready 里勿再跑 common
 var _boss_fatal_warning_summon_applied: bool = false
+## 预警期间召唤的商鞅：无碰撞，但仍受重力；且不进入掉血形态/死亡销毁流程
+var _boss_fatal_warning_damage_immune: bool = false
 
 # 动画名称映射
 var _damage_animations: Array[String] = ["less_1", "less_2", "less_3", "less_4"]
@@ -115,6 +124,7 @@ func _initialize_summoned_mode():
 func setup_summoned_for_boss_fatal_warning() -> void:
 	"""Boss 20% 预警 UI 期间被玩家召唤：进入 ready_to_pull 动画态，不播 common。"""
 	_boss_fatal_warning_summon_applied = true
+	_boss_fatal_warning_damage_immune = true
 	current_mode = MODE.SUMMONED
 	add_to_group("shangyang_player_summon")
 	_current_state = STATE.IDLE
@@ -122,6 +132,16 @@ func setup_summoned_for_boss_fatal_warning() -> void:
 	_is_dead = false
 	health = max_health
 	_thresholds_passed.clear()
+	# 按需求：预警期间召唤体仅与环境层碰撞；不与玩家/敌人/敌弹交互
+	collision_layer = 16
+	collision_mask = 1
+	if body_collision != null:
+		body_collision.set_deferred("disabled", false)
+	if story_interact != null:
+		story_interact.monitoring = false
+		story_interact.monitorable = false
+		story_interact.collision_layer = 0
+		story_interact.collision_mask = 0
 	if animation_player and animation_player.is_playing():
 		animation_player.stop()
 	if animation_player and animation_player.has_animation("ready_to_pull"):
@@ -399,7 +419,7 @@ func play_next_get_animation():
 	else:
 		print("已经是最终形态")
 
-func take_damage(damage_amount: float):
+func take_damage(damage_amount: float, attacker: Node2D = null):
 	"""受到攻击
 	
 	Args:
@@ -410,29 +430,17 @@ func take_damage(damage_amount: float):
 	if _is_dead or current_mode != MODE.SUMMONED or _current_state == STATE.COMMON:
 		# 在common动画播放期间不接受伤害
 		return
-	
-	# 减少血量
-	health -= damage_amount
-	health = max(health, 0.0)
-	
-	print("受到伤害: %.1f, 当前血量: %.1f" % [damage_amount, health])
-	
-	# 可以在这里添加击退效果
-	# 例如: apply_knockback(direction)
-	
-	# 检查血量阈值
-	_check_health_thresholds()
-	
-	# 如果血量归零，设置为死亡状态
-	if health <= 0.0 and not _is_dead:
-		_is_dead = true
-		_current_state = STATE.DEAD
-		print("商鞅已死亡")
+	if _boss_fatal_warning_damage_immune:
+		return
+	_apply_hit_knockback(attacker)
+	_apply_summoned_damage(damage_amount)
 
 func _check_health_thresholds():
 	"""检查血量是否达到阈值并触发相应动画"""
 	if _is_dead or current_mode != MODE.SUMMONED or _current_state == STATE.COMMON:
 		# 在common动画播放期间不检查血量阈值
+		return
+	if _boss_fatal_warning_damage_immune:
 		return
 	
 	var health_percent = health / max_health
@@ -517,7 +525,75 @@ func _on_animation_finished(anim_name: String):
 
 func _process(delta):
 	"""每帧更新，用于调试和状态监测"""
-	pass  # 可以根据需要添加逻辑
+	# 召唤态持续掉血：每秒掉最大生命值的 10%
+	if _is_dead:
+		return
+	if current_mode != MODE.SUMMONED:
+		return
+	if _current_state == STATE.COMMON:
+		return
+	if _boss_fatal_warning_damage_immune:
+		return
+	var dps := maxf(0.0, max_health * summoned_drain_percent_per_second)
+	if dps <= 0.0:
+		return
+	_apply_summoned_damage(dps * maxf(delta, 0.0))
+
+
+func _physics_process(delta: float) -> void:
+	if _ghost_after_boss_pull:
+		return
+	var g: float = float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+	velocity.y = minf(velocity.y + g * gravity_scale * maxf(0.0, delta), max_fall_speed)
+	# 轻微击退速度逐步衰减
+	velocity.x = move_toward(velocity.x, 0.0, hit_knockback_decay * maxf(0.0, delta))
+	move_and_slide()
+	_apply_player_push_resistance()
+
+
+func _apply_summoned_damage(damage_amount: float) -> void:
+	if damage_amount <= 0.0:
+		return
+	# 减少血量
+	health -= damage_amount
+	health = max(health, 0.0)
+	print("受到伤害: %.2f, 当前血量: %.2f" % [damage_amount, health])
+	# 检查血量阈值
+	_check_health_thresholds()
+	# 如果血量归零，设置为死亡状态
+	if health <= 0.0 and not _is_dead:
+		_is_dead = true
+		_current_state = STATE.DEAD
+		print("商鞅已死亡")
+
+
+func _apply_hit_knockback(attacker: Node2D = null) -> void:
+	var dir := -1.0
+	if attacker != null and is_instance_valid(attacker):
+		dir = -1.0 if attacker.global_position.x < global_position.x else 1.0
+	else:
+		var p := get_tree().get_first_node_in_group("player") as Node2D
+		if p != null:
+			dir = -1.0 if p.global_position.x < global_position.x else 1.0
+	velocity.x = dir * hit_knockback_speed_x
+
+
+func _apply_player_push_resistance() -> void:
+	# 被玩家推动：允许位移，但带阻力（速度较小）
+	var cnt := get_slide_collision_count()
+	if cnt <= 0:
+		return
+	for i in range(cnt):
+		var col := get_slide_collision(i)
+		if col == null:
+			continue
+		var c := col.get_collider()
+		if c is Node and (c as Node).is_in_group("player"):
+			var p := c as CharacterBody2D
+			if p != null:
+				var target_vx := clampf(p.velocity.x * player_push_factor, -player_push_max_speed, player_push_max_speed)
+				velocity.x = move_toward(velocity.x, target_vx, maxf(1.0, hit_knockback_decay) * 0.5)
+			return
 
 
 func force_initial_story_form() -> void:

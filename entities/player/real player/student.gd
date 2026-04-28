@@ -17,7 +17,6 @@ extends CharacterBody2D
 # 召唤商鞅相关参数
 @export var shangyang_summon_scene: PackedScene
 @export var summon_cooldown: float = 5.0  # 召唤冷却时间
-@export var summon_ink_cost: float = 30.0  # 召唤墨水消耗
 @export var summon_offset_x: float = 100.0  # 召唤位置的水平偏移
 @export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
 @export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
@@ -114,6 +113,7 @@ var _camera_focus_move_speed: float = 220.0
 
 var _lookahead_current: Vector2 = Vector2.ZERO
 var _lookahead_wants_fall: bool = false
+var _camera_drag_ignore_player_input: bool = false
 
 
 ## 读档用：直接写入 Camera2D.position，避免读档时视野从默认位置闪现
@@ -616,8 +616,6 @@ func can_summon_shangyang_now() -> bool:
 		return false
 	if not can_summon:
 		return false
-	if stats.ink < summon_ink_cost:
-		return false
 	if shangyang_summon_scene == null:
 		return false
 	if has_active_summoned_shangyang():
@@ -657,9 +655,6 @@ func try_summon_shangyang():
 	if not can_summon_shangyang_now():
 		return
 	
-	# 扣除墨水
-	stats.ink -= summon_ink_cost
-	
 	# 启动冷却
 	can_summon = false
 	summon_cooldown_timer = summon_cooldown
@@ -668,6 +663,12 @@ func try_summon_shangyang():
 	change_state(PlayerState.SUMMON_START)
 	
 	print("开始召唤商鞅，冷却时间: %.1f秒" % summon_cooldown)
+
+
+func get_summon_cooldown_ratio() -> float:
+	if summon_cooldown <= 0.001:
+		return 0.0
+	return clampf(summon_cooldown_timer / summon_cooldown, 0.0, 1.0)
 
 func execute_summon():
 	"""执行召唤商鞅"""
@@ -796,7 +797,11 @@ func _update_camera_bias(delta: float) -> void:
 	# 确保本相机成为当前相机，否则 position 偏移不会体现到画面上
 	if not cam.enabled:
 		cam.enabled = true
-	_update_lookahead(delta)
+	if _camera_drag_ignore_player_input:
+		# 拖拽期间，相机不受玩家移动输入影响：前瞻偏移清零并保持
+		_lookahead_current = Vector2.ZERO
+	else:
+		_update_lookahead(delta)
 	var base_world := _camera_aim_marker.global_position if _camera_aim_marker != null else global_position
 	var base_local := _camera_aim_marker.position if _camera_aim_marker != null else Vector2.ZERO
 	var focus_local := Vector2.ZERO
@@ -848,6 +853,13 @@ func clear_camera_focus_target(move_speed: float = -1.0) -> void:
 	_camera_focus_has_control = true
 	if move_speed > 0.0:
 		_camera_focus_move_speed = move_speed
+
+
+## 外部调用：拖拽期间忽略“玩家输入导致的相机偏移”（不禁用角色操作本身）
+func set_camera_drag_ignore_player_input(active: bool) -> void:
+	_camera_drag_ignore_player_input = active
+	if active:
+		_lookahead_current = Vector2.ZERO
 
 # ========== 计时器回调 ==========
 func _on_attack_timer_timeout():
@@ -1055,6 +1067,9 @@ func _input(event):
 		_process_controlled_input(event)
 	
 	if event is InputEventKey:
+		if event.pressed and not event.echo and event.keycode == KEY_F1:
+			unlock_shangyang_summon()
+			print("调试后门：已解锁召唤商鞅能力（F1）")
 		if event.pressed and event.keycode == KEY_J:
 			Input.action_press("attack")
 		elif not event.pressed and event.keycode == KEY_J:
