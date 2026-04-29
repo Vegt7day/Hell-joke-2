@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://b5liyf25o06vx"]
 
 [ext_resource type="Script" uid="uid://exiqsax20rd5" path="res://system/levels/world3/props/shangyang_limb_piece.gd" id="1_limb"]
-[ext_resource type="Texture2D" uid="uid://e74r0xae3sx0" path="res://entities/npc/商鞅/头.png" id="3_6qvdl"]
-[ext_resource type="Texture2D" uid="uid://bar6smbw8a1xa" path="res://entities/npc/商鞅/手.png" id="4_o42yq"]
-[ext_resource type="Texture2D" uid="uid://cv3j6ayywco71" path="res://entities/npc/商鞅/腿.png" id="5_lc6yu"]
+[ext_resource type="Texture2D" uid="uid://e74r0xae3sx0" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/头.png" id="3_6qvdl"]
+[ext_resource type="Texture2D" uid="uid://bar6smbw8a1xa" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/手.png" id="4_o42yq"]
+[ext_resource type="Texture2D" uid="uid://cv3j6ayywco71" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/腿.png" id="5_lc6yu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8s3v2"]
 atlas = ExtResource("5_lc6yu")

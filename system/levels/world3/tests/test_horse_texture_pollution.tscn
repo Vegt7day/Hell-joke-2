@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://test_horse_texture_pollution"]
+
+[ext_resource type="Script" path="res://system/levels/world3/tests/test_horse_texture_pollution.gd" id="1_test_script"]
+
+[node name="TestHorseTexturePollution" type="Node2D"]
+script = ExtResource("1_test_script")
+
+[node name="Bosses" type="Node2D" parent="."]
+
+[node name="Minors" type="Node2D" parent="Bosses"]
+
+[node name="SpawnMarkers" type="Node2D" parent="Bosses"]
+
+[node name="GreySpawn" type="Marker2D" parent="Bosses/SpawnMarkers"]
+position = Vector2(500, 200)
+
+[node name="BlackSpawn" type="Marker2D" parent="Bosses/SpawnMarkers"]
+position = Vector2(300, 200)

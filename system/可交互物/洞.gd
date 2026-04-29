@@ -5,7 +5,7 @@ extends StaticBody2D
 @export var disable_collision_on_trigger: bool = true  # 触发时是否禁用碰撞
 @export var one_time_trigger: bool = true  # 是否一次性触发
 @export var reset_delay: float = 0.0  # 重置延迟（秒），0表示不重置
-@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
+@export var trigger_sfx: AudioStream = preload("res://assets/资源总库/10_音频/jump.mp3")
 
 # 节点引用
 @onready var sprite: Sprite2D = $Sprite2D

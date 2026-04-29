@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cgvhtihkphxn1"]
 
-[ext_resource type="Texture2D" uid="uid://crcjrb213eibh" path="res://system/可交互物/桶.png" id="1_om5tm"]
+[ext_resource type="Texture2D" uid="uid://crcjrb213eibh" path="res://assets/资源总库/08_图像_机关/桶.png" id="1_om5tm"]
 [ext_resource type="Script" uid="uid://wc33s3teuqb" path="res://system/可交互物/桶.gd" id="2_barrel"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m5nc4"]

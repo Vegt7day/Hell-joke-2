@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cqr7e2u51rc0w"]
 
 [ext_resource type="Script" uid="uid://b00oh06vlodqw" path="res://system/scene/loading.gd" id="1_3xipy"]
-[ext_resource type="Texture2D" uid="uid://bv8vwaid5hj5g" path="res://system/scene/加载文件.png" id="1_b5hbu"]
-[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="2_y7ho5"]
+[ext_resource type="Texture2D" uid="uid://bv8vwaid5hj5g" path="res://assets/资源总库/09_图像_系统/加载文件.png" id="1_b5hbu"]
+[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/资源总库/01_图像_背景/背景.png" id="2_y7ho5"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_y7ho5"]
 atlas = ExtResource("1_b5hbu")

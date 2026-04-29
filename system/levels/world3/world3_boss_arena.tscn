@@ -2,10 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="1_game"]
 [ext_resource type="Script" uid="uid://c0u51j0dhixej" path="res://system/levels/world3/scripts/boss_horse_phase_controller.gd" id="2_phase"]
+[ext_resource type="Texture2D" uid="uid://bkny8fikwl7f4" path="res://assets/资源总库/06_图像_World3/马场后.png" id="2_vkqhm"]
 [ext_resource type="PackedScene" uid="uid://b8or77wlcj53x" path="res://system/levels/world3/bosses/boss_horse_main.tscn" id="3_main"]
+[ext_resource type="Texture2D" uid="uid://cas4r1p3qskcm" path="res://assets/资源总库/06_图像_World3/马场中.png" id="3_rkk35"]
 [ext_resource type="PackedScene" uid="uid://cm8rbuwr72car" path="res://system/levels/world3/bosses/boss_si.tscn" id="4_si"]
-[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="6_05vw4"]
-[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="7_f8sp1"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/资源总库/02_图像_地图/地.png" id="6_05vw4"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/资源总库/02_图像_地图/墙.png" id="7_f8sp1"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="8_bch5w"]
 [ext_resource type="Script" uid="uid://blc6s1vtdeew5" path="res://system/levels/world3/scripts/shangyang_dialog_proxy.gd" id="10_syproxy"]
 [ext_resource type="PackedScene" uid="uid://bxem2tyx8ink3" path="res://system/levels/world3/random_pieces/piece_02.tscn" id="11_vcjgv"]
@@ -14,14 +16,12 @@
 [ext_resource type="Script" uid="uid://cvn4hd2llvrur" path="res://system/levels/world3/world3_boss_arena.gd" id="13_world3arena"]
 [ext_resource type="Script" uid="uid://ocnpb4spwa80" path="res://system/levels/world3/scripts/world3_random_piece_builder.gd" id="14_piece_builder"]
 [ext_resource type="PackedScene" uid="uid://b2sjxhdmw4rv6" path="res://system/levels/world3/random_pieces/piece_01.tscn" id="15_piece_01"]
+[ext_resource type="PackedScene" uid="uid://cjgjqi2oqg0i8" path="res://system/levels/world3/random_pieces/piece_05.tscn" id="16_piece_05"]
 [ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="17_jl37f"]
 [ext_resource type="PackedScene" uid="uid://dq2qesyce1l7i" path="res://system/camera/camera_cue_pan_to_marker.tscn" id="18_gj035"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="18_h3hwr"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="19_ndw4r"]
-[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="20_boss_bg_far"]
-[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="21_boss_bg_mid"]
-[ext_resource type="AudioStream" uid="uid://34dfybpvvspm" path="res://assets/商鞅的小曲.mp3" id="22_boss_bgm"]
-[ext_resource type="AudioStream" uid="uid://rtdoc4qvgfva" path="res://assets/开关.mp3" id="23_phase_sting"]
+[ext_resource type="AudioStream" uid="uid://cws33jtobhf3r" path="res://assets/资源总库/10_音频/开关.mp3" id="23_phase_sting"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lqbdu"]
 texture = ExtResource("6_05vw4")
@@ -61,28 +61,30 @@ script = ExtResource("13_world3arena")
 
 [node name="far" type="ParallaxLayer" parent="BackgroundParallax" unique_id=199930001]
 motion_scale = Vector2(0.08, 0.08)
-motion_offset = Vector2(0, 40)
+motion_offset = Vector2(0, 9)
+motion_mirroring = Vector2(749, 0)
 
 [node name="FarSprite" type="Sprite2D" parent="BackgroundParallax/far" unique_id=199930002]
-texture = ExtResource("20_boss_bg_far")
-position = Vector2(-320, -200)
-scale = Vector2(1.45, 1.45)
+position = Vector2(0, -40)
+texture = ExtResource("2_vkqhm")
 centered = false
-modulate = Color(0.35, 0.32, 0.38, 1)
 
 [node name="mid" type="ParallaxLayer" parent="BackgroundParallax" unique_id=199930003]
+position = Vector2(1, 0)
 motion_scale = Vector2(0.22, 0.22)
 motion_offset = Vector2(0, 20)
+motion_mirroring = Vector2(749, 0)
 
 [node name="MidSprite" type="Sprite2D" parent="BackgroundParallax/mid" unique_id=199930004]
-texture = ExtResource("21_boss_bg_mid")
-position = Vector2(-280, -140)
-scale = Vector2(0.95, 0.95)
+position = Vector2(-1, -24)
+texture = ExtResource("3_rkk35")
 centered = false
-modulate = Color(0.42, 0.38, 0.44, 0.92)
 
-[node name="BossBattleBgm" type="AudioStreamPlayer" parent="." unique_id=199931001]
-stream = ExtResource("22_boss_bgm")
+[node name="ArenaBgmA" type="AudioStreamPlayer" parent="." unique_id=199931001]
+volume_db = -5.0
+bus = &"BGM_Boss"
+
+[node name="ArenaBgmB" type="AudioStreamPlayer" parent="." unique_id=199931003]
 volume_db = -5.0
 bus = &"BGM_Boss"
 
@@ -149,8 +151,9 @@ position = Vector2(1312, 448)
 unique_name_in_owner = true
 position = Vector2(1440, 448)
 scale = Vector2(1, 1.0048534)
+collision_layer = 4
 collision_priority = 0.1
-move_left_speed = 188.0
+move_left_speed = 130.0
 white_sword_count_per_cast = 2
 red_bomb_count_per_cast = 2
 
@@ -176,12 +179,12 @@ script = ExtResource("2_phase")
 
 [node name="RandomPieceBuilder" type="Node" parent="Systems" unique_id=1065559332]
 script = ExtResource("14_piece_builder")
-piece_pool = Array[PackedScene]([ExtResource("15_piece_01"), ExtResource("11_vcjgv"), ExtResource("12_qq75a"), ExtResource("13_gj035")])
+piece_pool = Array[PackedScene]([ExtResource("15_piece_01"), ExtResource("11_vcjgv"), ExtResource("12_qq75a"), ExtResource("13_gj035"), ExtResource("16_piece_05")])
+allow_repeat_piece = false
 spawn_heart_every_n = 1
 heart_spawn_start_index = 0
 
 [node name="UIHints" type="CanvasLayer" parent="Systems" unique_id=1613001565]
-visible = false
 
 [node name="WarningLabelPlaceholder" type="Label" parent="Systems/UIHints" unique_id=776299288]
 offset_left = 128.0
@@ -191,6 +194,7 @@ offset_bottom = 96.0
 text = "（20% 强力攻击提示占位）"
 
 [node name="RopeLimbHint" type="Label" parent="Systems/UIHints" unique_id=776299289]
+visible = false
 offset_left = 80.0
 offset_top = 500.0
 offset_right = 1072.0
@@ -201,6 +205,33 @@ theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="PhaseEnterHint" type="RichTextLabel" parent="Systems/UIHints" unique_id=776299290]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 24.0
+offset_right = -16.0
+offset_bottom = 72.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+bbcode_enabled = true
+scroll_active = false
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SkillFeedRoot" type="Control" parent="Systems/UIHints" unique_id=776299291]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 180.0
+offset_right = -16.0
+offset_bottom = 332.0
+grow_horizontal = 2
+mouse_filter = 2
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=169688529]
 position = Vector2(288, -160)

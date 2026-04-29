@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://dv5qa18qbluus" path="res://system/ui/status_panel.gd" id="1_rswnf"]
 [ext_resource type="Script" uid="uid://dpfnky3od7yo8" path="res://system/ui/summon_cooldown_ring.gd" id="2_ring"]
-[ext_resource type="Texture2D" uid="uid://i8ggblxau4m1" path="res://entities/npc/商鞅/商.png" id="2_rswnf"]
-[ext_resource type="AudioStream" uid="uid://bjok8hm3ypsbf" path="res://assets/draw.mp3" id="3_draw_mp3"]
-[ext_resource type="AudioStream" uid="uid://dno0gg0tgvoce" path="res://assets/水滴.mp3" id="4_drop_mp3"]
+[ext_resource type="Texture2D" uid="uid://i8ggblxau4m1" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/商.png" id="2_rswnf"]
+[ext_resource type="AudioStream" uid="uid://bjok8hm3ypsbf" path="res://assets/资源总库/10_音频/draw.mp3" id="3_draw_mp3"]
+[ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="4_drop_mp3"]
 
 [node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")

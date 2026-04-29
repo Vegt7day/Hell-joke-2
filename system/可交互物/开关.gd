@@ -10,7 +10,7 @@ signal switch_state_changed(color: String, switch_state: String)
 @export var is_on: bool = false
 @export var bullet_trigger_enabled: bool = true  # 是否允许子弹触发
 @export var damage_threshold: float = 1.0  # 触发开关所需的最小伤害值
-@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
+@export var trigger_sfx: AudioStream = preload("res://assets/资源总库/10_音频/jump.mp3")
 
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer

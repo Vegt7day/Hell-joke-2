@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cjkbtgsoyodw3"]
 
 [ext_resource type="Script" uid="uid://lgwxwg0o45k3" path="res://门.gd" id="1_gxmog"]
-[ext_resource type="Texture2D" uid="uid://qmerhi1eunid" path="res://system/可交互物/门.png" id="2_vs45f"]
+[ext_resource type="Texture2D" uid="uid://qmerhi1eunid" path="res://assets/资源总库/08_图像_机关/门.png" id="2_vs45f"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2r42g"]

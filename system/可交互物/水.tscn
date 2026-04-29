@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://du2s1gdqmp4hk"]
 
-[ext_resource type="Texture2D" uid="uid://dei6m667i8tb4" path="res://system/可交互物/水.png" id="1_l1p8m"]
+[ext_resource type="Texture2D" uid="uid://dei6m667i8tb4" path="res://assets/资源总库/08_图像_机关/水.png" id="1_l1p8m"]
 [ext_resource type="Script" uid="uid://csh2hcm1hja2l" path="res://system/可交互物/水.gd" id="2_water"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dcifr"]

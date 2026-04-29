@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://mwm0oxywnqrf"]
 
 [ext_resource type="Script" uid="uid://bfshakbr65jkp" path="res://entities/npc/商鞅/商鞅.gd" id="1_iv8hp"]
-[ext_resource type="Texture2D" uid="uid://d10f8lwtf7fj4" path="res://entities/npc/商鞅/商鞅.png" id="2_bob5k"]
+[ext_resource type="Texture2D" uid="uid://d10f8lwtf7fj4" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/商鞅.png" id="2_bob5k"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="3_bob5k"]
 [ext_resource type="Script" uid="uid://dh5d2t0x4sqpp" path="res://entities/npc/商鞅/shang_yang_story_interact.gd" id="4_story"]
+[ext_resource type="AudioStream" uid="uid://c4v5p2e0cvrb6" path="res://assets/资源总库/10_音频/商鞅被拉扯音效.mp3" id="5_mmhi5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wa22q"]
 size = Vector2(94, 126)
@@ -823,7 +824,6 @@ script = ExtResource("1_iv8hp")
 position = Vector2(51, -80)
 texture = ExtResource("2_bob5k")
 hframes = 42
-frame = 40
 region_enabled = true
 region_rect = Rect2(0, 0, 6720, 160)
 
@@ -850,6 +850,11 @@ shape = SubResource("RectangleShape2D_story_ix")
 
 [node name="DialogMarker" type="Marker2D" parent="." unique_id=2107278150]
 position = Vector2(98, -96)
+
+[node name="BePullSfx" type="AudioStreamPlayer" parent="." unique_id=2107278151]
+stream = ExtResource("5_mmhi5")
+volume_db = 6.339
+bus = &"SFX_Enemy"
 
 [node name="LimbMarkers" type="Node2D" parent="." unique_id=337722901]
 

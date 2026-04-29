@@ -38,6 +38,7 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 @onready var story_interact: ShangYangStoryInteract = $StoryInteract
 @onready var limb_markers_root: Node2D = $LimbMarkers
 @onready var body_collision: CollisionShape2D = $CollisionShape2D
+@onready var be_pull_sfx: AudioStreamPlayer = get_node_or_null("BePullSfx") as AudioStreamPlayer
 
 # 私有变量
 var _current_state: STATE = STATE.IDLE
@@ -656,6 +657,8 @@ func force_initial_story_form() -> void:
 
 
 func play_be_pull_animation() -> void:
+	if be_pull_sfx != null and be_pull_sfx.stream != null:
+		be_pull_sfx.play()
 	if animation_player and animation_player.has_animation("be_pull"):
 		animation_player.play("be_pull")
 

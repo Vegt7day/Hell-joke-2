@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://d2p5xym2a3j3x"]
 
 [ext_resource type="Script" uid="uid://bhm2orppjolky" path="res://system/ui/heart_cell.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://dk4tph5jev25x" path="res://system/ui/生命值ui.png" id="2_c3dps"]
+[ext_resource type="Texture2D" uid="uid://dk4tph5jev25x" path="res://assets/资源总库/03_图像_UI/生命值ui.png" id="2_c3dps"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_igmlq"]
 atlas = ExtResource("2_c3dps")

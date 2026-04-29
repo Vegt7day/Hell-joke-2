@@ -7,6 +7,9 @@ extends Area2D
 ## 离开该区域后才可以再次触发一次击飞
 @export var require_exit_to_rearm: bool = true
 
+const STANDARD_BUMP_DIR := Vector2(-1.0, -0.42)
+const STANDARD_BUMP_SPEED := 268.0
+
 
 var _armed: bool = true
 
@@ -63,3 +66,8 @@ func _on_body_exited(body: Node2D) -> void:
 
 func set_bump_enabled(on: bool) -> void:
 	set_deferred("monitoring", on)
+
+
+func apply_standard_bump_preset() -> void:
+	bump_dir = STANDARD_BUMP_DIR
+	bump_speed = STANDARD_BUMP_SPEED

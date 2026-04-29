@@ -66,6 +66,7 @@ var stats: Stats
 @onready var walk_sound: AudioStreamPlayer = $walk
 @onready var attack_sound: AudioStreamPlayer = $attack
 @onready var hurt_sound: AudioStreamPlayer = get_node_or_null("hurt") as AudioStreamPlayer
+@onready var heal_sound: AudioStreamPlayer = get_node_or_null("HealSfx") as AudioStreamPlayer
 @onready var dialogic: Marker2D = $Marker2D3
 
 # 召唤音效
@@ -151,9 +152,6 @@ var _last_full_heal_interaction_id: String = ""
 func _ready():
 	add_to_group("player")
 	_resolve_and_bind_stats_source()
-	print("=== Player.gd _ready() 开始 ===")
-	print("玩家初始位置:", global_position)
-	print("父节点:", get_parent().name if get_parent() else "无父节点")
 	
 	# 首先重置所有物理状态
 	velocity = Vector2.ZERO
@@ -187,7 +185,6 @@ func _ready():
 	
 	# 检查是否在地面上
 	if is_on_floor():
-		print("玩家在地面上，初始状态: IDLE")
 		change_state(PlayerState.IDLE)
 	else:
 		# 如果不在平面上，尝试向上调整位置
@@ -201,7 +198,6 @@ func _ready():
 			move_and_slide()
 			
 			if is_on_floor():
-				print("找到地面，调整后位置:", global_position)
 				change_state(PlayerState.IDLE)
 				found_ground = true
 				break
@@ -209,12 +205,9 @@ func _ready():
 		# 如果没有找到地面，恢复原始位置
 		if not found_ground:
 			global_position.y = original_y
-			print("玩家不在平面上，初始状态: JUMP_FALL")
 			# 重置速度，防止初始速度过大
 			velocity = Vector2.ZERO
 			change_state(PlayerState.JUMP_FALL)
-	
-	print("=== Player.gd _ready() 完成 ===")
 
 
 func _resolve_and_bind_stats_source() -> void:
@@ -273,9 +266,6 @@ func change_state(new_state: PlayerState):
 	
 	# 执行进入新状态的逻辑
 	enter_state(current_state)
-	
-	# 打印状态转换（调试用）
-	print("状态转换: ", get_state_name(previous_state), " -> ", get_state_name(current_state))
 
 func get_state_name(state: PlayerState) -> String:
 	match state:
@@ -342,10 +332,8 @@ func enter_state(state: PlayerState):
 					summon_sound.play()
 				# 在动画中延迟召唤
 				summon_delay_timer.start()
-				print("开始召唤商鞅，播放draw动画")
 			else:
 				# 如果没有draw动画，直接召唤
-				print("警告：未找到draw动画，直接召唤")
 				execute_summon()
 				change_state(PlayerState.SUMMON_END)
 			
@@ -419,7 +407,7 @@ func handle_common_updates(delta: float):
 
 # ========== 状态更新函数 ==========
 func update_idle(delta: float):
-	var input_direction = Input.get_axis("move_left", "move_right")
+	var input_direction = _get_move_input_axis()
 	
 	# 检查移动输入
 	if input_direction != 0:
@@ -446,7 +434,7 @@ func update_idle(delta: float):
 		velocity.x = move_toward(velocity.x, 0, friction)
 
 func update_walk(delta: float):
-	var input_direction = Input.get_axis("move_left", "move_right")
+	var input_direction = _get_move_input_axis()
 	if not walk_sound.playing:
 		walk_sound.play()
 	
@@ -493,7 +481,7 @@ func _ensure_walk_sound_loop() -> void:
 
 func update_jump_ascend(delta: float):
 	# 处理水平移动
-	var input_direction = Input.get_axis("move_left", "move_right")
+	var input_direction = _get_move_input_axis()
 	if input_direction != 0:
 		velocity.x = move_toward(velocity.x, input_direction * move_speed, acceleration)
 		if (input_direction > 0 and direction != 1) or (input_direction < 0 and direction != 0):
@@ -525,7 +513,7 @@ func update_jump_ascend(delta: float):
 
 func update_jump_fall(delta: float):
 	# 处理水平移动
-	var input_direction = Input.get_axis("move_left", "move_right")
+	var input_direction = _get_move_input_axis()
 	if input_direction != 0:
 		velocity.x = move_toward(velocity.x, input_direction * move_speed, acceleration)
 		if (input_direction > 0 and direction != 1) or (input_direction < 0 and direction != 0):
@@ -668,8 +656,6 @@ func try_summon_shangyang():
 	
 	# 切换到召唤开始状态
 	change_state(PlayerState.SUMMON_START)
-	
-	print("开始召唤商鞅，冷却时间: %.1f秒" % summon_cooldown)
 
 
 func get_summon_cooldown_ratio() -> float:
@@ -701,8 +687,6 @@ func execute_summon():
 		_notify_boss_warning_summon_ready(shangyang)
 	else:
 		shangyang.switch_to_summoned_mode()
-	
-	print("成功召唤商鞅在位置: %s" % str(summon_position))
 
 func calculate_summon_position() -> Vector2:
 	"""计算召唤位置"""
@@ -746,16 +730,16 @@ func _physics_process(delta):
 				Input.action_release(action)
 	
 	# 处理跳跃输入 - 立即响应
-	if Input.is_action_just_pressed("jump") and is_on_floor() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
+	if enable_input_control and Input.is_action_just_pressed("jump") and is_on_floor() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START:
 		change_state(PlayerState.JUMP_ASCEND)
 	
 	# 更新当前状态
 	update_state(delta)
 	
 	# 处理互动输入
-	if Input.is_action_just_pressed("interact") and not interacting_with.is_empty():
+	if enable_input_control and Input.is_action_just_pressed("interact") and not interacting_with.is_empty():
 		interacting_with.back().interact()
-	if not _contact_triggers.is_empty():
+	if enable_input_control and not _contact_triggers.is_empty():
 		_contact_triggers.back().interact()
 	
 	# 处理攻击输入
@@ -816,7 +800,8 @@ func _update_camera_bias(delta: float) -> void:
 	if _camera_focus_active:
 		focus_local = _camera_focus_target_world - base_world
 	var desired_local := base_local + focus_local + _lookahead_current
-	var spd := _camera_focus_move_speed if _camera_focus_active else lookahead_camera_move_speed
+	# 焦点/回收接管阶段都使用外部传入速度；仅普通前瞻时使用 lookahead 速度
+	var spd := _camera_focus_move_speed if _camera_focus_has_control else lookahead_camera_move_speed
 	var step := maxf(1.0, spd) * maxf(delta, 0.0)
 	cam.position = cam.position.move_toward(desired_local, step)
 	if not _camera_focus_active and not camera_lookahead_enabled and cam.position.length() <= 0.5:
@@ -845,6 +830,12 @@ func _update_lookahead(delta: float) -> void:
 	# 指数型平滑（帧率无关）
 	var a := 1.0 - exp(-maxf(0.0, lookahead_xy_lerp_speed) * maxf(0.0, delta))
 	_lookahead_current = _lookahead_current.lerp(desired, clampf(a, 0.0, 1.0))
+
+
+func _get_move_input_axis() -> float:
+	if not enable_input_control:
+		return 0.0
+	return Input.get_axis("move_left", "move_right")
 
 
 ## 外部（如 CameraFocusArea）调用：将相机焦点移向一个世界坐标点
@@ -894,13 +885,10 @@ func _on_summon_delay_timer_timeout():
 # ========== 动画完成回调 ==========
 func _on_animation_finished(anim_name: String):
 	"""动画播放完成时的回调"""
-	print("动画完成: %s, 当前状态: %s" % [anim_name, get_state_name(current_state)])
-	
 	match current_state:
 		PlayerState.SUMMON_START:
 			# draw动画播放完成，进入SUMMON_END状态
 			if anim_name == "draw":
-				print("draw动画播放完成，进入SUMMON_END状态")
 				change_state(PlayerState.SUMMON_END)
 		
 		# 其他状态的处理保持不变
@@ -965,10 +953,10 @@ func take_damage(damage_amount: float):
 	# Stats.health 是 int；很多敌方伤害是小数（如 0.05），若直接相减会被截断为 0 导致“被打不掉血”。
 	var damage_i: int = maxi(1, int(ceil(damage_amount)))
 	stats.health -= damage_i
+	if hurt_sound != null and hurt_sound.stream != null:
+		hurt_sound.play()
 	if stats.health > 0:
 		_trigger_hit_screen_feedback()
-		if hurt_sound != null and hurt_sound.stream != null:
-			hurt_sound.play()
 
 
 ## 按需求：仅在特定交互（心/剑、存档点）时调用，瞬间回满血
@@ -986,6 +974,8 @@ func recover_full_health_once(interaction_id: String) -> bool:
 		return false
 	_last_full_heal_interaction_id = interaction_id
 	stats.health = stats.max_health
+	if heal_sound != null and heal_sound.stream != null:
+		heal_sound.play()
 	return true
 
 
@@ -1090,7 +1080,6 @@ func _input(event):
 	if event is InputEventKey:
 		if event.pressed and not event.echo and event.keycode == KEY_F1:
 			unlock_shangyang_summon()
-			print("调试后门：已解锁召唤商鞅能力（F1）")
 		if event.pressed and event.keycode == KEY_J:
 			Input.action_press("attack")
 		elif not event.pressed and event.keycode == KEY_J:
@@ -1109,8 +1098,6 @@ func _init_input_control():
 			disabled_actions[action] = false
 			action_callbacks[action] = false
 			action_presses[action] = false
-		else:
-			print("警告：动作 ", action, " 不存在于InputMap中")
 
 func _process_controlled_input(event):
 	for action in disabled_actions.keys():
@@ -1129,7 +1116,6 @@ func _process_controlled_input(event):
 
 func disable_action(action_name: String, add_callback: bool = false, callback_node: Node = null, callback_method: String = ""):
 	if not InputMap.has_action(action_name):
-		print("错误：动作 ", action_name, " 不存在于InputMap中")
 		return
 	
 	if action_name in disabled_actions:
@@ -1145,16 +1131,11 @@ func disable_action(action_name: String, add_callback: bool = false, callback_no
 			if not has_method(action_name + "_pressed_callback"):
 				_add_callback_method(action_name, callback_node, callback_method)
 		
-		print("动作 ", action_name, " 已被禁用")
-		
 		if Input.is_action_pressed(action_name):
 			Input.action_release(action_name)
-	else:
-		print("警告：动作 ", action_name, " 未被监控")
 
 func enable_action(action_name: String):
 	if not InputMap.has_action(action_name):
-		print("错误：动作 ", action_name, " 不存在于InputMap中")
 		return
 	
 	if action_name in disabled_actions:
@@ -1164,9 +1145,6 @@ func enable_action(action_name: String):
 		if has_method(action_name + "_pressed_callback"):
 			_remove_callback_method(action_name)
 		
-		print("动作 ", action_name, " 已被解锁")
-	else:
-		print("警告：动作 ", action_name, " 未被监控")
 
 func _add_callback_method(action_name: String, callback_node: Node, callback_method: String):
 	var callback_func = func():
@@ -1203,12 +1181,10 @@ func is_action_disabled(action_name: String) -> bool:
 func disable_all_actions():
 	for action in disabled_actions.keys():
 		disable_action(action)
-	print("所有动作已被禁用")
 
 func enable_all_actions():
 	for action in disabled_actions.keys():
 		enable_action(action)
-	print("所有动作已被解锁")
 
 # ========== 交互系统 ==========
 func register_interactable(v: Interactable):

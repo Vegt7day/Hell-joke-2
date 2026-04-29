@@ -46,7 +46,19 @@ static func update_directory(extension:String) -> void:
 
 	var keys_to_remove := []
 	for key in directory:
-		if not ResourceLoader.exists(directory[key]):
+		var entry: Variant = directory[key]
+		var path_to_check: String = ""
+		if typeof(entry) == TYPE_STRING:
+			path_to_check = entry
+		elif entry is Resource:
+			var rp: String = (entry as Resource).resource_path
+			if rp.is_empty():
+				continue
+			path_to_check = rp
+		else:
+			keys_to_remove.append(key)
+			continue
+		if not ResourceLoader.exists(path_to_check):
 			keys_to_remove.append(key)
 	for key in keys_to_remove:
 		directory.erase(key)

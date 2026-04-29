@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bahd8uj8gujj5"]
 
 [ext_resource type="Script" uid="uid://dnvpuf4pfv4de" path="res://entities/npc/商鞅/shang_yang_limb.gd" id="1_limb"]
-[ext_resource type="Texture2D" uid="uid://d2ko6w1cd7m3k" path="res://entities/npc/商鞅/商鞅肢体.png" id="2_g808a"]
+[ext_resource type="Texture2D" uid="uid://d2ko6w1cd7m3k" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/商鞅肢体.png" id="2_g808a"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m25bi"]
 atlas = ExtResource("2_g808a")

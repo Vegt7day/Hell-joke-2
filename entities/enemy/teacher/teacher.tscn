@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://1colpcddw04k"]
 
 [ext_resource type="Script" uid="uid://4s12inoufkdc" path="res://entities/enemy/teacher/teacher.gd" id="1_8cnmc"]
-[ext_resource type="Texture2D" uid="uid://bq8j6q2svbfyc" path="res://entities/enemy/teacher/teacher.png" id="1_23k3x"]
+[ext_resource type="Texture2D" uid="uid://bq8j6q2svbfyc" path="res://assets/资源总库/06_图像_敌人/teacher/teacher.png" id="1_23k3x"]
 [ext_resource type="PackedScene" uid="uid://ytj6dqiqemb5" path="res://entities/enemy/bullet/蚊子.tscn" id="2_1kfbk"]
-[ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_1kfbk"]
+[ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/资源总库/10_音频/破空.mp3" id="3_1kfbk"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_l68gm"]
 [ext_resource type="PackedScene" uid="uid://b8qdrsdj7p10h" path="res://system/ui/boss_health_bar.tscn" id="6_okk1h"]
 

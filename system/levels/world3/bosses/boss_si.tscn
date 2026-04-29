@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cm8rbuwr72car"]
 
 [ext_resource type="Script" uid="uid://djcqlukbsd8we" path="res://system/levels/world3/bosses/boss_si.gd" id="1_si"]
-[ext_resource type="Texture2D" uid="uid://dlab0qdpvyvwx" path="res://system/levels/world3/bosses/驷马.png" id="2_hn4pt"]
+[ext_resource type="Texture2D" uid="uid://dlab0qdpvyvwx" path="res://assets/资源总库/06_图像_World3/bosses/驷马.png" id="2_hn4pt"]
 
 [sub_resource type="Animation" id="Animation_37dnn"]
 length = 0.001
@@ -181,6 +181,7 @@ position = Vector2(0, 24)
 [node name="CinematicAnchor" type="Marker2D" parent="." unique_id=1733208102]
 
 [node name="HitboxPlaceholder" type="StaticBody2D" parent="." unique_id=533537618]
+collision_layer = 0
 collision_mask = 0
 collision_priority = 0.3
 

@@ -4,10 +4,10 @@ extends CharacterBody2D
 const _MINOR_SELF_SCENE := preload("res://system/levels/world3/bosses/boss_horse_minor.tscn")
 const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse_player_bump_area.gd")
 const _RED_BOMB_SCENE := preload("res://system/levels/world3/props/bomb_red_horse.tscn")
-const _ATLAS_GREY := preload("res://system/levels/world3/bosses/灰马.png")
-const _ATLAS_WHITE := preload("res://system/levels/world3/bosses/白马.png")
-const _ATLAS_BLACK := preload("res://system/levels/world3/bosses/黑马.png")
-const _ATLAS_RED := preload("res://system/levels/world3/bosses/红马.png")
+const _ATLAS_GREY := preload("res://assets/资源总库/06_图像_World3/bosses/灰马.png")
+const _ATLAS_WHITE := preload("res://assets/资源总库/06_图像_World3/bosses/白马.png")
+const _ATLAS_BLACK := preload("res://assets/资源总库/06_图像_World3/bosses/黑马.png")
+const _ATLAS_RED := preload("res://assets/资源总库/06_图像_World3/bosses/红马.png")
 
 @export var horse_id: BossHorseTypes.HorseId = BossHorseTypes.HorseId.GREY
 ## 小黑马召唤的分身：小黑马外观、仅左移循环，不放技能。
@@ -287,6 +287,14 @@ func _play_optional(anim_name: StringName, fallback_seconds: float = 0.12) -> vo
 	if animation_player == null or not animation_player.has_animation(anim_name):
 		await get_tree().create_timer(fallback_seconds).timeout
 		return
+	# 修正共享 AtlasTexture 的 atlas —— 分身播放 black_jump 会污染所有实例的 AtlasTexture_7yfle
+	if sprite_2d and sprite_2d.texture and sprite_2d.texture is AtlasTexture:
+		var at := sprite_2d.texture as AtlasTexture
+		match int(horse_id):
+			0: at.atlas = _ATLAS_GREY
+			1: at.atlas = _ATLAS_WHITE
+			2: at.atlas = _ATLAS_BLACK
+			3: at.atlas = _ATLAS_RED
 	animation_player.play(anim_name)
 	var length := animation_player.get_animation(anim_name).length
 	if length <= 0.0:
@@ -317,8 +325,18 @@ func _spawn_white_sword() -> void:
 func refresh_visual_to_horse_id() -> void:
 	if is_summoned_clone or sprite_2d == null:
 		return
-	if animation_player:
-		animation_player.stop(true)
+	# 先修复共享 AtlasTexture 的 atlas —— 分身播放 black_jump 会把所有实例的 AtlasTexture_7yfle.atlas 改成黑马
+	if sprite_2d.texture and sprite_2d.texture is AtlasTexture:
+		var at := sprite_2d.texture as AtlasTexture
+		match int(horse_id):
+			0:
+				at.atlas = _ATLAS_GREY
+			1:
+				at.atlas = _ATLAS_WHITE
+			2:
+				at.atlas = _ATLAS_BLACK
+			3:
+				at.atlas = _ATLAS_RED
 	sprite_2d.region_enabled = true
 	var hid := int(horse_id)
 	match hid:

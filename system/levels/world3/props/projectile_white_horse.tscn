@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b5wrph5xcf0pf"]
 
 [ext_resource type="Script" uid="uid://ciegj0sq8s77c" path="res://system/levels/world3/props/projectile_white_horse.gd" id="1_proj"]
-[ext_resource type="Texture2D" uid="uid://cht2j8cfqwahw" path="res://system/levels/world3/props/白马召唤物.png" id="2_3grl1"]
+[ext_resource type="Texture2D" uid="uid://cht2j8cfqwahw" path="res://assets/资源总库/06_图像_World3/props/白马召唤物.png" id="2_3grl1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nhcu6"]
 size = Vector2(31, 4)

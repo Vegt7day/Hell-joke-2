@@ -12,7 +12,7 @@ const _PUSH_DIR_META := "_window_push_dir"
 
 @export var initial_color: String = "红"
 @export var is_open: bool = true
-@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
+@export var trigger_sfx: AudioStream = preload("res://assets/资源总库/10_音频/jump.mp3")
 
 @onready var sprite_2d: Sprite2D = $Sprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer

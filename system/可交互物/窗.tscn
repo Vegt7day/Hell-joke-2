@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bha6aitbys2hs"]
 
-[ext_resource type="Texture2D" uid="uid://0niqdh3e61ev" path="res://system/可交互物/窗.png" id="1_bnd1u"]
+[ext_resource type="Texture2D" uid="uid://0niqdh3e61ev" path="res://assets/资源总库/08_图像_机关/窗.png" id="1_bnd1u"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="2_rp01u"]
 [ext_resource type="Script" uid="uid://ct1y7mrsh0rss" path="res://system/可交互物/窗.gd" id="3_win"]
 

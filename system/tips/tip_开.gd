@@ -1,7 +1,7 @@
 extends Area2D
 
 # 导出变量，可以在编辑器中设置
-@export var dialogue_timeline: String = "res://assets/tip_开关与门1.dtl"  # Dialogic2时间线名称
+@export var dialogue_timeline: String = "res://assets/资源总库/12_Dialogic工程/tip_开关与门1.dtl"  # Dialogic2时间线名称
 @export var one_shot: bool = true  # 是否只触发一次
 @export var player_group_name: String = "player"  # 玩家所在的组名
 @export var require_input: bool = false  # 是否需要按交互键触发

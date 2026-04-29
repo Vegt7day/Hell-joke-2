@@ -3,14 +3,15 @@
 [ext_resource type="Script" uid="uid://bd4ejhaavitm7" path="res://entities/player/real player/student.gd" id="1_wkr24"]
 [ext_resource type="PackedScene" uid="uid://b0610k7g8b8vx" path="res://entities/player/bullet/ink.tscn" id="2_dnbur"]
 [ext_resource type="PackedScene" uid="uid://mwm0oxywnqrf" path="res://entities/npc/商鞅/商鞅.tscn" id="2_vmijo"]
-[ext_resource type="AudioStream" uid="uid://dkx4cf3fxibqa" path="res://assets/破空.mp3" id="3_dnbur"]
-[ext_resource type="AudioStream" uid="uid://dg8oigfgb8yh7" path="res://assets/walk.mp3" id="4_avp68"]
+[ext_resource type="AudioStream" uid="uid://bw7pa85pbtavl" path="res://assets/资源总库/10_音频/破空.mp3" id="3_dnbur"]
+[ext_resource type="AudioStream" uid="uid://bh7ykawm28lfr" path="res://assets/资源总库/10_音频/walk.mp3" id="4_avp68"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="4_cdn5u"]
-[ext_resource type="AudioStream" uid="uid://dj5saoxegjvkl" path="res://assets/jump.mp3" id="4_ic7vs"]
+[ext_resource type="AudioStream" uid="uid://bdhfsmdh6dtcj" path="res://assets/资源总库/10_音频/jump.mp3" id="4_ic7vs"]
 [ext_resource type="PackedScene" uid="uid://lmhmviqigfpb" path="res://system/ui/status_panel.tscn" id="5_ic7vs"]
-[ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://system/ui/按e提示.png" id="6_avp68"]
-[ext_resource type="Texture2D" uid="uid://075guroroax5" path="res://entities/player/real player/新主角.png" id="6_vmijo"]
-[ext_resource type="AudioStream" uid="uid://bjok8hm3ypsbf" path="res://assets/draw.mp3" id="9_cdn5u"]
+[ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://assets/资源总库/03_图像_UI/按e提示.png" id="6_avp68"]
+[ext_resource type="Texture2D" uid="uid://075guroroax5" path="res://assets/资源总库/04_图像_玩家/real player/新主角.png" id="6_vmijo"]
+[ext_resource type="AudioStream" uid="uid://25oc835mles5" path="res://assets/资源总库/10_音频/draw.mp3" id="9_cdn5u"]
+[ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="10_heal"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dnbur"]
 radius = 6.000001
@@ -396,9 +397,15 @@ stream = ExtResource("3_dnbur")
 volume_db = -16.845
 
 [node name="hurt" type="AudioStreamPlayer" parent="." unique_id=1491403654]
-stream = ExtResource("4_ic7vs")
+stream = ExtResource("3_dnbur")
 volume_db = -10.0
 pitch_scale = 0.82
+bus = &"SFX_Player"
+
+[node name="HealSfx" type="AudioStreamPlayer" parent="." unique_id=1491403655]
+stream = ExtResource("10_heal")
+volume_db = -8.0
+pitch_scale = 1.05
 bus = &"SFX_Player"
 
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]

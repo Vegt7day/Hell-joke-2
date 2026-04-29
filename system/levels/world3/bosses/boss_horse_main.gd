@@ -41,6 +41,13 @@ const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse
 @export var black_clone_cast_count: int = 2
 @export var black_clone_cast_interval: float = 9.5
 @export var black_clone_fade_out_seconds: float = 0.25
+@export var skill_feed_root_path: NodePath = NodePath("../../Systems/UIHints/SkillFeedRoot")
+@export var skill_feed_max_rows: int = 5 ## 弹幕轨道数
+@export var skill_feed_row_height: float = 28.0
+@export var skill_feed_text_width: float = 304.0
+@export var skill_feed_danmaku_speed: float = 220.0
+@export var skill_feed_lane_enter_margin: float = 8.0
+@export var skill_feed_spawn_offset_x: float = 16.0
 
 @onready var stats: Stats = $Stats
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -56,6 +63,7 @@ var _unlocked_skills: Array[BossHorseTypes.HorseId] = [BossHorseTypes.HorseId.GR
 var _movement_enabled: bool = true
 var _offscreen_elapsed: float = 0.0
 var _smoothed_y_cmd: float = 0.0
+var _skill_feed_lane_active: Array[RichTextLabel] = []
 
 
 func _ready() -> void:
@@ -70,6 +78,11 @@ func _ready() -> void:
 		if animation_player and animation_player.has_animation(&"jump"):
 			animation_player.play(&"jump")
 		set_movement_enabled(true)
+		process_mode = Node.PROCESS_MODE_INHERIT
+		# 分身为 is_summoned_clone 时提前 return，先补碰撞区，再做一帧后重试，避免入树时机偶发缺失。
+		_ensure_player_bump_area()
+		call_deferred("_ensure_player_bump_area")
+		call_deferred("_bootstrap_summoned_clone_walk_state")
 		return
 
 	add_to_group("boss_horse_main")
@@ -108,6 +121,7 @@ func _ensure_player_bump_area() -> void:
 		return
 	var a := _PLAYER_BUMP_AREA.new() as BossHorsePlayerBumpArea
 	a.name = "PlayerBumpArea"
+	a.apply_standard_bump_preset()
 	a.setup_shape_from_horse(self)
 	add_child(a)
 
@@ -120,6 +134,9 @@ func _process(delta: float) -> void:
 	if not auto_cast_enabled or not _intro_timeline_done:
 		return
 	if _is_casting_skill:
+		return
+	# 20% 致命演出：主马技能与回场暂停（已开始的技能不受影响）
+	if _is_fatal_pull_sequence_active():
 		return
 	if _cooldown_left > 0.0:
 		_cooldown_left -= delta
@@ -139,7 +156,8 @@ func _physics_process(delta: float) -> void:
 	if _is_outside_camera_bounds():
 		_offscreen_elapsed += delta
 		if _offscreen_elapsed >= offscreen_respawn_delay_seconds:
-			_respawn_to_camera_right_quarter_down()
+			if not _is_fatal_pull_sequence_active():
+				_respawn_to_camera_right_quarter_down()
 			_offscreen_elapsed = 0.0
 	else:
 		_offscreen_elapsed = 0.0
@@ -169,12 +187,24 @@ func _resolve_phase_controller() -> void:
 		_phase_controller = current_scene.get_node_or_null("Systems/PhaseController")
 
 
+func _is_fatal_pull_sequence_active() -> bool:
+	if _phase_controller == null:
+		_resolve_phase_controller()
+	if _phase_controller != null and is_instance_valid(_phase_controller) and _phase_controller.has_method("is_fatal_pull_sequence_active"):
+		return bool(_phase_controller.call("is_fatal_pull_sequence_active"))
+	return false
+
+
 func _on_intro_timeline_finished() -> void:
 	_intro_timeline_done = true
 	print("[BossMain] 入场 Timeline 完成，开始技能循环。")
 
 
 func _on_phase_changed(new_phase: BossHorseTypes.BossPhase) -> void:
+	# 兜底：只要阶段推进到战斗阶段，就保证主马技能循环开启。
+	if new_phase != BossHorseTypes.BossPhase.INTRO:
+		_intro_timeline_done = true
+		auto_cast_enabled = true
 	match new_phase:
 		BossHorseTypes.BossPhase.GREY_SOLO:
 			_unlocked_skills = [BossHorseTypes.HorseId.GREY]
@@ -219,6 +249,9 @@ func _try_cast_random_skill() -> void:
 		return
 	_is_casting_skill = true
 	var picked := _unlocked_skills[randi() % _unlocked_skills.size()]
+	_show_skill_broadcast(picked, true)
+	# 按需求：小马技能播报也要出现（与皇马播报并行入队）
+	_show_skill_broadcast(picked, false)
 	match picked:
 		BossHorseTypes.HorseId.GREY:
 			await _cast_grey_skill()
@@ -237,10 +270,12 @@ func _try_cast_random_skill() -> void:
 func _cast_grey_skill() -> void:
 	await _play_optional(&"to grey")
 	await _play_optional(&"grey_ready")
+	_toggle_root_collision_shape_disabled(false)
 	if animation_player and animation_player.has_animation(&"grey_running"):
 		animation_player.play(&"grey_running")
 	var dash_to := global_position + Vector2.LEFT * grey_dash_distance
 	await _move_to_position(dash_to, grey_dash_duration)
+	_toggle_root_collision_shape_disabled(true)
 	await _play_optional(&"grey_over")
 	_restore_idle_jump()
 
@@ -261,6 +296,8 @@ func _cast_black_skill() -> void:
 	await _play_optional(&"to_black")
 	await _play_optional(&"black_ready")
 	var clone := _spawn_black_clone()
+	# 黑马分身出场即播一条“小马”消息，避免体感只看到皇马。
+	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, false)
 	var clone_ap := _get_clone_animation_player(clone)
 	var call_len := _play_anim_sync(animation_player, clone_ap, &"black_call", 0.12)
 	if call_len > 0.0:
@@ -300,6 +337,12 @@ func set_movement_enabled(enabled: bool) -> void:
 	_movement_enabled = enabled
 	if not enabled:
 		velocity = Vector2.ZERO
+
+
+func _toggle_root_collision_shape_disabled(disabled: bool) -> void:
+	var shape := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape:
+		shape.disabled = disabled
 
 
 func _move_to_position(target: Vector2, duration: float) -> void:
@@ -471,9 +514,36 @@ func _spawn_black_clone() -> CharacterBody2D:
 		clone.set("is_summoned_clone", true)
 	root.add_child(clone)
 	clone.global_position = global_position + Vector2(-56, 0)
+	clone.process_mode = Node.PROCESS_MODE_INHERIT
+	if clone.has_method("_ensure_player_bump_area"):
+		clone.call("_ensure_player_bump_area")
+	if clone.has_method("_bootstrap_summoned_clone_walk_state"):
+		clone.call_deferred("_bootstrap_summoned_clone_walk_state")
 	if clone.has_method("set_movement_enabled"):
 		clone.call("set_movement_enabled", true)
 	return clone
+
+
+func _bootstrap_summoned_clone_walk_state() -> void:
+	if not is_summoned_clone:
+		return
+	set_movement_enabled(true)
+	process_mode = Node.PROCESS_MODE_INHERIT
+	if animation_player == null:
+		return
+	# 回档后分身可能停在 ready/非循环动画；短延时切回稳定行走循环。
+	var ready_len := 0.18
+	if animation_player.has_animation(&"black_ready"):
+		ready_len = maxf(0.08, animation_player.get_animation(&"black_ready").length)
+	elif animation_player.has_animation(&"jump"):
+		ready_len = maxf(0.08, animation_player.get_animation(&"jump").length * 0.35)
+	await get_tree().create_timer(minf(0.35, ready_len)).timeout
+	if not is_instance_valid(self):
+		return
+	if animation_player.has_animation(&"jump"):
+		animation_player.play(&"jump")
+	elif animation_player.has_animation(&"grey_run"):
+		animation_player.play(&"grey_run")
 
 
 func _run_black_clone_skill_loop(clone: CharacterBody2D) -> void:
@@ -488,10 +558,14 @@ func _run_black_clone_skill_loop(clone: CharacterBody2D) -> void:
 		if clone == null or not is_instance_valid(clone):
 			return
 		await _await_subject_in_skill_cast_horizontal_band(clone)
+		if not is_inside_tree():
+			return
 		if clone == null or not is_instance_valid(clone):
 			return
 		var skill := _pick_clone_skill()
 		await _cast_clone_skill(clone, skill)
+		if not is_inside_tree():
+			return
 		if clone and is_instance_valid(clone) and clone.has_method("set_movement_enabled"):
 			clone.call("set_movement_enabled", true)
 	if clone and is_instance_valid(clone):
@@ -512,6 +586,7 @@ func _pick_clone_skill() -> BossHorseTypes.HorseId:
 
 func _cast_clone_skill(clone: CharacterBody2D, skill: BossHorseTypes.HorseId) -> void:
 	var ap := clone.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	_show_skill_broadcast(skill, false)
 	match skill:
 		BossHorseTypes.HorseId.GREY:
 			await _play_optional_on(ap, &"to grey", 0.05)
@@ -591,7 +666,10 @@ func _play_anim_sync(a: AnimationPlayer, b: AnimationPlayer, anim_name: StringNa
 
 
 func _get_player_position_or_fallback(fallback: Vector2) -> Vector2:
-	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var tree := get_tree()
+	if tree == null:
+		return fallback
+	var player := tree.get_first_node_in_group("player") as Node2D
 	if player:
 		return player.global_position
 	return fallback
@@ -618,3 +696,191 @@ func _await_seconds_safe(seconds: float) -> void:
 func _restore_clone_idle_jump(ap: AnimationPlayer) -> void:
 	if ap and ap.has_animation(&"jump"):
 		ap.play(&"jump")
+
+
+func _skill_display_name(skill: BossHorseTypes.HorseId) -> String:
+	match skill:
+		BossHorseTypes.HorseId.GREY:
+			return "爱的冲撞"
+		BossHorseTypes.HorseId.WHITE:
+			return "认真一剑"
+		BossHorseTypes.HorseId.BLACK:
+			return "诡影兵团"
+		BossHorseTypes.HorseId.RED:
+			return "猩红风暴"
+		_:
+			return "未知技能"
+
+
+func _horse_display_name(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> String:
+	if is_main_horse:
+		return "皇马"
+	match skill:
+		BossHorseTypes.HorseId.GREY:
+			return "灰马"
+		BossHorseTypes.HorseId.WHITE:
+			return "白马"
+		BossHorseTypes.HorseId.BLACK:
+			return "黑马"
+		BossHorseTypes.HorseId.RED:
+			return "红马"
+		_:
+			return "小马"
+
+
+func _horse_color_hex(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> String:
+	if is_main_horse:
+		return "#FFD34D"
+	match skill:
+		BossHorseTypes.HorseId.GREY:
+			return "#B8BBC7"
+		BossHorseTypes.HorseId.WHITE:
+			return "#F4F7FF"
+		BossHorseTypes.HorseId.BLACK:
+			return "#8B90A8"
+		BossHorseTypes.HorseId.RED:
+			return "#FF6B6B"
+		_:
+			return "#FFFFFF"
+
+
+func _skill_color_hex(skill: BossHorseTypes.HorseId) -> String:
+	match skill:
+		BossHorseTypes.HorseId.GREY:
+			return "#B8BBC7"
+		BossHorseTypes.HorseId.WHITE:
+			return "#F4F7FF"
+		BossHorseTypes.HorseId.BLACK:
+			return "#8B90A8"
+		BossHorseTypes.HorseId.RED:
+			return "#FF6B6B"
+		_:
+			return "#FFFFFF"
+
+
+func _show_skill_broadcast(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> void:
+	var feed_root := _resolve_skill_feed_root()
+	if feed_root == null or not is_instance_valid(feed_root):
+		return
+	var caster := _horse_display_name(skill, is_main_horse)
+	var gift := _skill_display_name(skill)
+	if is_main_horse and (skill == BossHorseTypes.HorseId.WHITE or skill == BossHorseTypes.HorseId.RED):
+		gift += "*2"
+	var caster_color := _horse_color_hex(skill, is_main_horse)
+	var skill_color := _skill_color_hex(skill)
+	var msg := "[color=%s]%s[/color] 打赏了 [color=%s]%s[/color]" % [
+		caster_color,
+		caster,
+		skill_color,
+		gift
+	]
+	_push_skill_feed_message(feed_root, msg)
+
+
+func post_skill_broadcast(skill: int, is_main_horse: bool) -> void:
+	_show_skill_broadcast(skill as BossHorseTypes.HorseId, is_main_horse)
+
+
+func post_minor_entry_broadcast(phase_raw: int) -> void:
+	var skill := BossHorseTypes.HorseId.GREY
+	match phase_raw:
+		int(BossHorseTypes.BossPhase.GREY_SOLO):
+			skill = BossHorseTypes.HorseId.GREY
+		int(BossHorseTypes.BossPhase.WHITE_SOLO):
+			skill = BossHorseTypes.HorseId.WHITE
+		int(BossHorseTypes.BossPhase.BLACK_SOLO):
+			skill = BossHorseTypes.HorseId.BLACK
+		int(BossHorseTypes.BossPhase.RED_SOLO):
+			skill = BossHorseTypes.HorseId.RED
+		_:
+			return
+	var feed_root := _resolve_skill_feed_root()
+	if feed_root == null or not is_instance_valid(feed_root):
+		return
+	var horse_name := _horse_display_name(skill, false)
+	var horse_color := _horse_color_hex(skill, false)
+	var msg := "[color=%s]%s[/color] 进入了直播间" % [horse_color, horse_name]
+	_push_skill_feed_message(feed_root, msg)
+
+
+func _resolve_skill_feed_root() -> Control:
+	var by_path := get_node_or_null(skill_feed_root_path) as Control
+	if by_path != null and is_instance_valid(by_path):
+		return by_path
+	var tree := get_tree()
+	if tree == null:
+		return null
+	var scene := tree.current_scene
+	if scene == null:
+		return null
+	return scene.get_node_or_null("Systems/UIHints/SkillFeedRoot") as Control
+
+
+func _create_skill_feed_row(feed_root: Control, message_bbcode: String) -> RichTextLabel:
+	var row := RichTextLabel.new()
+	row.bbcode_enabled = true
+	row.fit_content = true
+	row.scroll_active = false
+	row.autowrap_mode = TextServer.AUTOWRAP_OFF
+	row.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.custom_minimum_size = Vector2(0, skill_feed_row_height)
+	row.size = Vector2(skill_feed_text_width, skill_feed_row_height)
+	row.position = Vector2(0, 0)
+	row.theme = feed_root.theme
+	row.theme_type_variation = &""
+	row.text = message_bbcode
+	return row
+
+
+func _push_skill_feed_message(feed_root: Control, message_bbcode: String) -> void:
+	var lane_count: int = maxi(1, skill_feed_max_rows)
+	if _skill_feed_lane_active.size() != lane_count:
+		_skill_feed_lane_active.resize(lane_count)
+	for lane in range(lane_count):
+		var old := _skill_feed_lane_active[lane]
+		if old == null or not is_instance_valid(old):
+			_skill_feed_lane_active[lane] = null
+	var lane_idx := _pick_danmaku_lane(feed_root)
+	if lane_idx < 0:
+		return
+	var row := _create_skill_feed_row(feed_root, message_bbcode)
+	feed_root.add_child(row)
+	_skill_feed_lane_active[lane_idx] = row
+	var spawn_x := feed_root.size.x + skill_feed_spawn_offset_x
+	var y := float(lane_idx) * skill_feed_row_height
+	row.position = Vector2(spawn_x, y)
+	row.modulate.a = 1.0
+	var label_w := maxf(skill_feed_text_width, row.get_content_width())
+	var end_x := -label_w - 24.0
+	var dist := absf(end_x - spawn_x)
+	var dur := dist / maxf(1.0, skill_feed_danmaku_speed)
+	var tw := create_tween()
+	tw.tween_property(row, "position:x", end_x, maxf(0.05, dur)).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	tw.finished.connect(func() -> void:
+		if lane_idx >= 0 and lane_idx < _skill_feed_lane_active.size() and _skill_feed_lane_active[lane_idx] == row:
+			_skill_feed_lane_active[lane_idx] = null
+		if is_instance_valid(row):
+			row.queue_free()
+	, CONNECT_ONE_SHOT)
+
+
+func _pick_danmaku_lane(feed_root: Control) -> int:
+	var lane_count: int = maxi(1, skill_feed_max_rows)
+	var lane_right_x := feed_root.size.x
+	for lane in range(lane_count):
+		var row := _skill_feed_lane_active[lane]
+		if row == null or not is_instance_valid(row):
+			return lane
+		if _is_danmaku_fully_inside_right_boundary(row, lane_right_x):
+			return lane
+	return -1
+
+
+func _is_danmaku_fully_inside_right_boundary(row: RichTextLabel, lane_right_x: float) -> bool:
+	if row == null or not is_instance_valid(row):
+		return true
+	var content_w := maxf(row.size.x, row.get_content_width())
+	var right_x := row.position.x + maxf(skill_feed_text_width, content_w)
+	return right_x <= (lane_right_x - skill_feed_lane_enter_margin)

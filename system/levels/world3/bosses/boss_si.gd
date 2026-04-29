@@ -1,8 +1,11 @@
 extends Node2D
 ## 驷：入场 / 变四马视觉与离场驱动（占位）。
 
+const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse_player_bump_area.gd")
+
 @export var move_left_speed: float = 78.0
 @export var respawn_margin: float = 120.0
+@export var si_bump_y_scale: float = 0.86
 
 var _phase_controller: Node
 var _movement_enabled: bool = true
@@ -12,6 +15,7 @@ func _ready() -> void:
 	add_to_group("boss_si")
 	add_to_group("boss_horse_shared_target")
 	_resolve_phase_controller()
+	_ensure_player_bump_area()
 
 
 func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
@@ -39,6 +43,30 @@ func _resolve_phase_controller() -> void:
 
 func set_movement_enabled(enabled: bool) -> void:
 	_movement_enabled = enabled
+
+
+func _ensure_player_bump_area() -> void:
+	if get_node_or_null("PlayerBumpArea") != null:
+		return
+	var a := _PLAYER_BUMP_AREA.new() as BossHorsePlayerBumpArea
+	a.name = "PlayerBumpArea"
+	a.apply_standard_bump_preset()
+	var src := get_node_or_null("HitboxPlaceholder/CollisionShape2D") as CollisionShape2D
+	if src != null and src.shape != null:
+		var c2 := CollisionShape2D.new()
+		c2.shape = src.shape.duplicate()
+		c2.position = src.position
+		c2.rotation = src.rotation
+		c2.scale = Vector2(src.scale.x, src.scale.y * si_bump_y_scale)
+		a.add_child(c2)
+	else:
+		var c := CollisionShape2D.new()
+		var circ := CircleShape2D.new()
+		circ.radius = 46.0
+		c.shape = circ
+		c.position = Vector2(20, -28)
+		a.add_child(c)
+	add_child(a)
 
 
 func _wrap_to_right_if_out_of_view() -> void:

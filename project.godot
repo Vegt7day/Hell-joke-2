@@ -29,29 +29,30 @@ MechanismSfxBus="*res://system/globals/mechanism_sfx_bus.gd"
 [dialogic]
 
 directories/dch_directory={
-"character": "res://assets/Dialogic/character.dch",
-"中学生": "res://assets/Dialogic/中学生.dch",
-"商鞅": "res://assets/Dialogic/商鞅.dch",
-"老教师": "res://assets/Dialogic/老教师.dch"
+"Dialogic/character": "res://assets/资源总库/12_Dialogic工程/Dialogic/character.dch",
+"Dialogic/中学生": "res://assets/资源总库/12_Dialogic工程/Dialogic/中学生.dch",
+"Dialogic/商鞅": "res://assets/资源总库/12_Dialogic工程/Dialogic/商鞅.dch",
+"Dialogic/老教师": "res://assets/资源总库/12_Dialogic工程/Dialogic/老教师.dch"
 }
 directories/dtl_directory={
-"student_intro": "res://assets/student_intro.dtl",
-"teacher_intro": "res://assets/teacher_intro.dtl",
+"12_Dialogic工程/student_intro": "res://assets/资源总库/12_Dialogic工程/student_intro.dtl",
+"12_Dialogic工程/teacher_intro": "res://assets/资源总库/12_Dialogic工程/teacher_intro.dtl",
+"12_Dialogic工程/tip_开关与门1": "res://assets/资源总库/12_Dialogic工程/tip_开关与门1.dtl",
+"12_Dialogic工程/什么？！": "res://assets/资源总库/12_Dialogic工程/什么？！.dtl",
+"12_Dialogic工程/哈哈，我逃走了": "res://assets/资源总库/12_Dialogic工程/哈哈，我逃走了.dtl",
+"level2/商鞅五马分尸": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅五马分尸.dtl",
+"level2/商鞅提出要求": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅提出要求.dtl",
+"level2/商鞅教导交互心与剑": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅教导交互心与剑.dtl",
+"level2/回去看商鞅": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/回去看商鞅.dtl",
+"level2/获得商鞅能力": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/获得商鞅能力.dtl",
+"level2/重拾五肢": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/重拾五肢.dtl",
+"level2/马开始战斗": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/马开始战斗.dtl",
 "timeline": "res://assets/timeline.dtl",
-"tip_开关与门1": "res://assets/tip_开关与门1.dtl",
-"什么？！": "res://assets/什么？！.dtl",
-"哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl",
-"商鞅五马分尸": "res://assets/Dialogic/level2/商鞅五马分尸.dtl",
-"商鞅提出要求": "res://assets/Dialogic/level2/商鞅提出要求.dtl",
-"商鞅教导交互心与剑": "res://assets/Dialogic/level2/商鞅教导交互心与剑.dtl",
-"回去看商鞅": "res://assets/Dialogic/level2/回去看商鞅.dtl",
-"获得商鞅能力": "res://assets/Dialogic/level2/获得商鞅能力.dtl",
-"重拾五肢": "res://assets/Dialogic/level2/重拾五肢.dtl",
-"马开始战斗": "res://assets/Dialogic/level2/马开始战斗.dtl"
+"商鞅提醒按f": "res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅提醒按f.dtl"
 }
 layout/style_directory={
-"": "res://assets/bubble.tres",
-"bubble": "res://assets/bubble.tres"
+"": "res://assets/资源总库/12_Dialogic工程/bubble.tres",
+"bubble": "res://assets/资源总库/12_Dialogic工程/bubble.tres"
 }
 text/letter_speed=0.01
 text/initial_text_reveal_skippable=true
@@ -86,8 +87,8 @@ audio/channel_defaults={
 }
 }
 glossary/default_case_sensitive=true
-layout/style_list=["res://assets/bubble.tres"]
-layout/default_style="res://assets/bubble.tres"
+layout/style_list=["res://assets/资源总库/12_Dialogic工程/bubble.tres"]
+layout/default_style="res://assets/资源总库/12_Dialogic工程/bubble.tres"
 variables={}
 text/autocolor_names=false
 text/autoadvance_enabled=true
@@ -131,6 +132,7 @@ move_right={
 jump={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
 ]
 }
 attack={

@@ -1,13 +1,13 @@
 [gd_scene format=4 uid="uid://cb28e04q4603v"]
 
-[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="1_4oalq"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/资源总库/02_图像_地图/地.png" id="1_4oalq"]
 [ext_resource type="Script" uid="uid://c4qk0i2o145qi" path="res://system/levels/world.gd" id="1_pk68g"]
-[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="2_bdba8"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/资源总库/02_图像_地图/墙.png" id="2_bdba8"]
 [ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
 [ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/auto_teleporter.tscn" id="4_js66a"]
 [ext_resource type="PackedScene" uid="uid://cf8ltmxevvjay" path="res://system/可交互物/contact_trigger.tscn" id="4_kv7wa"]
-[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="6_tls4y"]
-[ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/background/school.png" id="7_b258r"]
+[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/资源总库/01_图像_背景/高楼 学校背景.png" id="6_tls4y"]
+[ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/资源总库/01_图像_背景/school.png" id="7_b258r"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="8_y8eji"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="9_25x0f"]
 [ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="10_m8c1u"]
@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="14_3o3xc"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
-[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="16_ambient_bg"]
+[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/资源总库/01_图像_背景/背景.png" id="16_ambient_bg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hrldk"]
 texture = ExtResource("1_4oalq")
@@ -189,12 +189,12 @@ position = Vector2(0, -32)
 
 [node name="到区域触发对话" parent="." unique_id=865012812 instance=ExtResource("10_ytupi")]
 position = Vector2(-448, 576)
-dialogue_timeline = "res://assets/tip_开关与门1.dtl"
+dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/tip_开关与门1.dtl"
 one_shot = false
 
 [node name="到区域触发对话2" parent="." unique_id=734561275 instance=ExtResource("10_ytupi")]
 position = Vector2(-832, 608)
-dialogue_timeline = "res://assets/哈哈，我逃走了.dtl"
+dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/哈哈，我逃走了.dtl"
 one_shot = false
 
 [node name="触发器" parent="." unique_id=1732432861 instance=ExtResource("10_m8c1u")]
@@ -254,7 +254,7 @@ trap_group = "1"
 
 [node name="到区域触发对话3" parent="." unique_id=692808302 instance=ExtResource("10_ytupi")]
 position = Vector2(-992, 704)
-dialogue_timeline = "res://assets/什么？！.dtl"
+dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/什么？！.dtl"
 one_shot = false
 
 [node name="Game" parent="." unique_id=1668650706 instance=ExtResource("14_xr4xx")]

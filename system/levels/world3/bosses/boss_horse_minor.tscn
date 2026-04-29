@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://dcffv6icd48hr"]
 
 [ext_resource type="Script" uid="uid://b2y303nknefit" path="res://system/levels/world3/bosses/boss_horse_minor.gd" id="1_minor"]
-[ext_resource type="Texture2D" uid="uid://cdf7d42kgd6os" path="res://system/levels/world3/bosses/灰马.png" id="2_edf2c"]
-[ext_resource type="Texture2D" uid="uid://c0225qa1p3dqs" path="res://system/levels/world3/bosses/黑马.png" id="3_mtyuh"]
-[ext_resource type="Texture2D" uid="uid://dsngwuy2ru4rk" path="res://system/levels/world3/bosses/红马.png" id="4_c2qlg"]
-[ext_resource type="Texture2D" uid="uid://2g7f3paxurdx" path="res://system/levels/world3/bosses/白马.png" id="5_8wa74"]
+[ext_resource type="Texture2D" uid="uid://cdf7d42kgd6os" path="res://assets/资源总库/06_图像_World3/bosses/灰马.png" id="2_edf2c"]
+[ext_resource type="Texture2D" uid="uid://c0225qa1p3dqs" path="res://assets/资源总库/06_图像_World3/bosses/黑马.png" id="3_mtyuh"]
+[ext_resource type="Texture2D" uid="uid://dsngwuy2ru4rk" path="res://assets/资源总库/06_图像_World3/bosses/红马.png" id="4_c2qlg"]
+[ext_resource type="Texture2D" uid="uid://2g7f3paxurdx" path="res://assets/资源总库/06_图像_World3/bosses/白马.png" id="5_8wa74"]
 
-[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_edf2c"]
-points = PackedVector2Array(10, -18, -23, 16, 6, 16)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_edf2c"]
+size = Vector2(44, 37)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7yfle"]
 atlas = ExtResource("2_edf2c")
@@ -810,14 +810,14 @@ _data = {
 }
 
 [node name="BossHorseMinor" type="CharacterBody2D" unique_id=190626765]
-collision_layer = 256
-collision_mask = 8
+collision_layer = 0
+collision_mask = 0
 collision_priority = 0.3
 script = ExtResource("1_minor")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=897553087]
-position = Vector2(12, -16)
-shape = SubResource("ConvexPolygonShape2D_edf2c")
+position = Vector2(7, -18.5)
+shape = SubResource("RectangleShape2D_edf2c")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2077667840]
 position = Vector2(16, -16)

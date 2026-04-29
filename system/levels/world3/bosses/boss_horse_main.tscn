@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" uid="uid://rhi3gdj7b424" path="res://system/levels/world3/bosses/boss_horse_main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="2_stats"]
-[ext_resource type="Texture2D" uid="uid://c0k8nly1ooq40" path="res://system/levels/world3/bosses/头马.png" id="2_yq0pa"]
+[ext_resource type="Texture2D" uid="uid://c0k8nly1ooq40" path="res://assets/资源总库/06_图像_World3/bosses/头马.png" id="2_yq0pa"]
 [ext_resource type="PackedScene" uid="uid://b8qdrsdj7p10h" path="res://system/ui/boss_health_bar.tscn" id="3_bar"]
-[ext_resource type="Texture2D" uid="uid://dbglv8k87x5ci" path="res://system/ui/马boss名字ui.png" id="5_ry0xf"]
+[ext_resource type="Texture2D" uid="uid://dbglv8k87x5ci" path="res://assets/资源总库/03_图像_UI/马boss名字ui.png" id="5_ry0xf"]
 
-[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_yq0pa"]
-points = PackedVector2Array(18.38478, 66.46805, 58.689873, 26.162956, 22.627422, -28.284275)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ry0xf"]
+size = Vector2(91.000015, 69.00001)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ry0xf"]
 atlas = ExtResource("2_yq0pa")
@@ -892,16 +892,16 @@ animations = [{
 }]
 
 [node name="BossHorseMain" type="CharacterBody2D" unique_id=574789870]
-collision_layer = 256
+collision_layer = 0
 collision_mask = 0
 collision_priority = 0.3
 script = ExtResource("1_main")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=348055896]
-position = Vector2(14, -60.000004)
-rotation = 0.7853982
+position = Vector2(9.5, -34.5)
 scale = Vector2(0.9999999, 0.9999999)
-shape = SubResource("ConvexPolygonShape2D_yq0pa")
+shape = SubResource("RectangleShape2D_ry0xf")
+disabled = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=868405711]
 position = Vector2(32, -32)

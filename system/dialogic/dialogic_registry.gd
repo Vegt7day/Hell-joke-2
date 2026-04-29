@@ -5,8 +5,8 @@ var character_map: Dictionary = {}
 
 # 角色资源映射
 var character_resource_map: Dictionary = {
-	"中学生": "res://assets/Dialogic/中学生.dch",
-	"老教师": "res://assets/Dialogic/老教师.dch"
+	"中学生": "res://assets/资源总库/12_Dialogic工程/Dialogic/中学生.dch",
+	"老教师": "res://assets/资源总库/12_Dialogic工程/Dialogic/老教师.dch"
 }
 
 func _ready():

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cc84hghr8mqv5"]
 
 [ext_resource type="Script" uid="uid://yitmau8tj21y" path="res://system/ui/ink_slot.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://db5sppo0xmkpd" path="res://system/ui/墨水ui.png" id="2_xn4ax"]
+[ext_resource type="Texture2D" uid="uid://db5sppo0xmkpd" path="res://assets/资源总库/03_图像_UI/墨水ui.png" id="2_xn4ax"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8bfwu"]
 atlas = ExtResource("2_xn4ax")

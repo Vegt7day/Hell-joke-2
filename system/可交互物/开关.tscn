@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://uiik2odgtuve"]
 
 [ext_resource type="Script" uid="uid://b84oghaoaxwpg" path="res://system/可交互物/开关.gd" id="1_7bjq7"]
-[ext_resource type="Texture2D" uid="uid://6rl2ivpb87gt" path="res://system/可交互物/开关.png" id="2_7bjq7"]
+[ext_resource type="Texture2D" uid="uid://6rl2ivpb87gt" path="res://assets/资源总库/08_图像_机关/开关.png" id="2_7bjq7"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jmglv"]
 

@@ -2,8 +2,8 @@
 
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="1_ds7wl"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="1_nf153"]
-[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/map/地.png" id="2_mnuwj"]
-[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/map/墙.png" id="3_qovbt"]
+[ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/资源总库/02_图像_地图/地.png" id="2_mnuwj"]
+[ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/资源总库/02_图像_地图/墙.png" id="3_qovbt"]
 [ext_resource type="PackedScene" uid="uid://cgvhtihkphxn1" path="res://system/可交互物/桶.tscn" id="5_qovbt"]
 [ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="7_f0gjl"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="8_gtqfr"]

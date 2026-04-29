@@ -4,21 +4,22 @@ extends CanvasLayer
 signal warning_finished
 
 @onready var _anim: AnimationPlayer = $AnimationPlayer
+const _FATAL_WARNING_DURATION := 5.0
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = 120
+	layer = 1000
 	if _anim:
 		if not _anim.animation_finished.is_connected(_on_animation_finished):
 			_anim.animation_finished.connect(_on_animation_finished)
 		if _anim.has_animation(&"warning"):
 			_anim.play(&"warning")
 		else:
-			await get_tree().create_timer(2.2).timeout
+			await get_tree().create_timer(_FATAL_WARNING_DURATION).timeout
 			_emit_done()
 	else:
-		await get_tree().create_timer(2.2).timeout
+		await get_tree().create_timer(_FATAL_WARNING_DURATION).timeout
 		_emit_done()
 
 

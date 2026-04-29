@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dai5yhdyjeq8s"]
 
 [ext_resource type="Script" uid="uid://ccgbxlwps0vp0" path="res://system/levels/world3/props/save_point_interactable.gd" id="1_savepoint"]
-[ext_resource type="Texture2D" uid="uid://c5h2dpbg8imqb" path="res://system/levels/world3/props/存档点.png" id="2_ifq4s"]
+[ext_resource type="Texture2D" uid="uid://c5h2dpbg8imqb" path="res://assets/资源总库/06_图像_World3/props/存档点.png" id="2_ifq4s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pick"]
 size = Vector2(88, 112)

@@ -27,16 +27,24 @@ func _ready() -> void:
 		add_bubble()
 	
 	# 等待一帧确保节点完全初始化
-	await get_tree().process_frame
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.process_frame
 	
 	# 从全局注册表加载角色
 	load_characters_from_registry()
 
 func load_characters_from_registry() -> void:
 	print("=== 从全局注册表加载角色 ===")
+	if not is_inside_tree() or get_tree() == null:
+		return
 	
 	# 给注册表更多时间初始化
-	await get_tree().create_timer(0.1).timeout
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.create_timer(0.1).timeout
 	
 	# 通过自动加载节点路径获取注册器
 	var registry = get_node_or_null("/root/DialogicRegistry")

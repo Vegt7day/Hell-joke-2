@@ -3,7 +3,7 @@ extends StaticBody2D
 # 导出变量，可以在编辑器中设置
 @export var initial_color: String = "红"
 @export var is_open: bool = false  # 初始状态：false=关闭，true=打开
-@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
+@export var trigger_sfx: AudioStream = preload("res://assets/资源总库/10_音频/jump.mp3")
 
 # 节点引用
 @onready var sprite_2d: Sprite2D = $Sprite2D

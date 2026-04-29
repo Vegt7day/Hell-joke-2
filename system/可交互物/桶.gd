@@ -4,7 +4,7 @@ extends StaticBody2D
 @export var damage_threshold: float = 1.0
 @export var water_scene: PackedScene = preload("res://system/可交互物/水.tscn")
 @export var spawn_offset: Vector2 = Vector2(0, 0)
-@export var trigger_sfx: AudioStream = preload("res://assets/jump.mp3")
+@export var trigger_sfx: AudioStream = preload("res://assets/资源总库/10_音频/jump.mp3")
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
