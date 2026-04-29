@@ -55,6 +55,10 @@ var _owner_follow_offset: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
+	# 每个实例独立 AtlasTexture，切断 shared sub_resource 引用
+	if sprite_2d and sprite_2d.texture and sprite_2d.texture is AtlasTexture:
+		sprite_2d.texture = sprite_2d.texture.duplicate()
+
 	if is_summoned_clone:
 		auto_use_skill = false
 		add_to_group("boss_horse_minor")

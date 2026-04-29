@@ -3,10 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://4xo0q3npep12" path="res://system/可交互物/tile_map_layer.tscn" id="1_kpiqd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_outer"]
-size = Vector2(1408, 384)
+size = Vector2(2023, 384)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_inner"]
-size = Vector2(768, 256)
+size = Vector2(820, 256)
 
 [node name="Piece05" type="Node2D" unique_id=294204182]
 
@@ -14,7 +14,7 @@ size = Vector2(768, 256)
 position = Vector2(-672, 0)
 
 [node name="attack" type="Marker2D" parent="." unique_id=99499472]
-position = Vector2(800, -32)
+position = Vector2(320, -160)
 
 [node name="over" type="Marker2D" parent="." unique_id=1545363653]
 position = Vector2(1408, 0)
@@ -25,7 +25,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="OuterStreamingArea" unique_id=921621473]
-position = Vector2(384, -224)
+position = Vector2(76.5, -224)
 shape = SubResource("RectangleShape2D_outer")
 
 [node name="InnerStreamingArea" type="Area2D" parent="." unique_id=323761723]
@@ -34,7 +34,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InnerStreamingArea" unique_id=1019313121]
-position = Vector2(384, -192)
+position = Vector2(-50, -224)
 shape = SubResource("RectangleShape2D_inner")
 
 [node name="TileMapLayer" parent="." unique_id=136708381 instance=ExtResource("1_kpiqd")]
