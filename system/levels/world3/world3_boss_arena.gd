@@ -12,9 +12,12 @@ const DEFAULT_MAIN_ARENA_HEART_SCENE := preload("res://system/levels/world3/prop
 @onready var minors_root: Node2D = $Bosses/Minors
 @onready var phase_controller: Node = $Systems/PhaseController
 @onready var random_piece_builder: Node = $Systems/RandomPieceBuilder
+@onready var boss_battle_bgm: AudioStreamPlayer = get_node_or_null("BossBattleBgm") as AudioStreamPlayer
+@onready var boss_phase_stinger: AudioStreamPlayer = get_node_or_null("BossPhaseStinger") as AudioStreamPlayer
 var _pending_shared_hp_override_for_save: int = -1
 var _death_ground_y: float = 0.0
 var _fall_death_triggered: bool = false
+var _no_damage_heart_interaction_tokens: int = 1
 
 
 func _ready() -> void:
@@ -22,6 +25,25 @@ func _ready() -> void:
 		_death_ground_y = player.global_position.y
 	_fall_death_triggered = false
 	call_deferred("_ensure_main_arena_heart_at_attack_marker")
+	_setup_boss_audio()
+
+
+func _setup_boss_audio() -> void:
+	if phase_controller != null and phase_controller.has_signal("phase_changed"):
+		if not phase_controller.phase_changed.is_connected(_on_boss_phase_changed_stinger):
+			phase_controller.phase_changed.connect(_on_boss_phase_changed_stinger)
+	if boss_battle_bgm != null and boss_battle_bgm.stream != null:
+		var st: AudioStream = boss_battle_bgm.stream
+		if st is AudioStreamMP3:
+			(st as AudioStreamMP3).loop = true
+		elif st is AudioStreamOggVorbis:
+			(st as AudioStreamOggVorbis).loop = true
+		boss_battle_bgm.play()
+
+
+func _on_boss_phase_changed_stinger(_new_phase: Variant) -> void:
+	if boss_phase_stinger != null and boss_phase_stinger.stream != null:
+		boss_phase_stinger.play()
 
 
 func _ensure_main_arena_heart_at_attack_marker() -> void:
@@ -67,6 +89,7 @@ func to_dict() -> Dictionary:
 		"current_phase": phase_controller.get("current_phase") if phase_controller != null else 0,
 		"boss_shared_hp": -1,
 		"interactables": {},
+		"intro_battle_triggered": false,
 	}
 	if phase_controller != null and phase_controller.has_method("get_shared_stats"):
 		var st := phase_controller.call("get_shared_stats") as Stats
@@ -83,6 +106,8 @@ func to_dict() -> Dictionary:
 			out["interactables"][String(i.name)] = (i as BossDamageInteractable).export_save_state()
 	if random_piece_builder != null and random_piece_builder.has_method("export_builder_state"):
 		out["random_piece_builder"] = random_piece_builder.call("export_builder_state")
+	if phase_controller != null and phase_controller.has_method("is_intro_battle_triggered_for_save"):
+		out["intro_battle_triggered"] = bool(phase_controller.call("is_intro_battle_triggered_for_save"))
 	return out
 
 
@@ -91,17 +116,32 @@ func from_dict(dict: Dictionary) -> void:
 	_apply_node_state(main_horse, dict.get("main_horse", {}))
 	_apply_node_state(boss_si, dict.get("boss_si", {}))
 	var minors_dict: Dictionary = dict.get("minors", {})
+	if phase_controller != null and phase_controller.has_method("ensure_saved_minors_present"):
+		phase_controller.call("ensure_saved_minors_present", minors_dict)
 	for c in minors_root.get_children():
 		if c is Node2D and minors_dict.has(String(c.name)):
 			_apply_node_state(c as Node2D, minors_dict[String(c.name)])
 	var boss_shared_hp: int = int(dict.get("boss_shared_hp", -1))
+	var shared_max_hp: int = -1
 	if boss_shared_hp >= 0 and phase_controller != null and phase_controller.has_method("get_shared_stats"):
 		var st := phase_controller.call("get_shared_stats") as Stats
 		if st != null:
+			shared_max_hp = st.max_health
 			st.health = boss_shared_hp
 	var saved_phase: Variant = dict.get("current_phase", null)
+	var saved_phase_int: int = int(saved_phase) if saved_phase != null else int(BossHorseTypes.BossPhase.INTRO)
 	if saved_phase != null and phase_controller != null and phase_controller.has_method("request_phase"):
-		phase_controller.call_deferred("request_phase", int(saved_phase))
+		phase_controller.call_deferred("request_phase", saved_phase_int)
+	var intro_battle_triggered := bool(dict.get("intro_battle_triggered", false))
+	if phase_controller != null and phase_controller.has_method("apply_intro_battle_triggered_from_save"):
+		phase_controller.call("apply_intro_battle_triggered_from_save", intro_battle_triggered)
+	var should_skip_intro_gate: bool = intro_battle_triggered
+	if saved_phase_int > int(BossHorseTypes.BossPhase.INTRO):
+		should_skip_intro_gate = true
+	if shared_max_hp > 0 and boss_shared_hp >= 0 and boss_shared_hp < shared_max_hp:
+		should_skip_intro_gate = true
+	if should_skip_intro_gate and phase_controller != null and phase_controller.has_method("force_main_si_enter_battle_from_save"):
+		phase_controller.call_deferred("force_main_si_enter_battle_from_save")
 	var int_map: Dictionary = dict.get("interactables", {})
 	for i in bosses_root.get_node("PropsSpawn").get_children():
 		if i is BossDamageInteractable and int_map.has(String(i.name)):
@@ -124,6 +164,13 @@ func update_player(position: Vector2, direction: int = 1) -> void:
 
 func set_pending_shared_hp_override_for_save(value: int) -> void:
 	_pending_shared_hp_override_for_save = max(value, 0)
+
+
+func consume_no_damage_heart_interaction_token() -> bool:
+	if _no_damage_heart_interaction_tokens <= 0:
+		return false
+	_no_damage_heart_interaction_tokens -= 1
+	return true
 
 
 func _capture_node_state(node: Node2D) -> Dictionary:

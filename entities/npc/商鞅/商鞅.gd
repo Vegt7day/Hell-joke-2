@@ -24,7 +24,7 @@ const HEALTH_THRESHOLDS = [0.75, 0.5, 0.25, 0.0]
 @export var current_mode: MODE = MODE.STORY
 @export var max_health: float = 10.0
 @export var health: float = 10.0
-@export var summoned_drain_percent_per_second: float = 0.10
+@export var summoned_lifetime_seconds: float = 10.0
 @export var gravity_scale: float = 1.0
 @export var max_fall_speed: float = 900.0
 @export var hit_knockback_speed_x: float = 120.0
@@ -66,6 +66,9 @@ var _ghost_after_boss_pull: bool = false
 var _boss_fatal_warning_summon_applied: bool = false
 ## 预警期间召唤的商鞅：无碰撞，但仍受重力；且不进入掉血形态/死亡销毁流程
 var _boss_fatal_warning_damage_immune: bool = false
+var _summoned_despawn_token: int = 0
+var _summoned_despawn_cancelled: bool = false
+var _summoned_disappearing: bool = false
 
 # 动画名称映射
 var _damage_animations: Array[String] = ["less_1", "less_2", "less_3", "less_4"]
@@ -120,6 +123,7 @@ func _initialize_summoned_mode():
 		print("警告：未找到common动画，直接进入idle状态")
 		_current_state = STATE.IDLE
 		animation_player.play("idle")
+	_start_summoned_lifetime_countdown()
 
 func setup_summoned_for_boss_fatal_warning() -> void:
 	"""Boss 20% 预警 UI 期间被玩家召唤：进入 ready_to_pull 动画态，不播 common。"""
@@ -146,6 +150,7 @@ func setup_summoned_for_boss_fatal_warning() -> void:
 		animation_player.stop()
 	if animation_player and animation_player.has_animation("ready_to_pull"):
 		animation_player.play("ready_to_pull")
+	cancel_summoned_lifetime_limit()
 
 
 func switch_to_summoned_mode():
@@ -158,6 +163,8 @@ func switch_to_story_mode():
 	"""切换到剧情模式"""
 	current_mode = MODE.STORY
 	remove_from_group("shangyang_player_summon")
+	_summoned_despawn_token += 1
+	_summoned_despawn_cancelled = true
 	_initialize_story_mode()
 
 func can_accept_limb_pickup() -> bool:
@@ -494,6 +501,7 @@ func _on_animation_finished(anim_name: String):
 				_current_state = STATE.IDLE
 				animation_player.play("idle")
 				print("common动画完成，进入idle状态")
+				_start_summoned_lifetime_countdown()
 		
 		STATE.DAMAGED:
 			# 伤害动画播放完成后
@@ -525,19 +533,62 @@ func _on_animation_finished(anim_name: String):
 
 func _process(delta):
 	"""每帧更新，用于调试和状态监测"""
-	# 召唤态持续掉血：每秒掉最大生命值的 10%
-	if _is_dead:
-		return
+	pass
+
+
+func _start_summoned_lifetime_countdown() -> void:
 	if current_mode != MODE.SUMMONED:
-		return
-	if _current_state == STATE.COMMON:
 		return
 	if _boss_fatal_warning_damage_immune:
 		return
-	var dps := maxf(0.0, max_health * summoned_drain_percent_per_second)
-	if dps <= 0.0:
+	if summoned_lifetime_seconds <= 0.0:
 		return
-	_apply_summoned_damage(dps * maxf(delta, 0.0))
+	_summoned_despawn_cancelled = false
+	_summoned_despawn_token += 1
+	var token := _summoned_despawn_token
+	_run_summoned_lifetime_countdown(token)
+
+
+func cancel_summoned_lifetime_limit() -> void:
+	_summoned_despawn_cancelled = true
+	_summoned_despawn_token += 1
+
+
+func _run_summoned_lifetime_countdown(token: int) -> void:
+	if not is_inside_tree():
+		return
+	var t := get_tree()
+	if t == null:
+		return
+	await t.create_timer(summoned_lifetime_seconds).timeout
+	if not is_inside_tree():
+		return
+	if token != _summoned_despawn_token:
+		return
+	if _summoned_despawn_cancelled:
+		return
+	if _boss_fatal_warning_damage_immune:
+		return
+	if current_mode != MODE.SUMMONED:
+		return
+	if _is_dead or _summoned_disappearing:
+		return
+	await _play_summoned_disappear_and_destroy()
+
+
+func _play_summoned_disappear_and_destroy() -> void:
+	if _summoned_disappearing:
+		return
+	_summoned_disappearing = true
+	if animation_player != null and animation_player.has_animation("disable"):
+		animation_player.play("disable")
+		await animation_player.animation_finished
+	elif is_inside_tree():
+		var tw := create_tween()
+		tw.tween_property(self, "modulate:a", 0.0, 0.45)
+		await tw.finished
+	if is_inside_tree():
+		queue_free()
 
 
 func _physics_process(delta: float) -> void:

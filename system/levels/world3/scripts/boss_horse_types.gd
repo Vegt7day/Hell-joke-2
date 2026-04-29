@@ -9,7 +9,7 @@ enum HorseId {
 	RED = 3,
 }
 
-## Boss 阶段占位；具体状态机实现时在此扩展（参见 Docs/11）
+## Boss 阶段占位；具体状态机实现时在此扩展（参见 Docs/更新文档/11-World3-Boss马战设计.md）
 enum BossPhase {
 	INTRO,
 	SI_TO_FOUR_VISUAL,

@@ -5,8 +5,14 @@ extends CanvasLayer
 @onready var dead_label: Label = $Root/Center/VBox/DeadLabel
 @onready var btn_heart: Button = $Root/Center/VBox/Buttons/BtnHeart
 @onready var btn_savepoint: Button = $Root/Center/VBox/Buttons/BtnSavePoint
+@onready var ui_sfx: AudioStreamPlayer = get_node_or_null("UiSfx") as AudioStreamPlayer
 
 var _game: Node = null
+
+
+func _play_ui_click() -> void:
+	if ui_sfx != null and ui_sfx.stream != null:
+		ui_sfx.play()
 
 
 func _ready() -> void:
@@ -40,12 +46,14 @@ func _refresh_heart_button_state() -> void:
 
 
 func _on_press_heart() -> void:
+	_play_ui_click()
 	if _game != null and _game.has_method("on_world3_death_choice_load_heart"):
 		_game.call("on_world3_death_choice_load_heart")
 	queue_free()
 
 
 func _on_press_savepoint() -> void:
+	_play_ui_click()
 	if _game != null and _game.has_method("on_world3_death_choice_load_savepoint"):
 		_game.call("on_world3_death_choice_load_savepoint")
 	queue_free()

@@ -87,6 +87,13 @@ func _apply_instant_visual(open: bool) -> void:
 func _resolve_overlapping_players_after_open() -> void:
 	if not is_inside_tree() or collision_shape.disabled or collision_shape.shape == null:
 		return
+	var tree := get_tree()
+	if tree == null:
+		return
+	# 避免在 physics flush / space lock 期间访问 direct_space_state
+	await tree.physics_frame
+	if not is_inside_tree() or collision_shape.disabled or collision_shape.shape == null:
+		return
 	var players := _collect_overlapping_players()
 	if players.is_empty():
 		return

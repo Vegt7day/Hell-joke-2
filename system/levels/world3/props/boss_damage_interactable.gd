@@ -31,11 +31,18 @@ func interact() -> void:
 			player.trigger_hit_shake_only()
 		player.unregister_interactable(self)
 	super.interact()
-	if animation_player != null and animation_player.has_animation(hurt_anim_name):
-		animation_player.play(hurt_anim_name)
-		await animation_player.animation_finished
 	var phase := _resolve_phase_controller()
 	if phase != null and phase.has_method("trigger_external_percent_damage"):
+		var scene := get_tree().current_scene
+		var skip_damage_this_use := false
+		if scene != null and scene.has_method("consume_no_damage_heart_interaction_token"):
+			skip_damage_this_use = bool(scene.call("consume_no_damage_heart_interaction_token"))
+		# 第一次心/剑交互就先记录「主马/驷马已进入表演状态」，确保本次存档可恢复参战状态
+		if phase.has_method("mark_intro_battle_triggered_for_save"):
+			phase.call("mark_intro_battle_triggered_for_save")
+		# 无伤次数内：本次仅记为使用，不扣血；否则正常扣血
+		if not skip_damage_this_use:
+			phase.call("trigger_external_percent_damage", damage_percent, String(name))
 		if is_instance_valid(Game) and Game.has_method("save_game") and phase.has_method("get_shared_stats"):
 			# 心/剑交互时把主角回满血，并把满血状态写入 heart 存档
 			if player != null:
@@ -46,14 +53,18 @@ func interact() -> void:
 					player.call("recover_full_health")
 			var st := phase.call("get_shared_stats") as Stats
 			if st != null and st.max_health > 0:
-				var predicted_drop: int = max(1, int(round(float(st.max_health) * clampf(damage_percent, 0.01, 1.0))))
+				var predicted_drop: int = 0
+				if not skip_damage_this_use:
+					predicted_drop = max(1, int(round(float(st.max_health) * clampf(damage_percent, 0.01, 1.0))))
 				var predicted_hp: int = max(st.health - predicted_drop, 0)
 				var scn := get_tree().current_scene
 				if scn != null and scn.has_method("set_pending_shared_hp_override_for_save"):
 					scn.call("set_pending_shared_hp_override_for_save", predicted_hp)
 				_mark_piece_heart_used_state_before_save()
 				Game.save_game("heart")
-		phase.call("trigger_external_percent_damage", damage_percent, String(name))
+	if animation_player != null and animation_player.has_animation(hurt_anim_name):
+		animation_player.play(hurt_anim_name)
+		await animation_player.animation_finished
 	_play_if_exists(post_hurt_idle_anim_name)
 
 

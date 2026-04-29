@@ -162,8 +162,9 @@ _data = {
 &"jump": SubResource("Animation_knrgb")
 }
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_si"]
-size = Vector2(64, 64)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hn4pt"]
+radius = 32.0
+height = 64.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5q2pc"]
 atlas = ExtResource("2_hn4pt")
@@ -179,13 +180,13 @@ position = Vector2(0, 24)
 
 [node name="CinematicAnchor" type="Marker2D" parent="." unique_id=1733208102]
 
-[node name="HitboxPlaceholder" type="Area2D" parent="." unique_id=533537618]
-collision_layer = 4
-collision_mask = 2
+[node name="HitboxPlaceholder" type="StaticBody2D" parent="." unique_id=533537618]
+collision_mask = 0
+collision_priority = 0.3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxPlaceholder" unique_id=203933532]
 position = Vector2(32, -32)
-shape = SubResource("RectangleShape2D_si")
+shape = SubResource("CapsuleShape2D_hn4pt")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=766067506]
 position = Vector2(32, -32)

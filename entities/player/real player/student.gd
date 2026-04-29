@@ -43,6 +43,9 @@ var shangyang_summon_unlocked: bool = false
 @export var hit_flash_pulse_up: float = 0.045
 @export var hit_flash_pulse_down: float = 0.055
 
+## Boss 马身撞击：两次接受击飞的最短间隔（秒）
+@export var horse_bump_global_min_interval: float = 0.14
+
 @onready var interaction_icon: AnimatedSprite2D = $interactionIcon
 
 # 重力
@@ -62,6 +65,7 @@ var stats: Stats
 @onready var jump_sound: AudioStreamPlayer = $jump
 @onready var walk_sound: AudioStreamPlayer = $walk
 @onready var attack_sound: AudioStreamPlayer = $attack
+@onready var hurt_sound: AudioStreamPlayer = get_node_or_null("hurt") as AudioStreamPlayer
 @onready var dialogic: Marker2D = $Marker2D3
 
 # 召唤音效
@@ -88,6 +92,9 @@ var direction: int = 1  # 1=向右, 0=向左
 var last_shoot_direction: int = 1
 var interacting_with: Array[Interactable] = []
 var _contact_triggers: Array[ContactTrigger] = []
+
+## 距上次被马撞击击飞的时间（秒），用于节流
+var _horse_bump_time_since: float = 999.0
 
 var _hurt_flash_modulate_base: Color = Color.WHITE
 var _shake_tween: Tween
@@ -728,6 +735,7 @@ func return_to_normal_state():
 
 # ========== 主循环 ==========
 func _physics_process(delta):
+	_horse_bump_time_since += delta
 	# 处理交互图标
 	interaction_icon.visible = not interacting_with.is_empty()
 	
@@ -938,6 +946,17 @@ func calculate_shoot_position() -> Vector2:
 		base_position.y + offset.y
 	)
 
+## 被 World3 马身撞击区调用：叠加速度，带全局限流。
+func apply_bump_from_horse(impulse: Vector2) -> bool:
+	if impulse.length_squared() < 1.0:
+		return false
+	if _horse_bump_time_since < horse_bump_global_min_interval:
+		return false
+	velocity += impulse
+	_horse_bump_time_since = 0.0
+	return true
+
+
 func take_damage(damage_amount: float):
 	if stats == null:
 		return
@@ -948,6 +967,8 @@ func take_damage(damage_amount: float):
 	stats.health -= damage_i
 	if stats.health > 0:
 		_trigger_hit_screen_feedback()
+		if hurt_sound != null and hurt_sound.stream != null:
+			hurt_sound.play()
 
 
 ## 按需求：仅在特定交互（心/剑、存档点）时调用，瞬间回满血

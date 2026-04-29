@@ -43,9 +43,11 @@ directories/dtl_directory={
 "哈哈，我逃走了": "res://assets/哈哈，我逃走了.dtl",
 "商鞅五马分尸": "res://assets/Dialogic/level2/商鞅五马分尸.dtl",
 "商鞅提出要求": "res://assets/Dialogic/level2/商鞅提出要求.dtl",
+"商鞅教导交互心与剑": "res://assets/Dialogic/level2/商鞅教导交互心与剑.dtl",
 "回去看商鞅": "res://assets/Dialogic/level2/回去看商鞅.dtl",
 "获得商鞅能力": "res://assets/Dialogic/level2/获得商鞅能力.dtl",
-"重拾五肢": "res://assets/Dialogic/level2/重拾五肢.dtl"
+"重拾五肢": "res://assets/Dialogic/level2/重拾五肢.dtl",
+"马开始战斗": "res://assets/Dialogic/level2/马开始战斗.dtl"
 }
 layout/style_directory={
 "": "res://assets/bubble.tres",
@@ -169,6 +171,7 @@ summon={
 2d_physics/layer_6="提示"
 2d_physics/layer_7="Enemy_bullet"
 2d_physics/layer_8="交互"
+2d_physics/layer_9="BossHorse"
 
 [physics]
 

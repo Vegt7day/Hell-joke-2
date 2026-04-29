@@ -68,20 +68,82 @@ func _run_pan_sequence() -> void:
 	if mk == null or not is_instance_valid(mk):
 		_running = false
 		return
+	var saved_input: Variant = null
+	if "enable_input_control" in player:
+		saved_input = player.get("enable_input_control")
+		player.set("enable_input_control", false)
 	var player_pos := player.global_position
 	var target_world := player_pos + (mk.global_position - player_pos) * clampf(pan_k, 0.0, 1.0)
 	if player.has_method("set_camera_drag_ignore_player_input"):
 		player.call("set_camera_drag_ignore_player_input", true)
 	player.call("set_camera_focus_target_world", target_world, camera_move_speed)
+	var cam := _resolve_player_camera2d(player)
+	var target_local := target_world - player.global_position
+	var to_target_seconds := _estimate_travel_seconds(cam, target_local, camera_move_speed)
+	if to_target_seconds > 0.0:
+		await _wait_seconds_safe(to_target_seconds)
 	var hold := maxf(0.0, hold_seconds)
 	if hold > 0.0:
-		await get_tree().create_timer(hold).timeout
+		await _wait_seconds_safe(hold)
 	if is_instance_valid(player):
 		var speed := clear_move_speed if clear_move_speed > 0.0 else camera_move_speed
+		var return_world := _resolve_player_camera_aim_world(player)
+		return_world = _clamp_world_to_camera_limits(cam, return_world)
+		# 回正目标：直接回到玩家 CameraAimMarker 对应点（受 Camera2D limit 约束）
+		player.call("set_camera_focus_target_world", return_world, speed)
+		var return_local := return_world - player.global_position
+		var back_seconds := _estimate_travel_seconds(cam, return_local, speed)
+		if back_seconds > 0.0:
+			await _wait_seconds_safe(back_seconds)
 		player.call("clear_camera_focus_target", speed)
 		if player.has_method("set_camera_drag_ignore_player_input"):
 			player.call("set_camera_drag_ignore_player_input", false)
+		if saved_input != null and "enable_input_control" in player:
+			player.set("enable_input_control", saved_input)
 	_running = false
+
+
+func _resolve_player_camera2d(player: Node2D) -> Camera2D:
+	if player == null:
+		return null
+	var c := player.get_node_or_null("Camera2D")
+	if c is Camera2D:
+		return c as Camera2D
+	return null
+
+
+func _estimate_travel_seconds(cam: Camera2D, target_local: Vector2, speed: float) -> float:
+	if cam == null:
+		return 0.0
+	var s := maxf(1.0, speed)
+	var dist := cam.position.distance_to(target_local)
+	return dist / s
+
+
+func _resolve_player_camera_aim_world(player: Node2D) -> Vector2:
+	if player == null:
+		return Vector2.ZERO
+	var aim := player.get_node_or_null("CameraAimMarker") as Node2D
+	if aim != null:
+		return aim.global_position
+	return player.global_position
+
+
+func _clamp_world_to_camera_limits(cam: Camera2D, world: Vector2) -> Vector2:
+	if cam == null:
+		return world
+	var out := world
+	if cam.limit_enabled:
+		out.x = clampf(out.x, float(cam.limit_left), float(cam.limit_right))
+		out.y = clampf(out.y, float(cam.limit_top), float(cam.limit_bottom))
+	return out
+
+
+func _wait_seconds_safe(seconds: float) -> void:
+	var t := get_tree()
+	if t == null:
+		return
+	await t.create_timer(maxf(0.0, seconds)).timeout
 
 
 func export_save_state() -> Dictionary:

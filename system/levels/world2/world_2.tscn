@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://b6ubg33ffka11" path="res://system/levels/world2/world_2_3.tscn" id="12_u3b1l"]
 [ext_resource type="PackedScene" uid="uid://dai5yhdyjeq8s" path="res://system/levels/world3/props/save_point_interactable.tscn" id="13_dt1td"]
 [ext_resource type="PackedScene" uid="uid://dq2qesyce1l7i" path="res://system/camera/camera_cue_pan_to_marker.tscn" id="15_n3x6w"]
+[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="16_ambient_bg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8yweu"]
 texture = ExtResource("2_o4usy")
@@ -80,6 +81,17 @@ position = Vector2(-352, 608)
 [node name="Game" parent="." unique_id=1668650706 instance=ExtResource("8_8bqis")]
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=1304201613]
+
+[node name="ambient_far" type="ParallaxLayer" parent="ParallaxBackground" unique_id=199920001]
+motion_scale = Vector2(0.1, 0.1)
+motion_mirroring = Vector2(2304, 0)
+
+[node name="AmbientSprite" type="Sprite2D" parent="ParallaxBackground/ambient_far" unique_id=199920002]
+texture = ExtResource("16_ambient_bg")
+position = Vector2(-400, -180)
+scale = Vector2(1.35, 1.35)
+centered = false
+modulate = Color(0.52, 0.5, 0.56, 1)
 
 [node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1298926255]
 position = Vector2(-1154, -72)

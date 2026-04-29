@@ -14,6 +14,8 @@ extends Node2D
 @onready var summon_skill: Control = $SummonSkill
 @onready var summon_ring: Control = $SummonSkill/Ring
 @onready var summon_mask: ColorRect = $SummonSkill/GrayMask
+@onready var heart_ink_stinger: AudioStreamPlayer = get_node_or_null("HeartInkStinger") as AudioStreamPlayer
+@onready var ink_recover_sfx: AudioStreamPlayer = get_node_or_null("InkRecoverSfx") as AudioStreamPlayer
 
 var _cells: Array[HeartCell] = []
 var _display_health: int = 0
@@ -202,6 +204,7 @@ func _apply_one_damage_step() -> void:
 	if c == null:
 		await get_tree().process_frame
 		return
+	_play_heart_ink_stinger(1.12)
 	await c.play_damage_step()
 
 
@@ -210,6 +213,7 @@ func _apply_one_heal_step() -> void:
 	if c == null:
 		await get_tree().process_frame
 		return
+	_play_heart_ink_stinger(1.28)
 	await c.play_heal_step()
 
 
@@ -329,6 +333,7 @@ func _apply_one_ink_use_step() -> void:
 		_swap_slot_with_left_neighbor(_recovering_slot)
 
 	# 消耗：先播 use，再立即切 empty（由 slot.play_use_step 内完成）
+	_play_heart_ink_stinger(0.95)
 	if used.has_method("play_use_step"):
 		await used.call("play_use_step")
 
@@ -351,8 +356,17 @@ func _on_ink_slot_recover_finished(slot: Node) -> void:
 	stats.ink = next
 	_display_ink_slots_full = _calc_full_ink_slots_from_stats()
 	_sync_ink_slots_instant(_display_ink_slots_full)
+	if ink_recover_sfx != null and ink_recover_sfx.stream != null:
+		ink_recover_sfx.play()
 	# 如果还有空槽，继续恢复下一格（仍然保证只有 1 格在恢复）
 	_try_start_recover_chain_on_leftmost_empty()
+
+
+func _play_heart_ink_stinger(pitch: float = 1.0) -> void:
+	if heart_ink_stinger == null or heart_ink_stinger.stream == null:
+		return
+	heart_ink_stinger.pitch_scale = pitch
+	heart_ink_stinger.play()
 
 
 func _leftmost_empty_slot() -> Node:

@@ -2,6 +2,7 @@ extends CharacterBody2D
 ## 单马（灰/白/黑/红共用场景），由 `horse_id` 区分外观与 AI（占位）。
 
 const _MINOR_SELF_SCENE := preload("res://system/levels/world3/bosses/boss_horse_minor.tscn")
+const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse_player_bump_area.gd")
 const _RED_BOMB_SCENE := preload("res://system/levels/world3/props/bomb_red_horse.tscn")
 const _ATLAS_GREY := preload("res://system/levels/world3/bosses/灰马.png")
 const _ATLAS_WHITE := preload("res://system/levels/world3/bosses/白马.png")
@@ -12,7 +13,7 @@ const _ATLAS_RED := preload("res://system/levels/world3/bosses/红马.png")
 ## 小黑马召唤的分身：小黑马外观、仅左移循环，不放技能。
 @export var is_summoned_clone: bool = false
 @export var suppress_clone_ready_anim: bool = false
-@export var move_left_speed: float = 210.0
+@export var move_left_speed: float = 168.0
 @export var respawn_margin: float = 120.0
 ## 离开摄像机可视区后，累计该秒数再传送到屏幕右侧外（与主马一致；其余传送参数不变）
 @export var offscreen_respawn_delay_seconds: float = 0.5
@@ -20,21 +21,23 @@ const _ATLAS_RED := preload("res://system/levels/world3/bosses/红马.png")
 @export var skill_cast_inset_from_left_px: float = 256.0
 @export var skill_cast_inset_from_right_px: float = 16.0
 @export var auto_use_skill: bool = true
-@export var grey_dash_distance: float = 180.0
-@export var grey_dash_duration: float = 0.28
-@export var grey_skill_cooldown: float = 4.0
+@export var grey_dash_distance: float = 165.0
+@export var grey_dash_duration: float = 0.3
+@export var grey_skill_cooldown: float = 4.6
 const DEFAULT_SWORD_SCENE := preload("res://system/levels/world3/props/projectile_white_horse.tscn")
 @export var sword_scene: PackedScene = DEFAULT_SWORD_SCENE
-@export var white_skill_cooldown: float = 4.0
+@export var white_skill_cooldown: float = 4.8
 @export var white_sword_spawn_delay: float = 0.1
 @export var red_bomb_scene: PackedScene = _RED_BOMB_SCENE
-@export var red_skill_cooldown: float = 6.0
+@export var red_skill_cooldown: float = 6.8
 @export var red_bomb_spawn_delay: float = 0.15
 ## 小黑马本体：周期性召唤无技能分身；<=0 表示不自动消失（由场景逻辑回收）。
 @export var black_minor_summon_interval: float = 15.0
 @export var black_minor_clone_offset: Vector2 = Vector2(-44, 0)
 @export var black_minor_clone_lifetime: float = 5.0
 @export var black_minor_clone_fade_seconds: float = 0.28
+@export var black_minor_clone_back_offset_x: float = 32.0
+@export var black_minor_clone_y_toward_player: float = 32.0
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var sprite_2d: Sprite2D = $Sprite2D
@@ -46,6 +49,9 @@ var _skill_cooldown_left: float = 0.0
 var _black_minor_summon_accum: float = 0.0
 var _black_summon_locked: bool = false
 var _offscreen_elapsed: float = 0.0
+var _follow_owner_for_black_clone: bool = false
+var _owner_minor_for_clone: Node2D
+var _owner_follow_offset: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -64,6 +70,16 @@ func _ready() -> void:
 	add_to_group("boss_horse_shared_target")
 	_resolve_phase_controller()
 	refresh_visual_to_horse_id()
+	_ensure_player_bump_area()
+
+
+func _ensure_player_bump_area() -> void:
+	if get_node_or_null("PlayerBumpArea") != null:
+		return
+	var a := _PLAYER_BUMP_AREA.new() as BossHorsePlayerBumpArea
+	a.name = "PlayerBumpArea"
+	a.setup_shape_from_horse(self)
+	add_child(a)
 
 
 func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
@@ -79,6 +95,13 @@ func take_damage(damage_amount: float, _attacker: Variant = null) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if is_summoned_clone and _follow_owner_for_black_clone:
+		if _owner_minor_for_clone == null or not is_instance_valid(_owner_minor_for_clone):
+			queue_free()
+			return
+		velocity = Vector2.ZERO
+		global_position = _owner_minor_for_clone.global_position + _owner_follow_offset
+		return
 	if not _movement_enabled or _is_casting_skill:
 		velocity = Vector2.ZERO
 		_offscreen_elapsed = 0.0
@@ -100,12 +123,13 @@ func _process(delta: float) -> void:
 	if horse_id == BossHorseTypes.HorseId.BLACK and _movement_enabled and visible:
 		if _black_summon_locked:
 			return
-		if _is_in_skill_cast_horizontal_band():
-			_black_minor_summon_accum += delta
+		# CD 全场景累计；仅在限制区域内触发施放
+		_black_minor_summon_accum += delta
 		if _black_minor_summon_accum >= black_minor_summon_interval:
-			_black_minor_summon_accum = 0.0
-			call_deferred("_spawn_black_minor_clone")
-			return
+			if _is_in_skill_cast_horizontal_band():
+				_black_minor_summon_accum = 0.0
+				call_deferred("_spawn_black_minor_clone")
+				return
 	if not auto_use_skill:
 		return
 	if horse_id != BossHorseTypes.HorseId.GREY and horse_id != BossHorseTypes.HorseId.WHITE and horse_id != BossHorseTypes.HorseId.RED:
@@ -340,14 +364,16 @@ func _spawn_black_minor_clone() -> void:
 	clone.set("is_summoned_clone", true)
 	clone.set("auto_use_skill", false)
 	clone.set("suppress_clone_ready_anim", true)
+	clone.set("_follow_owner_for_black_clone", true)
+	clone.set("_owner_minor_for_clone", self)
 	root.add_child(clone)
-	var slot := get_node_or_null("CloneSlot") as Node2D
-	if slot:
-		clone.global_position = slot.global_position
-	else:
-		clone.global_position = global_position + black_minor_clone_offset
+	var py := _get_player_position_or_fallback(global_position).y
+	var y_dir := 1.0 if py >= global_position.y else -1.0
+	var follow_offset := Vector2(black_minor_clone_back_offset_x, y_dir * black_minor_clone_y_toward_player)
+	clone.set("_owner_follow_offset", follow_offset)
+	clone.global_position = global_position + follow_offset
 	if clone.has_method("set_movement_enabled"):
-		clone.call("set_movement_enabled", true)
+		clone.call("set_movement_enabled", false)
 	var clone_ap := clone.get_node_or_null("AnimationPlayer") as AnimationPlayer
 	var create_len := _play_anim_sync(animation_player, clone_ap, &"black_create", 0.08)
 	if create_len > 0.0:

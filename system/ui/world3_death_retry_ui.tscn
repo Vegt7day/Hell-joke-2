@@ -1,10 +1,16 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://system/ui/world3_death_retry_ui.gd" id="1_ui"]
+[ext_resource type="AudioStream" uid="uid://bsdtpixx8gxbp" path="res://assets/咔擦，门窗.mp3" id="2_ui_click"]
 
 [node name="World3DeathRetryUI" type="CanvasLayer"]
 layer = 128
 script = ExtResource("1_ui")
+
+[node name="UiSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_ui_click")
+volume_db = -6.0
+bus = &"UI"
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3

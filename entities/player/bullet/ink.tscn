@@ -182,7 +182,7 @@ size = Vector2(33, 31)
 
 [node name="Ink" type="CharacterBody2D" unique_id=1325919166]
 collision_layer = 8
-collision_mask = 85
+collision_mask = 341
 script = ExtResource("1_wl7rs")
 damage = 2
 

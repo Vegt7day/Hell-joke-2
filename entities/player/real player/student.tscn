@@ -395,6 +395,12 @@ stream = ExtResource("4_ic7vs")
 stream = ExtResource("3_dnbur")
 volume_db = -16.845
 
+[node name="hurt" type="AudioStreamPlayer" parent="." unique_id=1491403654]
+stream = ExtResource("4_ic7vs")
+volume_db = -10.0
+pitch_scale = 0.82
+bus = &"SFX_Player"
+
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]
 max_health = 6
 max_ink = 6.0

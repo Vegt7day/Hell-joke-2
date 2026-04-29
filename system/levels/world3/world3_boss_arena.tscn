@@ -14,10 +14,14 @@
 [ext_resource type="Script" uid="uid://cvn4hd2llvrur" path="res://system/levels/world3/world3_boss_arena.gd" id="13_world3arena"]
 [ext_resource type="Script" uid="uid://ocnpb4spwa80" path="res://system/levels/world3/scripts/world3_random_piece_builder.gd" id="14_piece_builder"]
 [ext_resource type="PackedScene" uid="uid://b2sjxhdmw4rv6" path="res://system/levels/world3/random_pieces/piece_01.tscn" id="15_piece_01"]
-[ext_resource type="PackedScene" uid="uid://dxn46qe1v5gpv" path="res://system/camera/camera_focus_area.tscn" id="16_6f05j"]
 [ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="17_jl37f"]
+[ext_resource type="PackedScene" uid="uid://dq2qesyce1l7i" path="res://system/camera/camera_cue_pan_to_marker.tscn" id="18_gj035"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="18_h3hwr"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="19_ndw4r"]
+[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/background/背景.png" id="20_boss_bg_far"]
+[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/background/高楼 学校背景.png" id="21_boss_bg_mid"]
+[ext_resource type="AudioStream" uid="uid://34dfybpvvspm" path="res://assets/商鞅的小曲.mp3" id="22_boss_bgm"]
+[ext_resource type="AudioStream" uid="uid://rtdoc4qvgfva" path="res://assets/开关.mp3" id="23_phase_sting"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lqbdu"]
 texture = ExtResource("6_05vw4")
@@ -47,11 +51,45 @@ physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_lqbdu")
 sources/1 = SubResource("TileSetAtlasSource_kbcxp")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6f05j"]
-size = Vector2(416, 149)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gj035"]
+size = Vector2(170, 74)
 
 [node name="World3BossArena" type="Node2D" unique_id=869987681]
 script = ExtResource("13_world3arena")
+
+[node name="BackgroundParallax" type="ParallaxBackground" parent="." unique_id=199930000]
+
+[node name="far" type="ParallaxLayer" parent="BackgroundParallax" unique_id=199930001]
+motion_scale = Vector2(0.08, 0.08)
+motion_offset = Vector2(0, 40)
+
+[node name="FarSprite" type="Sprite2D" parent="BackgroundParallax/far" unique_id=199930002]
+texture = ExtResource("20_boss_bg_far")
+position = Vector2(-320, -200)
+scale = Vector2(1.45, 1.45)
+centered = false
+modulate = Color(0.35, 0.32, 0.38, 1)
+
+[node name="mid" type="ParallaxLayer" parent="BackgroundParallax" unique_id=199930003]
+motion_scale = Vector2(0.22, 0.22)
+motion_offset = Vector2(0, 20)
+
+[node name="MidSprite" type="Sprite2D" parent="BackgroundParallax/mid" unique_id=199930004]
+texture = ExtResource("21_boss_bg_mid")
+position = Vector2(-280, -140)
+scale = Vector2(0.95, 0.95)
+centered = false
+modulate = Color(0.42, 0.38, 0.44, 0.92)
+
+[node name="BossBattleBgm" type="AudioStreamPlayer" parent="." unique_id=199931001]
+stream = ExtResource("22_boss_bgm")
+volume_db = -5.0
+bus = &"BGM_Boss"
+
+[node name="BossPhaseStinger" type="AudioStreamPlayer" parent="." unique_id=199931002]
+stream = ExtResource("23_phase_sting")
+volume_db = -9.0
+bus = &"SFX_Enemy"
 
 [node name="Game" parent="." unique_id=362030619 instance=ExtResource("1_game")]
 
@@ -76,19 +114,19 @@ position = Vector2(1120, 384)
 position = Vector2(1152, 384)
 
 [node name="SiSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011717]
-position = Vector2(1216, 384)
+position = Vector2(1194, 362)
 
 [node name="GreySpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011718]
-position = Vector2(768, 384)
+position = Vector2(746, 362)
 
 [node name="WhiteSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011719]
-position = Vector2(832, 384)
+position = Vector2(810, 362)
 
 [node name="BlackSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011720]
-position = Vector2(896, 384)
+position = Vector2(874, 362)
 
 [node name="RedSpawn" type="Marker2D" parent="Bosses/SpawnMarkers" unique_id=825011721]
-position = Vector2(960, 384)
+position = Vector2(1428, 372)
 
 [node name="PropsSpawn" type="Node2D" parent="Bosses" unique_id=1333474675]
 
@@ -109,20 +147,20 @@ position = Vector2(1312, 448)
 
 [node name="MainHorse" parent="Bosses" unique_id=760878487 instance=ExtResource("3_main")]
 unique_name_in_owner = true
-position = Vector2(960, 448)
+position = Vector2(1440, 448)
 scale = Vector2(1, 1.0048534)
 collision_priority = 0.1
-move_left_speed = 250.0
+move_left_speed = 188.0
 white_sword_count_per_cast = 2
 red_bomb_count_per_cast = 2
 
 [node name="BossSi" parent="Bosses" unique_id=1886780310 instance=ExtResource("4_si")]
 unique_name_in_owner = true
-position = Vector2(1024, 448)
+position = Vector2(1504, 448)
 move_left_speed = 2.0
 
 [node name="Minors" type="Node2D" parent="Bosses" unique_id=1218491051]
-position = Vector2(992, -64)
+position = Vector2(1600, 416)
 
 [node name="Systems" type="Node2D" parent="." unique_id=1020726105]
 
@@ -139,7 +177,6 @@ script = ExtResource("2_phase")
 [node name="RandomPieceBuilder" type="Node" parent="Systems" unique_id=1065559332]
 script = ExtResource("14_piece_builder")
 piece_pool = Array[PackedScene]([ExtResource("15_piece_01"), ExtResource("11_vcjgv"), ExtResource("12_qq75a"), ExtResource("13_gj035")])
-piece_count = 4
 spawn_heart_every_n = 1
 heart_spawn_start_index = 0
 
@@ -170,15 +207,6 @@ position = Vector2(288, -160)
 tile_map_data = PackedByteArray("AAAsACYAAAAAAAAAAAAsACcAAAAAAAEAAAAtACYAAAABAAAAAAAtACcAAAABAAEAAAAuACYAAAAAAAAAAAAuACcAAAAAAAEAAAAvACYAAAABAAAAAAAvACcAAAABAAEAAAAwACYAAAAAAAAAAAAwACcAAAAAAAEAAAAxACYAAAABAAAAAAAxACcAAAABAAEAAAAyACYAAAAAAAAAAAAyACcAAAAAAAEAAAAzACYAAAABAAAAAAAzACcAAAABAAEAAAA0ACYAAAAAAAAAAAA0ACcAAAAAAAEAAAA1ACYAAAABAAAAAAA1ACcAAAABAAEAAAA2ACYAAAAAAAAAAAA2ACcAAAAAAAEAAAA3ACYAAAABAAAAAAA3ACcAAAABAAEAAAA4ACYAAAAAAAAAAAA4ACcAAAAAAAEAAAA5ACYAAAABAAAAAAA5ACcAAAABAAEAAAA6ACYAAAAAAAAAAAA6ACcAAAAAAAEAAAA7ACYAAAABAAAAAAA7ACcAAAABAAEAAAA8ACYAAAAAAAAAAAA8ACcAAAAAAAEAAAA9ACYAAAABAAAAAAA9ACcAAAABAAEAAAA+ACYAAAAAAAAAAAA+ACcAAAAAAAEAAAA/ACYAAAABAAAAAAA/ACcAAAABAAEAAABEACYAAAAAAAAAAABEACcAAAAAAAEAAABFACYAAAABAAAAAABFACcAAAABAAEAAABGACYAAAAAAAAAAABGACcAAAAAAAEAAABHACYAAAABAAAAAABHACcAAAABAAEAAABCACYAAAAAAAAAAABCACcAAAAAAAEAAABDACYAAAABAAAAAABDACcAAAABAAEAAAAqACYAAAAAAAAAAAAqACcAAAAAAAEAAAArACYAAAABAAAAAAArACcAAAABAAEAAAAoACYAAAAAAAAAAAAoACcAAAAAAAEAAAApACYAAAABAAAAAAApACcAAAABAAEAAAAmACYAAAAAAAAAAAAmACcAAAAAAAEAAAAnACYAAAABAAAAAAAnACcAAAABAAEAAAAkACYAAAAAAAAAAAAkACcAAAAAAAEAAAAlACYAAAABAAAAAAAlACcAAAABAAEAAAAiACYAAAAAAAAAAAAiACcAAAAAAAEAAAAjACYAAAABAAAAAAAjACcAAAABAAEAAAAgACYAAAAAAAAAAAAgACcAAAAAAAEAAAAhACYAAAABAAAAAAAhACcAAAABAAEAAAAYACYAAAAAAAAAAAAYACcAAAAAAAEAAAAZACYAAAABAAAAAAAZACcAAAABAAEAAAAWACYAAAAAAAAAAAAWACcAAAAAAAEAAAAXACYAAAABAAAAAAAXACcAAAABAAEAAAAUACYAAAAAAAAAAAAUACcAAAAAAAEAAAAVACYAAAABAAAAAAAVACcAAAABAAEAAAASACYAAAAAAAAAAAASACcAAAAAAAEAAAATACYAAAABAAAAAAATACcAAAABAAEAAAAQACYAAAAAAAAAAAAQACcAAAAAAAEAAAARACYAAAABAAAAAAARACcAAAABAAEAAAAOACYAAAAAAAAAAAAOACcAAAAAAAEAAAAPACYAAAABAAAAAAAPACcAAAABAAEAAAAOAAAAAQAAAAAAAAAOAAEAAQAAAAEAAAAOAAIAAQAAAAAAAAAOAAMAAQAAAAEAAAAOAAQAAQAAAAAAAAAOAAUAAQAAAAEAAAAOAAYAAQAAAAAAAAAOAAcAAQAAAAEAAAAOAAgAAQAAAAAAAAAOAAkAAQAAAAEAAAAOAAoAAQAAAAAAAAAOAAsAAQAAAAEAAAAOAAwAAQAAAAAAAAAOAA0AAQAAAAEAAAAOAA4AAQAAAAAAAAAOAA8AAQAAAAEAAAAOABAAAQAAAAAAAAAOABEAAQAAAAEAAAAOABIAAQAAAAAAAAAOABMAAQAAAAEAAAAOABQAAQAAAAAAAAAOABUAAQAAAAEAAAAOABYAAQAAAAAAAAAOABcAAQAAAAEAAAAOABgAAQAAAAAAAAAOABkAAQAAAAEAAAAOABoAAQAAAAAAAAAOABsAAQAAAAEAAAAOABwAAQAAAAAAAAAOAB0AAQAAAAEAAAAOAB4AAQAAAAAAAAAOAB8AAQAAAAEAAAAOACAAAQAAAAAAAAAOACEAAQAAAAEAAAAOACIAAQAAAAAAAAAOACMAAQAAAAEAAAAOACQAAQAAAAAAAAAOACUAAQAAAAEAAAAPAAAAAQABAAAAAAAPAAEAAQABAAEAAAAPAAIAAQABAAAAAAAPAAMAAQABAAEAAAAPAAQAAQABAAAAAAAPAAUAAQABAAEAAAAPAAYAAQABAAAAAAAPAAcAAQABAAEAAAAPAAgAAQABAAAAAAAPAAkAAQABAAEAAAAPAAoAAQABAAAAAAAPAAsAAQABAAEAAAAPAAwAAQABAAAAAAAPAA0AAQABAAEAAAAPAA4AAQABAAAAAAAPAA8AAQABAAEAAAAPABAAAQABAAAAAAAPABEAAQABAAEAAAAPABIAAQABAAAAAAAPABMAAQABAAEAAAAPABQAAQABAAAAAAAPABUAAQABAAEAAAAPABYAAQABAAAAAAAPABcAAQABAAEAAAAPABgAAQABAAAAAAAPABkAAQABAAEAAAAPABoAAQABAAAAAAAPABsAAQABAAEAAAAPABwAAQABAAAAAAAPAB0AAQABAAEAAAAPAB4AAQABAAAAAAAPAB8AAQABAAEAAAAPACAAAQABAAAAAAAPACEAAQABAAEAAAAPACIAAQABAAAAAAAPACMAAQABAAEAAAAPACQAAQABAAAAAAAPACUAAQABAAEAAAA=")
 tile_set = SubResource("TileSet_0uytu")
 
-[node name="CameraCueFocusArea" parent="." unique_id=1107586084 instance=ExtResource("16_6f05j")]
-position = Vector2(1312, 416)
-camera_move_speed = 150.0
-clear_move_speed = 150.0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraCueFocusArea" unique_id=1110339291]
-position = Vector2(16, -32)
-shape = SubResource("RectangleShape2D_6f05j")
-
 [node name="Windows" parent="." unique_id=1643735838 instance=ExtResource("17_jl37f")]
 position = Vector2(928, 256)
 
@@ -200,3 +228,13 @@ limit_left = 512
 limit_top = -9999951
 limit_right = 9999985
 limit_bottom = 480
+
+[node name="CameraCuePanToMarker" parent="." unique_id=834575939 instance=ExtResource("18_gj035")]
+position = Vector2(1312, 416)
+camera_move_speed = 500.0
+hold_seconds = 1.2
+clear_move_speed = 1500.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraCuePanToMarker" unique_id=408637106]
+position = Vector2(-672, 0)
+shape = SubResource("RectangleShape2D_gj035")

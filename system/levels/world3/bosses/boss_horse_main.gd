@@ -4,7 +4,7 @@ extends CharacterBody2D
 
 @export var auto_cast_enabled: bool = true
 @export var cast_check_interval: float = 0.2
-@export var move_left_speed: float = 90.0
+@export var move_left_speed: float = 78.0
 @export var respawn_margin: float = 120.0
 ## 离开摄像机可视区后，累计该秒数再传送到屏幕右侧外（其余传送参数仍用 respawn_margin、respawn_y_quarter_down_factor）
 @export var offscreen_respawn_delay_seconds: float = 0.5
@@ -19,8 +19,8 @@ extends CharacterBody2D
 ## X 轴始终向左；当越过玩家后不再改变 X 方向（不转向右）
 @export var stop_x_adjust_after_pass_player: bool = true
 ## 灰马技能：朝左冲刺
-@export var grey_dash_distance: float = 220.0
-@export var grey_dash_duration: float = 0.32
+@export var grey_dash_distance: float = 200.0
+@export var grey_dash_duration: float = 0.34
 ## 白马技能：召唤剑
 const DEFAULT_SWORD_SCENE := preload("res://system/levels/world3/props/projectile_white_horse.tscn")
 @export var sword_scene: PackedScene = DEFAULT_SWORD_SCENE
@@ -34,6 +34,7 @@ const DEFAULT_RED_BOMB_SCENE := preload("res://system/levels/world3/props/bomb_r
 @export var red_bomb_spawn_delay: float = 0.15
 ## 黑马技能：召唤分身（弱化版，外观与主马一致）
 const DEFAULT_MAIN_CLONE_SCENE := preload("res://system/levels/world3/bosses/boss_horse_main.tscn")
+const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse_player_bump_area.gd")
 @export var black_clone_scene: PackedScene = DEFAULT_MAIN_CLONE_SCENE
 ## 由大黑马召唤的分身为 true（不扣共享血条、不自动放 Boss 技能）
 @export var is_summoned_clone: bool = false
@@ -98,6 +99,17 @@ func _ready() -> void:
 	else:
 		# 无控制器时允许本地测试技能循环。
 		_intro_timeline_done = true
+
+	_ensure_player_bump_area()
+
+
+func _ensure_player_bump_area() -> void:
+	if get_node_or_null("PlayerBumpArea") != null:
+		return
+	var a := _PLAYER_BUMP_AREA.new() as BossHorsePlayerBumpArea
+	a.name = "PlayerBumpArea"
+	a.setup_shape_from_horse(self)
+	add_child(a)
 
 
 func _process(delta: float) -> void:
@@ -170,14 +182,21 @@ func _on_phase_changed(new_phase: BossHorseTypes.BossPhase) -> void:
 		BossHorseTypes.BossPhase.WHITE_SOLO:
 			_unlocked_skills = [BossHorseTypes.HorseId.GREY, BossHorseTypes.HorseId.WHITE]
 			print("[BossMain] 技能池：灰 + 白。")
-		BossHorseTypes.BossPhase.BLACK_SOLO, BossHorseTypes.BossPhase.RED_SOLO:
+		BossHorseTypes.BossPhase.BLACK_SOLO:
+			_unlocked_skills = [
+				BossHorseTypes.HorseId.GREY,
+				BossHorseTypes.HorseId.WHITE,
+				BossHorseTypes.HorseId.BLACK
+			]
+			print("[BossMain] 技能池：灰 + 白 + 黑。")
+		BossHorseTypes.BossPhase.RED_SOLO:
 			_unlocked_skills = [
 				BossHorseTypes.HorseId.GREY,
 				BossHorseTypes.HorseId.WHITE,
 				BossHorseTypes.HorseId.BLACK,
 				BossHorseTypes.HorseId.RED
 			]
-			print("[BossMain] 技能池：灰 + 白 + 黑 + 红。")
+			print("[BossMain] 技能池：灰 + 白 + 黑 + 红（红马解锁）。")
 		BossHorseTypes.BossPhase.ALL_HORSES, BossHorseTypes.BossPhase.CHAIN_CINEMATIC:
 			# 与红马单马阶段相同：四色技能全开
 			_unlocked_skills = [
@@ -580,13 +599,20 @@ func _get_player_position_or_fallback(fallback: Vector2) -> Vector2:
 
 func _play_optional_on(ap: AnimationPlayer, anim_name: StringName, fallback_seconds: float = 0.08) -> void:
 	if ap == null or not ap.has_animation(anim_name):
-		await get_tree().create_timer(fallback_seconds).timeout
+		await _await_seconds_safe(fallback_seconds)
 		return
 	ap.play(anim_name)
 	var length := ap.get_animation(anim_name).length
 	if length <= 0.0:
 		length = fallback_seconds
-	await get_tree().create_timer(length).timeout
+	await _await_seconds_safe(length)
+
+
+func _await_seconds_safe(seconds: float) -> void:
+	var t := get_tree()
+	if t == null:
+		return
+	await t.create_timer(maxf(0.0, seconds)).timeout
 
 
 func _restore_clone_idle_jump(ap: AnimationPlayer) -> void:

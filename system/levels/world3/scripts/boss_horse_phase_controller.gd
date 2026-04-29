@@ -1,6 +1,6 @@
 extends Node
 ## 血量阶段、入场 Timeline、20% 商鞅分支、五马同场调度。
-## 设计见 `Docs/11-World3-Boss马战设计.md`。
+## 设计见 `Docs/更新文档/11-World3-Boss马战设计.md`。
 
 signal phase_changed(new_phase: BossHorseTypes.BossPhase)
 signal shared_health_changed(current_health: int, max_health: int, hp_percent: float)
@@ -24,14 +24,17 @@ signal intro_timeline_finished
 @export var intro_entry_duration: float = 1.1
 @export var intro_main_jump_beat_seconds: float = 0.25
 @export var si_exit_screen_offset: Vector2 = Vector2(-1400, 0)
-## 驷马沿 offset 离场 tween 时长；越长越慢。原 1.4s 约 1000px/s；现为 1/4 速度 → 5.6s。
-@export var si_exit_duration: float = 5.6
+## 驷马沿 offset 离场 tween 时长；调短以加快离场后战斗衔接。
+@export var si_exit_duration: float = 1.2
+## 主马/驷马离场速度（像素/秒），按此速度移动到刚出摄像头范围即停
+@export var si_main_exit_speed: float = 400.0
+@export var si_main_exit_margin: float = 64.0
 @export var grey_entry_offset: Vector2 = Vector2(-420, 0)
 
 ## 换马流程：当前马先离场，下一匹从临近侧回场（当前用平移模拟小跳前进）
 @export var horse_switch_exit_offset: Vector2 = Vector2(360, 0)
 @export var horse_switch_entry_offset: Vector2 = Vector2(280, 0)
-@export var horse_switch_duration: float = 0.6
+@export var horse_switch_duration: float = 0.35
 @export var skip_intro_timeline: bool = false
 @export var shangyang_path: NodePath = NodePath("../../Bosses/ShangYang")
 ## 对话气泡「商鞅」锚点；预警期可追踪召唤体。场景 `World3BossArena` 下默认 `Systems/ShangYangDialogProxy`。
@@ -76,6 +79,10 @@ signal intro_timeline_finished
 @export var fatal_pull_surround_rush_duration: float = 0.85
 ## 商鞅线：伸绳期间摄像机（玩家子节点 Camera2D）缓慢移向商鞅的时长；与绳伸长并行
 @export var fatal_sy_camera_pan_seconds: float = 2.0
+## 商鞅被抓住时，相机焦点锁向商鞅的速度（像素/秒）
+@export var fatal_sy_camera_lock_speed: float = 1800.0
+## 拉扯演出结束后，相机回正速度（像素/秒）
+@export var fatal_sy_camera_return_speed: float = 2200.0
 ## 五马拉商鞅：围拢/镜头锚点相对商鞅根坐标的偏移（右 +X，上 -Y）
 @export var fatal_sy_pull_horses_anchor_offset: Vector2 = Vector2(32, -32)
 
@@ -110,6 +117,13 @@ const _TIMELINE_SY_PULL := "商鞅五马分尸"
 const _TIMELINE_RELIMB := "重拾五肢"
 const _TIMELINE_SY_PULL_PATH := "res://assets/Dialogic/level2/商鞅五马分尸.dtl"
 const _TIMELINE_RELIMB_PATH := "res://assets/Dialogic/level2/重拾五肢.dtl"
+const _TIMELINE_INTRO_TUTORIAL := "商鞅教导交互心与剑"
+const _TIMELINE_INTRO_BATTLE_START := "马开始战斗"
+
+var _intro_waiting_first_heart_sword: bool = false
+var _intro_battle_start_timeline_started: bool = false
+var _intro_first_heart_sword_triggered: bool = false
+var _restore_si_exit_sequence_running: bool = false
 
 
 func is_summon_during_fatal_warning_window() -> bool:
@@ -170,7 +184,8 @@ func _register_world3_dialogic_when_ready() -> void:
 		if n > 0:
 			print("[BossPhase] World3 Dialogic 注册成功（第 %d 帧，共注册 %d 项）" % [tries + 1, n])
 			return
-		await get_tree().process_frame
+		if not await _await_process_frame_safe():
+			return
 		tries += 1
 	push_warning("[BossPhase] World3 Dialogic 注册失败：90 帧内未找到 DialogicRegistry 或玩家/标记点（见上一帧详细警告）")
 
@@ -268,7 +283,8 @@ func _ensure_dialogic_registry_for_sy_pull_dialog(sy: Node2D) -> void:
 		if _try_register_shangyang_for_dialog(sy if is_instance_valid(sy) else null, quiet):
 			print("[BossPhase] Boss 对话前「商鞅」已注册到 DialogicRegistry（第 %d 帧）" % [tries + 1])
 			return
-		await get_tree().process_frame
+		if not await _await_process_frame_safe():
+			return
 		tries += 1
 	push_warning("[BossPhase] Boss 对话前「商鞅」注册失败（120 帧，见上一帧详细警告）")
 
@@ -324,10 +340,18 @@ func request_phase(next: BossHorseTypes.BossPhase) -> void:
 	phase_changed.emit(next)
 	print("[BossPhase] 阶段切换: ", BossHorseTypes.phase_to_text(old_phase), " -> ", BossHorseTypes.phase_to_text(next))
 	if next == BossHorseTypes.BossPhase.FINAL_WARNING_20 and not _final_warning_sequence_started:
+		_cancel_summoned_shangyang_lifetime_limit_in_scene()
 		_final_warning_sequence_started = true
 		_queue_async_on_timer(Callable(self, "_fatal_attack_launcher"))
 	if next == BossHorseTypes.BossPhase.ALL_HORSES or next == BossHorseTypes.BossPhase.CHAIN_CINEMATIC:
 		call_deferred("_apply_finale_minor_horse_colors_and_refresh")
+
+
+func _cancel_summoned_shangyang_lifetime_limit_in_scene() -> void:
+	var summons := get_tree().get_nodes_in_group("shangyang_player_summon")
+	for n in summons:
+		if n != null and is_instance_valid(n) and n.has_method("cancel_summoned_lifetime_limit"):
+			n.call("cancel_summoned_lifetime_limit")
 
 
 func apply_shared_damage(damage_amount: float, source_name: String = "unknown") -> void:
@@ -343,6 +367,10 @@ func trigger_external_percent_damage(percent: float = 0.2, source_name: String =
 	if _main_stats == null:
 		push_warning("[BossPhase] 外部扣血触发失败：共享血条未初始化。source=%s" % source_name)
 		return
+	_intro_first_heart_sword_triggered = true
+	if _intro_waiting_first_heart_sword and not _intro_battle_start_timeline_started:
+		_intro_battle_start_timeline_started = true
+		_queue_async_on_timer(Callable(self, "_intro_battle_start_timeline_launcher"))
 	if _external_damage_busy:
 		print("[BossPhase] 外部扣血请求被忽略（忙碌中）。source=", source_name)
 		return
@@ -422,6 +450,10 @@ func _log_phase_once(key: String) -> void:
 
 
 func _run_boss_intro_timeline() -> void:
+	# 稳态：若已判定进入战斗态（如读档补偿已生效），不要再执行 intro 门控，避免把驷/主再次锁死为不可动。
+	if _intro_done or _intro_first_heart_sword_triggered or current_phase != BossHorseTypes.BossPhase.INTRO:
+		intro_timeline_finished.emit()
+		return
 	var main := get_node_or_null(main_horse_path) as Node2D
 	var si := get_node_or_null(boss_si_path) as Node2D
 	var minors := get_node_or_null(minors_path) as Node2D
@@ -437,6 +469,13 @@ func _run_boss_intro_timeline() -> void:
 	print("[BossPhase] 入场 Timeline 开始。")
 	_set_horse_movement(main, false)
 	_set_horse_movement(si, false)
+	main.visible = false
+	main.process_mode = Node.PROCESS_MODE_DISABLED
+	si.visible = false
+	si.process_mode = Node.PROCESS_MODE_DISABLED
+	_intro_waiting_first_heart_sword = false
+	_intro_battle_start_timeline_started = false
+	_intro_first_heart_sword_triggered = false
 
 	var target_main_pos := main.global_position
 	var target_si_pos := si.global_position
@@ -453,6 +492,17 @@ func _run_boss_intro_timeline() -> void:
 				c.visible = false
 				(c as Node).process_mode = Node.PROCESS_MODE_DISABLED
 
+	# 对话开始前再做一次角色注册，避免玩家锚点晚就绪导致“主角未注册”
+	_register_boss_arena_dialogic_characters(get_node_or_null(shangyang_path) as Node2D, true)
+	await _await_dialog_timeline(_TIMELINE_INTRO_TUTORIAL)
+	_intro_waiting_first_heart_sword = true
+	if _intro_first_heart_sword_triggered and not _intro_battle_start_timeline_started:
+		_intro_battle_start_timeline_started = true
+		_queue_async_on_timer(Callable(self, "_intro_battle_start_timeline_launcher"))
+	while _intro_waiting_first_heart_sword:
+		if not await _await_process_frame_safe():
+			break
+
 	if skip_intro_timeline:
 		await _apply_grey_solo_spawn(minors, grey_spawn, false)
 		si.visible = false
@@ -465,11 +515,16 @@ func _run_boss_intro_timeline() -> void:
 		intro_timeline_finished.emit()
 		return
 
+	main.visible = true
+	main.process_mode = Node.PROCESS_MODE_INHERIT
+	si.visible = true
+	si.process_mode = Node.PROCESS_MODE_INHERIT
+
 	var main_ap := main.get_node_or_null("AnimationPlayer") as AnimationPlayer
 	if main_ap and main_ap.has_animation(&"jump"):
 		main_ap.play(&"jump")
 
-	await get_tree().create_timer(intro_main_jump_beat_seconds).timeout
+	await _await_seconds_safe(intro_main_jump_beat_seconds)
 
 	var si_ap := si.get_node_or_null("AnimationPlayer") as AnimationPlayer
 	if si_ap and si_ap.has_animation(&"divide"):
@@ -477,12 +532,17 @@ func _run_boss_intro_timeline() -> void:
 		var div_len := si_ap.get_animation(&"divide").length
 		if div_len <= 0.0:
 			div_len = 1.0
-		await get_tree().create_timer(div_len).timeout
+		await _await_seconds_safe(div_len)
 
 	if si_ap and si_ap.has_animation(&"horses run"):
 		si_ap.play(&"horses run")
 
-	await _move_node(si, si.global_position + si_exit_screen_offset, si_exit_duration)
+	var exit_dir := si_exit_screen_offset
+	var main_exit_target := _target_outside_camera(main, exit_dir, si_main_exit_margin)
+	var si_exit_target := _target_outside_camera(si, exit_dir, si_main_exit_margin)
+	await _move_pair_by_speed(main, main_exit_target, si, si_exit_target, si_main_exit_speed)
+	# 主马无需等待驷马退场与灰马进场，开场即恢复移动
+	_set_horse_movement(main, true)
 
 	si.visible = false
 	si.process_mode = Node.PROCESS_MODE_DISABLED
@@ -490,7 +550,6 @@ func _run_boss_intro_timeline() -> void:
 		si_ap.stop()
 
 	await _apply_grey_solo_spawn(minors, grey_spawn, true)
-	_set_horse_movement(main, true)
 
 	_intro_done = true
 	request_phase(BossHorseTypes.BossPhase.FOUR_EXIT_GREY_ENTER)
@@ -498,6 +557,102 @@ func _run_boss_intro_timeline() -> void:
 	_on_main_health_changed()
 	print("[BossPhase] 入场 Timeline 完成（驷离场，灰马进场）。")
 	intro_timeline_finished.emit()
+
+
+func _intro_battle_start_timeline_launcher() -> void:
+	# 需求：对话与召唤/出战同时进行，不再等待对话结束后才放行
+	_intro_waiting_first_heart_sword = false
+	# 播放前临门重注册一次，避免主角对话气泡丢失
+	_register_boss_arena_dialogic_characters(get_node_or_null(shangyang_path) as Node2D, true)
+	await _await_dialog_timeline(_TIMELINE_INTRO_BATTLE_START)
+
+
+func mark_intro_battle_triggered_for_save() -> void:
+	_intro_first_heart_sword_triggered = true
+	if _intro_waiting_first_heart_sword and not _intro_battle_start_timeline_started:
+		_intro_battle_start_timeline_started = true
+		_queue_async_on_timer(Callable(self, "_intro_battle_start_timeline_launcher"))
+
+
+func is_intro_battle_triggered_for_save() -> bool:
+	return _intro_first_heart_sword_triggered
+
+
+func apply_intro_battle_triggered_from_save(triggered: bool) -> void:
+	_intro_first_heart_sword_triggered = triggered
+	if triggered and _intro_waiting_first_heart_sword and not _intro_battle_start_timeline_started:
+		_intro_battle_start_timeline_started = true
+		_queue_async_on_timer(Callable(self, "_intro_battle_start_timeline_launcher"))
+
+
+func force_main_si_enter_battle_from_save() -> void:
+	# 读档补偿：不再模拟“补一次心剑”，直接让主马+驷马进入战斗态。
+	_intro_first_heart_sword_triggered = true
+	_intro_waiting_first_heart_sword = false
+	_intro_battle_start_timeline_started = true
+	_intro_done = true
+	var main := get_node_or_null(main_horse_path) as Node2D
+	var si := get_node_or_null(boss_si_path) as Node2D
+	if main != null:
+		main.visible = true
+		main.process_mode = Node.PROCESS_MODE_INHERIT
+		_set_horse_movement(main, true)
+	if si != null:
+		si.visible = true
+		si.process_mode = Node.PROCESS_MODE_INHERIT
+		if "move_left_speed" in si:
+			# 读档强制进战斗时，确保驷马速度不落到体感极慢档位。
+			var cur_speed: float = float(si.get("move_left_speed"))
+			if cur_speed < 180.0:
+				si.set("move_left_speed", 220.0)
+		# 读档恢复需求：驷马要执行“撤场动作”，因此此处先停，交给恢复序列驱动离场。
+		_set_horse_movement(si, false)
+	if current_phase == BossHorseTypes.BossPhase.INTRO:
+		request_phase(BossHorseTypes.BossPhase.FOUR_EXIT_GREY_ENTER)
+		request_phase(BossHorseTypes.BossPhase.GREY_SOLO)
+	_queue_restore_si_exit_and_grey_entry_sequence()
+
+
+func _queue_restore_si_exit_and_grey_entry_sequence() -> void:
+	if _restore_si_exit_sequence_running:
+		return
+	_restore_si_exit_sequence_running = true
+	_queue_async_on_timer(Callable(self, "_restore_si_exit_and_grey_entry_launcher"))
+
+
+func _restore_si_exit_and_grey_entry_launcher() -> void:
+	await _run_restore_si_exit_and_grey_entry_sequence()
+
+
+func _run_restore_si_exit_and_grey_entry_sequence() -> void:
+	var main := get_node_or_null(main_horse_path) as Node2D
+	var si := get_node_or_null(boss_si_path) as Node2D
+	var minors := get_node_or_null(minors_path) as Node2D
+	var grey_spawn := get_node_or_null(grey_spawn_path) as Node2D
+	if main == null or si == null or minors == null:
+		_restore_si_exit_sequence_running = false
+		return
+	if not si.visible:
+		# 驷马已离场时不重复演出，直接补齐当前阶段小马。
+		_apply_cumulative_minors_for_phase(current_phase)
+		_restore_si_exit_sequence_running = false
+		return
+	var si_ap := si.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if si_ap and si_ap.has_animation(&"horses run"):
+		si_ap.play(&"horses run")
+	var exit_dir := si_exit_screen_offset
+	var main_exit_target := _target_outside_camera(main, exit_dir, si_main_exit_margin)
+	var si_exit_target := _target_outside_camera(si, exit_dir, si_main_exit_margin)
+	await _move_pair_by_speed(main, main_exit_target, si, si_exit_target, si_main_exit_speed)
+	si.visible = false
+	si.process_mode = Node.PROCESS_MODE_DISABLED
+	if si_ap:
+		si_ap.stop()
+	if grey_spawn != null:
+		await _apply_grey_solo_spawn(minors, grey_spawn, true)
+	# 撤场+灰马入场完成后，再按当前阶段补齐应在场小马。
+	_apply_cumulative_minors_for_phase(current_phase)
+	_restore_si_exit_sequence_running = false
 
 
 func _apply_grey_solo_spawn(minors: Node2D, grey_spawn: Node2D, from_left_side: bool) -> void:
@@ -703,6 +858,47 @@ func _move_pair(first: Node2D, first_target: Vector2, second: Node2D, second_tar
 	await tw.finished
 
 
+func _move_pair_by_speed(first: Node2D, first_target: Vector2, second: Node2D, second_target: Vector2, speed: float) -> void:
+	var tw := create_tween()
+	tw.set_parallel(true)
+	var spd := maxf(1.0, speed)
+	var d1 := first.global_position.distance_to(first_target) / spd
+	var d2 := second.global_position.distance_to(second_target) / spd
+	tw.tween_property(first, NodePath("global_position"), first_target, maxf(0.01, d1)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(second, NodePath("global_position"), second_target, maxf(0.01, d2)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tw.finished
+
+
+func _target_outside_camera(node: Node2D, direction_hint: Vector2, margin: float) -> Vector2:
+	if node == null:
+		return Vector2.ZERO
+	var dir := direction_hint.normalized()
+	if dir == Vector2.ZERO:
+		dir = Vector2.LEFT
+	var cam := _get_player_camera2d()
+	if cam == null:
+		return node.global_position + dir * 600.0
+	var vp := get_viewport()
+	if vp == null:
+		return node.global_position + dir * 600.0
+	var vp_rect: Rect2 = vp.get_visible_rect()
+	var half: Vector2 = vp_rect.size * 0.5
+	var center: Vector2 = cam.get_screen_center_position()
+	var left: float = center.x - half.x
+	var right: float = center.x + half.x
+	var top: float = center.y - half.y
+	var bottom: float = center.y + half.y
+	var m := maxf(1.0, margin)
+	var out := node.global_position
+	if absf(dir.x) >= absf(dir.y):
+		out.x = (left - m) if dir.x < 0.0 else (right + m)
+		out.y = clampf(out.y + dir.y * m, top - m, bottom + m)
+	else:
+		out.y = (top - m) if dir.y < 0.0 else (bottom + m)
+		out.x = clampf(out.x + dir.x * m, left - m, right + m)
+	return out
+
+
 func _move_node(node: Node2D, target_position: Vector2, duration: float) -> void:
 	var tw := create_tween()
 	tw.tween_property(node, NodePath("global_position"), target_position, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
@@ -725,8 +921,26 @@ func _queue_async_on_timer(launcher: Callable) -> void:
 	if not is_inside_tree():
 		push_warning("[BossPhase] _queue_async_on_timer：节点不在树内")
 		return
-	var tw := get_tree().create_timer(0.0)
+	var tree := get_tree()
+	if tree == null:
+		return
+	var tw := tree.create_timer(0.0)
 	tw.timeout.connect(launcher, CONNECT_ONE_SHOT)
+
+
+func _await_seconds_safe(seconds: float) -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.create_timer(maxf(0.0, seconds)).timeout
+
+
+func _await_process_frame_safe() -> bool:
+	var tree := get_tree()
+	if tree == null:
+		return false
+	await tree.process_frame
+	return get_tree() != null
 
 
 func _intro_timeline_launcher() -> void:
@@ -778,7 +992,7 @@ func _fatal_attack_full_sequence() -> void:
 		else:
 			push_warning("[BossPhase] 放宽判定：曾判定存在商鞅上下文，但当前无可用 ShangYang 节点，跳过绳肢体演出，仅尝试对话注册与时间线")
 			await _ensure_dialogic_registry_for_sy_pull_dialog(null)
-		await get_tree().create_timer(0.12).timeout
+		await _await_seconds_safe(0.12)
 		await _await_dialog_timeline(_TIMELINE_SY_PULL, _TIMELINE_SY_PULL_PATH)
 		await _after_sy_pull_start_finale_siege()
 	else:
@@ -795,7 +1009,7 @@ func _on_tree_node_added_summon_sy_watch(node: Node) -> void:
 
 func _play_fatal_warning_panel() -> void:
 	if fatal_warning_scene == null:
-		await get_tree().create_timer(2.2).timeout
+		await _await_seconds_safe(2.2)
 		return
 	var ui := fatal_warning_scene.instantiate() as Node
 	var scn := get_tree().current_scene
@@ -806,7 +1020,7 @@ func _play_fatal_warning_panel() -> void:
 	if ui.has_signal("warning_finished"):
 		await ui.warning_finished
 	else:
-		await get_tree().create_timer(2.2).timeout
+		await _await_seconds_safe(2.2)
 
 
 func _resolve_shangyang_for_fatal_pull() -> Node2D:
@@ -857,13 +1071,36 @@ func _await_dialog_timeline(timeline_identifier: String, fallback_res_path: Stri
 		push_warning("[BossPhase] Dialogic.start 返回 null（Styles 子系统异常）")
 		if dlg.timeline_ended.is_connected(on_timeline_ended):
 			dlg.timeline_ended.disconnect(on_timeline_ended)
-		get_tree().paused = tree_paused_before
+		var tree0 := get_tree()
+		if tree0 != null:
+			tree0.paused = tree_paused_before
 		return
 
 	# 等 Dialogic 的 defer 入树后再挂到当前场景，避免与根节点 add 顺序打架；并保证暂停时仍能推进
-	await get_tree().process_frame
-	await get_tree().process_frame
-	var scn := get_tree().current_scene
+	var tree := get_tree()
+	if tree == null:
+		if dlg.timeline_ended.is_connected(on_timeline_ended):
+			dlg.timeline_ended.disconnect(on_timeline_ended)
+		return
+	if not await _await_process_frame_safe():
+		if dlg.timeline_ended.is_connected(on_timeline_ended):
+			dlg.timeline_ended.disconnect(on_timeline_ended)
+		return
+	tree = get_tree()
+	if tree == null:
+		if dlg.timeline_ended.is_connected(on_timeline_ended):
+			dlg.timeline_ended.disconnect(on_timeline_ended)
+		return
+	if not await _await_process_frame_safe():
+		if dlg.timeline_ended.is_connected(on_timeline_ended):
+			dlg.timeline_ended.disconnect(on_timeline_ended)
+		return
+	tree = get_tree()
+	if tree == null:
+		if dlg.timeline_ended.is_connected(on_timeline_ended):
+			dlg.timeline_ended.disconnect(on_timeline_ended)
+		return
+	var scn := tree.current_scene
 	if scn and is_instance_valid(layout):
 		if layout.get_parent() != scn:
 			var p := layout.get_parent()
@@ -875,14 +1112,20 @@ func _await_dialog_timeline(timeline_identifier: String, fallback_res_path: Stri
 
 	var safety := 0
 	while not timeline_done[0] and safety < 7200:
-		await get_tree().process_frame
+		tree = get_tree()
+		if tree == null:
+			break
+		if not await _await_process_frame_safe():
+			break
 		safety += 1
 	if not timeline_done[0]:
 		push_warning("[BossPhase] 等待 timeline_ended 超时，已断开监听: %s" % timeline_identifier)
 		if dlg.timeline_ended.is_connected(on_timeline_ended):
 			dlg.timeline_ended.disconnect(on_timeline_ended)
 
-	get_tree().paused = tree_paused_before
+	var tree_end := get_tree()
+	if tree_end != null:
+		tree_end.paused = tree_paused_before
 
 
 func _play_relimb_timeline_deferred() -> void:
@@ -1014,6 +1257,11 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	if player_sy != null and "enable_input_control" in player_sy:
 		saved_input_sy = player_sy.get("enable_input_control")
 		player_sy.set("enable_input_control", false)
+	if player_sy != null and player_sy.has_method("set_camera_drag_ignore_player_input"):
+		player_sy.call("set_camera_drag_ignore_player_input", true)
+	if player_sy != null and player_sy.has_method("set_camera_focus_target_world"):
+		# 商鞅被抓住时，强制镜头焦点锁定到商鞅锚点（无视其是否在屏幕内）
+		player_sy.call("set_camera_focus_target_world", sy_pull_anchor, maxf(1.0, fatal_sy_camera_lock_speed))
 
 	var cam_sy := _get_player_camera2d()
 	var saved_cam_pos_sy := Vector2.ZERO
@@ -1027,7 +1275,7 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 	# 绳子接触肢体后，停止「跟随商鞅本体」并冻结在当前点位
 	_freeze_limb_following(limbs)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_shangyang)
-	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
+	await _await_seconds_safe(final_warn_pause_after_rope_seconds)
 	await _tween_pull_horses_then_limbs(pairs, main, shangyang)
 
 	for rope in ropes:
@@ -1036,6 +1284,10 @@ func _run_shangyang_limb_pull_sequence_for(shangyang: Node2D) -> void:
 
 	if cam_sy != null:
 		cam_sy.position = saved_cam_pos_sy
+	if player_sy != null and player_sy.has_method("clear_camera_focus_target"):
+		player_sy.call("clear_camera_focus_target", maxf(1.0, fatal_sy_camera_return_speed))
+	if player_sy != null and player_sy.has_method("set_camera_drag_ignore_player_input"):
+		player_sy.call("set_camera_drag_ignore_player_input", false)
 	if player_sy != null and saved_input_sy != null:
 		player_sy.set("enable_input_control", saved_input_sy)
 
@@ -1096,7 +1348,7 @@ func _run_player_fatal_ropes_pull() -> void:
 
 	await _tween_rope_extend_all(ropes, final_warn_rope_extend_seconds)
 	_show_rope_contact_hint_fire_and_forget(rope_contact_hint_player)
-	await get_tree().create_timer(final_warn_pause_after_rope_seconds).timeout
+	await _await_seconds_safe(final_warn_pause_after_rope_seconds)
 
 	for rope_u in ropes:
 		if rope_u != null and is_instance_valid(rope_u) and rope_u.has_method("unbind_end_keep_vector_from_start"):
@@ -1287,7 +1539,10 @@ func _show_rope_contact_hint_fire_and_forget(message: String) -> void:
 	lab.text = message
 	lab.visible = true
 	lab.modulate = Color(1, 1, 1, 1)
-	var tw := get_tree().create_timer(rope_contact_hint_duration)
+	var tree := get_tree()
+	if tree == null:
+		return
+	var tw := tree.create_timer(rope_contact_hint_duration)
 	tw.timeout.connect(
 		func() -> void:
 			if is_instance_valid(lab):
@@ -1432,7 +1687,10 @@ func _tween_pull_horses_then_limbs(pairs: Array[Dictionary], main_horse: Node2D,
 	if n_pairs == 0:
 		return
 	if is_instance_valid(shangyang) and shangyang.has_method("play_be_pull_animation"):
-		var t := get_tree().create_timer(delay)
+		var tree2 := get_tree()
+		if tree2 == null:
+			return
+		var t := tree2.create_timer(delay)
 		t.timeout.connect(
 			func() -> void:
 				if is_instance_valid(shangyang):
@@ -1514,3 +1772,17 @@ func _get_or_spawn_minor(minors: Node2D, minor_name: StringName) -> Node2D:
 	spawned.process_mode = Node.PROCESS_MODE_DISABLED
 	_set_horse_movement(spawned, false)
 	return spawned
+
+
+func ensure_saved_minors_present(minors_state: Dictionary) -> void:
+	# 读档时，_ready 可能已清空 Minors；这里按存档键名先补回节点，再由 world3_boss_arena.from_dict 应用状态。
+	if minors_state == null or minors_state.is_empty():
+		return
+	var minors := get_node_or_null(minors_path) as Node2D
+	if minors == null:
+		return
+	for raw_name in minors_state.keys():
+		var nm := StringName(String(raw_name))
+		if nm == StringName():
+			continue
+		_get_or_spawn_minor(minors, nm)
