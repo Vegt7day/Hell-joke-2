@@ -63,7 +63,7 @@ var _unlocked_skills: Array[BossHorseTypes.HorseId] = [BossHorseTypes.HorseId.GR
 var _movement_enabled: bool = true
 var _offscreen_elapsed: float = 0.0
 var _smoothed_y_cmd: float = 0.0
-var _skill_feed_lane_active: Array[RichTextLabel] = []
+var _skill_feed_lane_active: Array[Control] = []
 
 
 func _ready() -> void:
@@ -800,7 +800,7 @@ func post_minor_entry_broadcast(phase_raw: int) -> void:
 	var horse_name := _horse_display_name(skill, false)
 	var horse_color := _horse_color_hex(skill, false)
 	var msg := "[color=%s]%s[/color] 进入了直播间" % [horse_color, horse_name]
-	_push_skill_feed_message(feed_root, msg)
+	_push_skill_feed_message(feed_root, msg, true)
 
 
 func _resolve_skill_feed_root() -> Control:
@@ -816,7 +816,30 @@ func _resolve_skill_feed_root() -> Control:
 	return scene.get_node_or_null("Systems/UIHints/SkillFeedRoot") as Control
 
 
-func _create_skill_feed_row(feed_root: Control, message_bbcode: String) -> RichTextLabel:
+func _create_skill_feed_row(feed_root: Control, message_bbcode: String, is_entry: bool = false) -> Control:
+	var container := Control.new()
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(1, 1, 1, 0.45)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+
+	if is_entry:
+		style.bg_color = Color(1, 1, 1, 0.6)
+		style.set_corner_radius_all(10)
+		style.content_margin_left = 16
+		style.content_margin_right = 16
+		style.content_margin_top = 8
+		style.content_margin_bottom = 8
+
+	var panel := Panel.new()
+	panel.add_theme_stylebox_override("panel", style)
+	container.add_child(panel)
+
 	var row := RichTextLabel.new()
 	row.bbcode_enabled = true
 	row.fit_content = true
@@ -826,15 +849,23 @@ func _create_skill_feed_row(feed_root: Control, message_bbcode: String) -> RichT
 	row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.custom_minimum_size = Vector2(0, skill_feed_row_height)
-	row.size = Vector2(skill_feed_text_width, skill_feed_row_height)
-	row.position = Vector2(0, 0)
 	row.theme = feed_root.theme
 	row.theme_type_variation = &""
 	row.text = message_bbcode
-	return row
+	panel.add_child(row)
+
+	# 让 panel / container 大小自适应 row 文本内容
+	row.resized.connect(func():
+		var extra_w := style.content_margin_left + style.content_margin_right
+		var extra_h := style.content_margin_top + style.content_margin_bottom
+		panel.size = row.size + Vector2(extra_w, extra_h)
+		container.custom_minimum_size = panel.size
+	, CONNECT_ONE_SHOT)
+
+	return container
 
 
-func _push_skill_feed_message(feed_root: Control, message_bbcode: String) -> void:
+func _push_skill_feed_message(feed_root: Control, message_bbcode: String, is_entry: bool = false) -> void:
 	var lane_count: int = maxi(1, skill_feed_max_rows)
 	if _skill_feed_lane_active.size() != lane_count:
 		_skill_feed_lane_active.resize(lane_count)
@@ -845,24 +876,31 @@ func _push_skill_feed_message(feed_root: Control, message_bbcode: String) -> voi
 	var lane_idx := _pick_danmaku_lane(feed_root)
 	if lane_idx < 0:
 		return
-	var row := _create_skill_feed_row(feed_root, message_bbcode)
-	feed_root.add_child(row)
-	_skill_feed_lane_active[lane_idx] = row
-	var spawn_x := feed_root.size.x + skill_feed_spawn_offset_x
+	var container := _create_skill_feed_row(feed_root, message_bbcode, is_entry)
+	feed_root.add_child(container)
+	_skill_feed_lane_active[lane_idx] = container
+
+	# 用 viewport 绝对坐标计算 spawn/end，再转 feed_root 本地空间
+	var vp_width := feed_root.get_viewport_rect().size.x
+	var feed_screen_left := feed_root.global_position.x
+	var spawn_x := vp_width + skill_feed_spawn_offset_x - feed_screen_left
 	var y := float(lane_idx) * skill_feed_row_height
-	row.position = Vector2(spawn_x, y)
-	row.modulate.a = 1.0
+	container.position = Vector2(spawn_x, y)
+	container.modulate.a = 1.0
+
+	# 从 container 内取 RichTextLabel 算宽度
+	var row := container.get_child(0).get_child(0) as RichTextLabel
 	var label_w := maxf(skill_feed_text_width, row.get_content_width())
-	var end_x := -label_w - 24.0
+	var end_x := -label_w - 24.0 - feed_screen_left
 	var dist := absf(end_x - spawn_x)
 	var dur := dist / maxf(1.0, skill_feed_danmaku_speed)
-	var tw := create_tween()
-	tw.tween_property(row, "position:x", end_x, maxf(0.05, dur)).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
+	var tw := feed_root.create_tween()
+	tw.tween_property(container, "position:x", end_x, maxf(0.05, dur)).set_trans(Tween.TRANS_LINEAR).set_ease(Tween.EASE_IN_OUT)
 	tw.finished.connect(func() -> void:
-		if lane_idx >= 0 and lane_idx < _skill_feed_lane_active.size() and _skill_feed_lane_active[lane_idx] == row:
+		if lane_idx >= 0 and lane_idx < _skill_feed_lane_active.size() and _skill_feed_lane_active[lane_idx] == container:
 			_skill_feed_lane_active[lane_idx] = null
-		if is_instance_valid(row):
-			row.queue_free()
+		if is_instance_valid(container):
+			container.queue_free()
 	, CONNECT_ONE_SHOT)
 
 
@@ -870,17 +908,21 @@ func _pick_danmaku_lane(feed_root: Control) -> int:
 	var lane_count: int = maxi(1, skill_feed_max_rows)
 	var lane_right_x := feed_root.size.x
 	for lane in range(lane_count):
-		var row := _skill_feed_lane_active[lane]
-		if row == null or not is_instance_valid(row):
+		var ctrl := _skill_feed_lane_active[lane]
+		if ctrl == null or not is_instance_valid(ctrl):
 			return lane
-		if _is_danmaku_fully_inside_right_boundary(row, lane_right_x):
+		if _is_danmaku_fully_inside_right_boundary(ctrl, lane_right_x):
 			return lane
 	return -1
 
 
-func _is_danmaku_fully_inside_right_boundary(row: RichTextLabel, lane_right_x: float) -> bool:
-	if row == null or not is_instance_valid(row):
+func _is_danmaku_fully_inside_right_boundary(container: Control, lane_right_x: float) -> bool:
+	if container == null or not is_instance_valid(container):
 		return true
-	var content_w := maxf(row.size.x, row.get_content_width())
-	var right_x := row.position.x + maxf(skill_feed_text_width, content_w)
+	# container -> Panel -> RichTextLabel
+	var row := container.get_child(0).get_child(0) as RichTextLabel
+	if row == null:
+		return true
+	var content_w := maxf(container.size.x, row.get_content_width())
+	var right_x := container.position.x + maxf(skill_feed_text_width, content_w)
 	return right_x <= (lane_right_x - skill_feed_lane_enter_margin)
