@@ -13,7 +13,6 @@ extends Node2D
 @onready var inks_box: HBoxContainer = $Inks
 @onready var summon_skill: Control = $SummonSkill
 @onready var summon_bar: TextureProgressBar = $SummonSkill/CooldownBar
-@onready var summon_mask: ColorRect = $SummonSkill/GrayMask
 @onready var heart_ink_stinger: AudioStreamPlayer = get_node_or_null("HeartInkStinger") as AudioStreamPlayer
 @onready var ink_recover_sfx: AudioStreamPlayer = get_node_or_null("InkRecoverSfx") as AudioStreamPlayer
 
@@ -212,6 +211,8 @@ func _leftmost_cell_that_can_heal() -> HeartCell:
 func _apply_one_damage_step() -> void:
 	var c := _rightmost_cell_that_can_damage()
 	if c == null:
+		if not is_inside_tree():
+			return
 		await get_tree().process_frame
 		return
 	_play_heart_ink_stinger(1.12)
@@ -221,6 +222,8 @@ func _apply_one_damage_step() -> void:
 func _apply_one_heal_step() -> void:
 	var c := _leftmost_cell_that_can_heal()
 	if c == null:
+		if not is_inside_tree():
+			return
 		await get_tree().process_frame
 		return
 	_play_heart_ink_stinger(1.28)
@@ -406,8 +409,6 @@ func _update_summon_skill_ui() -> void:
 		return
 	var p := get_tree().get_first_node_in_group("player")
 	if p == null:
-		if summon_mask != null:
-			summon_mask.visible = true
 		if summon_bar != null:
 			summon_bar.visible = false
 			summon_bar.value = 0.0
@@ -426,10 +427,6 @@ func _update_summon_skill_ui() -> void:
 	var cooling := cooldown_ratio < 0.999
 	if summon_bar != null:
 		summon_bar.value = cooldown_ratio
-	if summon_mask != null:
-		summon_mask.visible = (not unlocked) or cooling
-
-
 func _left_neighbor_slot(slot: Node) -> Node:
 	var idx := _ink_slots.find(slot)
 	if idx <= 0:

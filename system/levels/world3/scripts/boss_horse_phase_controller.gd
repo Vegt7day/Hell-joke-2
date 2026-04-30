@@ -413,6 +413,20 @@ func _cleanup_all_summoned_clones_on_boss_death() -> void:
 	for n in get_tree().get_nodes_in_group("boss_horse_minor_summoned_clone"):
 		if n != null and is_instance_valid(n):
 			n.queue_free()
+	
+	# Boss 死亡 2 秒后销毁全部敌对目标（主马 + 小马 + 驷）
+	var cleanup_timer := get_tree().create_timer(2.0)
+	cleanup_timer.timeout.connect(
+		func():
+			for n in get_tree().get_nodes_in_group("boss_horse_main"):
+				if n != null and is_instance_valid(n):
+					n.queue_free()
+			for n in get_tree().get_nodes_in_group("boss_horse_minor"):
+				if n != null and is_instance_valid(n):
+					n.queue_free()
+	,
+		CONNECT_ONE_SHOT
+	)
 
 
 func apply_shared_damage(damage_amount: float, source_name: String = "unknown") -> void:
@@ -1015,6 +1029,26 @@ func _set_horse_movement(node: Node, enabled: bool) -> void:
 func _zero_velocity_if_characterbody2d(node: Node2D) -> void:
 	if node != null and node is CharacterBody2D:
 		(node as CharacterBody2D).velocity = Vector2.ZERO
+
+
+func _is_node_offscreen(node: Node2D, margin: float = 100.0) -> bool:
+	if node == null:
+		return false
+	var cam := _get_player_camera2d()
+	if cam == null:
+		return false
+	var vp := get_viewport()
+	if vp == null:
+		return false
+	var vp_rect: Rect2 = vp.get_visible_rect()
+	var half: Vector2 = vp_rect.size * 0.5
+	var center: Vector2 = cam.get_screen_center_position()
+	var left: float = center.x - half.x - margin
+	var right: float = center.x + half.x + margin
+	var top: float = center.y - half.y - margin
+	var bottom: float = center.y + half.y + margin
+	var pos := node.global_position
+	return pos.x < left or pos.x > right or pos.y < top or pos.y > bottom
 
 
 ## call_deferred(含 await 的函数) 在首次 yield 后协程会丢；用 0s timer 的 timeout 启动。

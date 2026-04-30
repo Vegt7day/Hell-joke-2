@@ -14,7 +14,7 @@ var _used: bool = false
 
 func _ready() -> void:
 	monitoring = true
-	monitorable = true
+	set_deferred("monitorable", true)
 	_play_if_exists(idle_anim_name)
 
 

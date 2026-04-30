@@ -65,6 +65,8 @@ func play_heal_step() -> void:
 
 
 func _play_if_exists(anim_name: StringName) -> void:
+	if not is_inside_tree():
+		return
 	if sprite == null or sprite.sprite_frames == null:
 		if not await _await_next_frame_safe():
 			return

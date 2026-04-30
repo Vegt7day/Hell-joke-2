@@ -111,19 +111,30 @@ func _build_sequence_with_seed(start_marker: Marker2D, runtime_root: Node2D) -> 
 func _select_piece_indices(count: int) -> void:
 	if piece_pool.is_empty() or count <= 0:
 		return
-	if allow_repeat_piece:
-		for _i in count:
-			_selected_pool_indices.append(_rng.randi_range(0, piece_pool.size() - 1))
-		return
-	var candidates: Array[int] = []
-	for i in piece_pool.size():
-		candidates.append(i)
-	for _j in count:
-		if candidates.is_empty():
-			break
-		var pick_at := _rng.randi_range(0, candidates.size() - 1)
-		_selected_pool_indices.append(candidates[pick_at])
-		candidates.remove_at(pick_at)
+	
+	# 前 count-1 块从主池（排除最后一个 piece）中随机选
+	# 最后一块固定为 pool 的最后一个（piece5）
+	var last_idx: int = piece_pool.size() - 1
+	var main_pool_size: int = max(0, last_idx)  # 排除最后一个
+	var select_count: int = max(0, count - 1)
+	
+	if select_count > 0 and main_pool_size > 0:
+		if allow_repeat_piece:
+			for _i in select_count:
+				_selected_pool_indices.append(_rng.randi_range(0, main_pool_size - 1))
+		else:
+			var candidates: Array[int] = []
+			for i in main_pool_size:
+				candidates.append(i)
+			for _j in min(select_count, candidates.size()):
+				if candidates.is_empty():
+					break
+				var pick_at := _rng.randi_range(0, candidates.size() - 1)
+				_selected_pool_indices.append(candidates[pick_at])
+				candidates.remove_at(pick_at)
+	
+	# 最后一块固定为最后一个 piece
+	_selected_pool_indices.append(last_idx)
 
 
 func _build_fixed_sequence(start_marker: Marker2D, runtime_root: Node2D) -> void:
