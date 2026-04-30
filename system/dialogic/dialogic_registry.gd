@@ -11,6 +11,14 @@ var character_resource_map: Dictionary = {
 
 func _ready():
 	print("DialogicRegistry 自动加载节点已就绪")
+	_preload_character_resources()
+
+
+func _preload_character_resources() -> void:
+	for char_id in character_resource_map:
+		var path = character_resource_map[char_id]
+		if ResourceLoader.exists(path):
+			load(path)
 
 # 注册角色
 func register_character(character_id: String, node: Node, character_resource_path: String = "") -> bool:

@@ -759,7 +759,7 @@ func _skill_color_hex(skill: BossHorseTypes.HorseId) -> String:
 		BossHorseTypes.HorseId.WHITE:
 			return "#ffffff"
 		BossHorseTypes.HorseId.BLACK:
-			return "#e83b3b"
+			return "#3e3546"
 		BossHorseTypes.HorseId.RED:
 			return "#e83b3b"
 		_:

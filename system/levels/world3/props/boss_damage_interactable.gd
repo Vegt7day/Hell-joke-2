@@ -74,7 +74,7 @@ func interact() -> void:
 					else:
 						if scn != null and scn.has_method("set_pending_shared_hp_override_for_save"):
 							scn.call("set_pending_shared_hp_override_for_save", predicted_hp)
-						Game.save_game("heart")
+						Game.save_game("heart", true)
 	if animation_player != null and animation_player.has_animation(hurt_anim_name):
 		animation_player.play(hurt_anim_name)
 		await animation_player.animation_finished

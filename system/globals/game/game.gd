@@ -157,27 +157,29 @@ func has_save(slot: String = SAVE_SLOT_SAVEPOINT) -> bool:
 	return FileAccess.file_exists(_save_path_for_slot(slot))
 
 
-func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
+func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> void:
 	var tree := get_tree()
 	if tree == null:
 		print("存档失败：SceneTree 不可用")
 		return
 	# 保存期间：暂停世界 + 禁用玩家操控（保存结束后恢复）
 	var paused_before := tree.paused
-	tree.paused = true
+	if not skip_pause:
+		tree.paused = true
 	var scene := tree.current_scene
 	var player_node_for_lock := _find_player_node_under_scene(scene)
 	var input_before: Variant = null
-	if player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+	if not skip_pause and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
 		input_before = player_node_for_lock.get("enable_input_control")
 		player_node_for_lock.set("enable_input_control", false)
 	# 由于本函数无 await，保存写盘完成即立刻恢复 paused/input
 	# 注意：任何早退都必须走到末尾恢复
 	if not scene or scene.scene_file_path.is_empty():
 		print("错误：没有有效的当前场景")
-		if input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+		if not skip_pause and input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
 			player_node_for_lock.set("enable_input_control", input_before)
-		tree.paused = paused_before
+		if not skip_pause:
+			tree.paused = paused_before
 		return
 	
 	var scene_name := scene.scene_file_path.get_file().get_basename()
@@ -247,9 +249,10 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT) -> void:
 	file = null
 	
 	print("游戏已保存: ", scene_name, " slot=", slot)
-	if input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
+	if not skip_pause and input_before != null and player_node_for_lock != null and "enable_input_control" in player_node_for_lock:
 		player_node_for_lock.set("enable_input_control", input_before)
-	tree.paused = paused_before
+	if not skip_pause:
+		tree.paused = paused_before
 
 
 func _export_bucket_states(scene: Node) -> Dictionary:

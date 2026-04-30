@@ -91,6 +91,7 @@ signal boss_combat_bgm_requested
 @export var fatal_sy_pull_horses_anchor_offset: Vector2 = Vector2(32, -32)
 
 var current_phase: BossHorseTypes.BossPhase = BossHorseTypes.BossPhase.INTRO
+static var _dialogic_resource_scanned := false
 
 var _main_stats: Stats
 var _phase_logged_once: Dictionary = {}
@@ -194,6 +195,8 @@ func _ready() -> void:
 	await _register_world3_dialogic_when_ready()
 	# 入场对话依赖注册完成后再启动，避免与 intro 协程并发导致首段场景对话丢失
 	_queue_async_on_timer(Callable(self, "_intro_timeline_launcher"))
+	# 预加载全部 Dialogic 时间线，避免首次使用时同步解析卡顿
+	_preload_all_dialogic_timelines()
 
 
 func _resolve_dialogic_registry() -> Node:
@@ -640,12 +643,18 @@ func _run_boss_intro_timeline() -> void:
 	intro_timeline_finished.emit()
 
 
+func _preload_all_dialogic_timelines() -> void:
+	load("res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅教导交互心与剑.dtl")
+	load("res://assets/资源总库/12_Dialogic工程/Dialogic/level2/马开始战斗.dtl")
+	load("res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅提醒按f.dtl")
+	load("res://assets/资源总库/12_Dialogic工程/Dialogic/level2/商鞅五马分尸.dtl")
+	load("res://assets/资源总库/12_Dialogic工程/Dialogic/level2/重拾五肢.dtl")
+
+
 func _intro_battle_start_timeline_launcher() -> void:
 	boss_combat_bgm_requested.emit()
 	# 需求：对话与召唤/出战同时进行，不再等待对话结束后才放行
 	_intro_waiting_first_heart_sword = false
-	# 播放前临门重注册一次，避免主角对话气泡丢失
-	_register_boss_arena_dialogic_characters(get_node_or_null(shangyang_path) as Node2D, true)
 	await _await_dialog_timeline(_TIMELINE_INTRO_BATTLE_START, _TIMELINE_INTRO_BATTLE_START_PATH)
 
 
@@ -1214,7 +1223,10 @@ func _await_dialog_timeline(timeline_identifier: String, fallback_res_path: Stri
 	# 避免启动过早缓存的空 dtl 目录（Engine meta）
 	if Engine.has_meta("dtl_directory"):
 		Engine.remove_meta("dtl_directory")
-	DialogicResourceUtil.update()
+	# 首次调用后跳过资源扫描（只需扫一次，后续 Dialogic 内部缓存已就绪）
+	if not _dialogic_resource_scanned:
+		_dialogic_resource_scanned = true
+		DialogicResourceUtil.update()
 
 	dlg.paused = false
 	var tree_paused_before := get_tree().paused

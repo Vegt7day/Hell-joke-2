@@ -435,7 +435,7 @@ func _finalize_delayed_heart_save() -> void:
 	_pending_heart_save_target_minor = StringName()
 	_pending_heart_save_elapsed = 0.0
 	if is_instance_valid(Game) and Game.has_method("save_game"):
-		Game.save_game("heart")
+		Game.save_game("heart", true)
 
 
 func consume_no_damage_heart_interaction_token() -> bool:
