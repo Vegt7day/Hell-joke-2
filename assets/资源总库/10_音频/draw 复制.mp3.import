@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dcrxdi2e8trl1"
+path="res://.godot/imported/draw 复制.mp3-17acc5e4228c1f0a428600c1b0096f1d.mp3str"
+
+[deps]
+
+source_file="res://assets/资源总库/10_音频/draw 复制.mp3"
+dest_files=["res://.godot/imported/draw 复制.mp3-17acc5e4228c1f0a428600c1b0096f1d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

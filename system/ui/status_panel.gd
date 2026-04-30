@@ -12,7 +12,7 @@ extends Node2D
 @onready var hearts_box: HBoxContainer = $Hearts
 @onready var inks_box: HBoxContainer = $Inks
 @onready var summon_skill: Control = $SummonSkill
-@onready var summon_ring: Control = $SummonSkill/Ring
+@onready var summon_bar: TextureProgressBar = $SummonSkill/CooldownBar
 @onready var summon_mask: ColorRect = $SummonSkill/GrayMask
 @onready var heart_ink_stinger: AudioStreamPlayer = get_node_or_null("HeartInkStinger") as AudioStreamPlayer
 @onready var ink_recover_sfx: AudioStreamPlayer = get_node_or_null("InkRecoverSfx") as AudioStreamPlayer
@@ -50,6 +50,16 @@ func _ready() -> void:
 	_target_ink_slots_full = _display_ink_slots_full
 	_sync_ink_slots_instant(_display_ink_slots_full)
 	_update_summon_skill_ui()
+	
+	# 占位：生成 1x1 白色纹理使 TextureProgressBar 可见；替换为真实贴图后删除此段
+	if summon_bar != null and summon_bar.texture_under == null:
+		var img := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+		img.fill(Color.WHITE)
+		var tex := ImageTexture.create_from_image(img)
+		summon_bar.texture_under = tex
+		summon_bar.texture_progress = tex
+		summon_bar.tint_under = Color(0.12, 0.12, 0.12, 0.7)
+		summon_bar.tint_progress = Color(0.95, 0.9, 0.25, 1.0)
 
 
 func _rebind_stats_next_frame() -> void:
@@ -398,18 +408,24 @@ func _update_summon_skill_ui() -> void:
 	if p == null:
 		if summon_mask != null:
 			summon_mask.visible = true
-		if summon_ring != null and summon_ring.has_method("set"):
-			summon_ring.set("cooldown_ratio", 0.0)
+		if summon_bar != null:
+			summon_bar.visible = false
+			summon_bar.value = 0.0
 		return
 	var unlocked := false
 	if "shangyang_summon_unlocked" in p:
 		unlocked = bool(p.get("shangyang_summon_unlocked"))
+	
+	# 没有召唤权限时隐藏冷却条
+	if summon_bar != null:
+		summon_bar.visible = unlocked
+	
 	var cooldown_ratio := 0.0
 	if p.has_method("get_summon_cooldown_ratio"):
 		cooldown_ratio = clampf(float(p.call("get_summon_cooldown_ratio")), 0.0, 1.0)
-	var cooling := cooldown_ratio > 0.001
-	if summon_ring != null and summon_ring.has_method("set"):
-		summon_ring.set("cooldown_ratio", cooldown_ratio)
+	var cooling := cooldown_ratio < 0.999
+	if summon_bar != null:
+		summon_bar.value = cooldown_ratio
 	if summon_mask != null:
 		summon_mask.visible = (not unlocked) or cooling
 

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cjkbtgsoyodw3"]
 
 [ext_resource type="Script" uid="uid://lgwxwg0o45k3" path="res://门.gd" id="1_gxmog"]
+[ext_resource type="AudioStream" uid="uid://c2i556d81h4c3" path="res://assets/资源总库/10_音频/咔擦，门窗.mp3" id="2_hyt57"]
 [ext_resource type="Texture2D" uid="uid://qmerhi1eunid" path="res://assets/资源总库/08_图像_机关/门.png" id="2_vs45f"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
 
@@ -145,6 +146,7 @@ size = Vector2(42, 42)
 collision_mask = 0
 collision_priority = 0.4
 script = ExtResource("1_gxmog")
+trigger_sfx = ExtResource("2_hyt57")
 
 [node name="SwitchChannelListener" type="Node" parent="." unique_id=765164709]
 script = ExtResource("3_swch")

@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://lmhmviqigfpb" path="res://system/ui/status_panel.tscn" id="5_ic7vs"]
 [ext_resource type="Texture2D" uid="uid://ng13aogq60tg" path="res://assets/资源总库/03_图像_UI/按e提示.png" id="6_avp68"]
 [ext_resource type="Texture2D" uid="uid://075guroroax5" path="res://assets/资源总库/04_图像_玩家/real player/新主角.png" id="6_vmijo"]
+[ext_resource type="AudioStream" uid="uid://7bys6fgqvpfj" path="res://assets/资源总库/10_音频/玩家受击.mp3" id="7_mijgj"]
 [ext_resource type="AudioStream" uid="uid://25oc835mles5" path="res://assets/资源总库/10_音频/draw.mp3" id="9_cdn5u"]
 [ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="10_heal"]
 
@@ -397,8 +398,8 @@ stream = ExtResource("3_dnbur")
 volume_db = -16.845
 
 [node name="hurt" type="AudioStreamPlayer" parent="." unique_id=1491403654]
-stream = ExtResource("3_dnbur")
-volume_db = -10.0
+stream = ExtResource("7_mijgj")
+volume_db = 4.579
 pitch_scale = 0.82
 bus = &"SFX_Player"
 
@@ -409,7 +410,7 @@ pitch_scale = 1.05
 bus = &"SFX_Player"
 
 [node name="Stats" parent="." unique_id=1279137 instance=ExtResource("4_cdn5u")]
-max_health = 6
+max_health = 12
 max_ink = 6.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=298142384]

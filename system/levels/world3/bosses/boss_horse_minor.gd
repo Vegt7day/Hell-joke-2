@@ -41,6 +41,8 @@ const DEFAULT_SWORD_SCENE := preload("res://system/levels/world3/props/projectil
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var sprite_2d: Sprite2D = $Sprite2D
+@onready var _grey_dash_sfx: AudioStreamPlayer = $GreyDashSfx
+@onready var _black_clone_sfx: AudioStreamPlayer = $BlackCloneSfx
 
 var _phase_controller: Node
 var _movement_enabled: bool = true
@@ -244,6 +246,8 @@ func _cast_grey_dash_skill() -> void:
 	if _is_casting_skill or not _movement_enabled:
 		return
 	_is_casting_skill = true
+	if _grey_dash_sfx and _grey_dash_sfx.stream:
+		_grey_dash_sfx.play()
 	await _play_optional(&"grey_ready")
 	if animation_player and animation_player.has_animation(&"grey_run"):
 		animation_player.play(&"grey_run")
@@ -373,6 +377,8 @@ func _spawn_black_minor_clone() -> void:
 	if not _is_in_skill_cast_horizontal_band():
 		return
 	_black_summon_locked = true
+	if _black_clone_sfx and _black_clone_sfx.stream:
+		_black_clone_sfx.play()
 	var root := get_parent() as Node2D
 	if root == null:
 		_black_summon_locked = false

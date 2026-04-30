@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dlt4bv5eygval"]
+
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="1_6ybqg"]
+
+[node name="SkillFeedRow" type="Control" unique_id=1326377508]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=1079413439]
+layout_mode = 0
+mouse_filter = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/normal_font = ExtResource("1_6ybqg")
+theme_override_fonts/bold_font = ExtResource("1_6ybqg")
+theme_override_fonts/bold_italics_font = ExtResource("1_6ybqg")
+theme_override_fonts/italics_font = ExtResource("1_6ybqg")
+theme_override_fonts/mono_font = ExtResource("1_6ybqg")
+theme_override_font_sizes/normal_font_size = 16
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+theme_override_font_sizes/italics_font_size = 16
+theme_override_font_sizes/mono_font_size = 16
+bbcode_enabled = true
+text = "阿斯顿"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1

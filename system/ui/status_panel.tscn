@@ -1,10 +1,15 @@
 [gd_scene format=3 uid="uid://lmhmviqigfpb"]
 
 [ext_resource type="Script" uid="uid://dv5qa18qbluus" path="res://system/ui/status_panel.gd" id="1_rswnf"]
-[ext_resource type="Script" uid="uid://dpfnky3od7yo8" path="res://system/ui/summon_cooldown_ring.gd" id="2_ring"]
-[ext_resource type="Texture2D" uid="uid://i8ggblxau4m1" path="res://assets/资源总库/05_图像_NPC商鞅/商鞅/商.png" id="2_rswnf"]
-[ext_resource type="AudioStream" uid="uid://bjok8hm3ypsbf" path="res://assets/资源总库/10_音频/draw.mp3" id="3_draw_mp3"]
-[ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="4_drop_mp3"]
+[ext_resource type="Texture2D" uid="uid://qhkc4rp7y502" path="res://assets/资源总库/03_图像_UI/商鞅召唤冷却.png" id="2_qtcyv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rswnf"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(18, 12, 26, 36)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ysatu"]
+atlas = ExtResource("2_qtcyv")
+region = Rect2(82, 12, 26, 36)
 
 [node name="status panel" type="Node2D" unique_id=437079611]
 script = ExtResource("1_rswnf")
@@ -35,35 +40,23 @@ offset_right = 96.0
 offset_bottom = 162.0
 mouse_filter = 2
 
-[node name="商" type="Sprite2D" parent="SummonSkill" unique_id=549042824]
-position = Vector2(33, 33)
-texture = ExtResource("2_rswnf")
-
-[node name="Ring" type="Control" parent="SummonSkill" unique_id=1200000005]
-anchors_preset = 0
-offset_left = 12.0
-offset_top = 8.0
-offset_right = 52.0
-offset_bottom = 48.0
-script = ExtResource("2_ring")
-radius = 17.0
-ring_bg_color = Color(0.12, 0.12, 0.12, 0.7)
-
-[node name="GrayMask" type="ColorRect" parent="SummonSkill" unique_id=1200000007]
+[node name="CooldownBar" type="TextureProgressBar" parent="SummonSkill" unique_id=1200000005]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 13.0
-offset_right = 45.0
-offset_bottom = 50.0
+offset_top = -2.0
+offset_right = 26.0
+offset_bottom = 34.0
 mouse_filter = 2
-color = Color(0.2, 0.2, 0.2, 0.55)
+max_value = 1.0
+step = 0.0
+value = 1.0
+fill_mode = 3
+nine_patch_stretch = true
+texture_under = SubResource("AtlasTexture_rswnf")
+texture_progress = SubResource("AtlasTexture_ysatu")
 
 [node name="HeartInkStinger" type="AudioStreamPlayer" parent="." unique_id=1200000010]
-stream = ExtResource("3_draw_mp3")
-volume_db = -8.0
 bus = &"UI"
 
 [node name="InkRecoverSfx" type="AudioStreamPlayer" parent="." unique_id=1200000011]
-stream = ExtResource("4_drop_mp3")
-volume_db = -12.0
+volume_db = -15.698
 bus = &"UI"

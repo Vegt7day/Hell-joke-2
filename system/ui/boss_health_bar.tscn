@@ -18,13 +18,20 @@ animations = []
 [node name="boss_health_bar" type="Node2D" unique_id=862236894]
 position = Vector2(320, -32)
 script = ExtResource("1_oqs2n")
-metadata/_edit_vertical_guides_ = [1152.0]
+metadata/_edit_vertical_guides_ = [1152.0, 320.0, 128.0]
 
 [node name="healthbar" type="TextureProgressBar" parent="." unique_id=2037119586]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 offset_left = -192.0
-offset_top = 64.0
+offset_top = 91.0
 offset_right = 192.0
-offset_bottom = 128.0
+offset_bottom = 155.0
+grow_horizontal = 2
+grow_vertical = 2
 max_value = 1.0
 step = 0.0
 value = 1.0
@@ -34,10 +41,11 @@ texture_progress_offset = Vector2(11, 4)
 metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1052797338]
-position = Vector2(1, 69)
+position = Vector2(0, 73)
 texture = ExtResource("3_dueyw")
 
 [node name="NameAnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1900210001]
 visible = false
 position = Vector2(1, 69)
 sprite_frames = SubResource("SpriteFrames_boss_name_anim")
+animation = &""

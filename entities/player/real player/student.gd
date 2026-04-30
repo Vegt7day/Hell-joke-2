@@ -16,7 +16,7 @@ extends CharacterBody2D
 
 # 召唤商鞅相关参数
 @export var shangyang_summon_scene: PackedScene
-@export var summon_cooldown: float = 5.0  # 召唤冷却时间
+@export var summon_cooldown: float = 12.0  # 召唤冷却时间
 @export var summon_offset_x: float = 100.0  # 召唤位置的水平偏移
 @export var summon_offset_y: float = 0.0    # 召唤位置的垂直偏移
 @export var summon_delay_in_animation: float = 0.2  # 动画中召唤的延迟时间
@@ -661,7 +661,7 @@ func try_summon_shangyang():
 func get_summon_cooldown_ratio() -> float:
 	if summon_cooldown <= 0.001:
 		return 0.0
-	return clampf(summon_cooldown_timer / summon_cooldown, 0.0, 1.0)
+	return clampf((summon_cooldown - summon_cooldown_timer) / summon_cooldown, 0.0, 1.0)
 
 func execute_summon():
 	"""执行召唤商鞅"""

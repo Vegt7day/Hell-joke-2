@@ -5,6 +5,8 @@ extends Area2D
 ## 预警阶段每秒向当前主角位置靠近的像素速度（上限）
 @export var ready_seek_speed: float = 150.0
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var _explosion_sfx: AudioStreamPlayer = $ExplosionSfx
+@onready var _misfire_sfx: AudioStreamPlayer = $MisfireSfx
 
 var _boom_damage_active: bool = false
 var _damage_applied: bool = false
@@ -60,6 +62,18 @@ func _run_red_bomb_sequence() -> void:
 	# 爆炸段：与玩家层重叠并每帧检测（已进入区域内的玩家也能命中）
 	collision_mask = 2
 	monitoring = true
+	# 检测玩家是否在爆炸范围内，选择爆炸 / 哑火音效
+	var _player_in_range := false
+	for body in get_overlapping_bodies():
+		if body.is_in_group("player"):
+			_player_in_range = true
+			break
+	if _player_in_range:
+		if _explosion_sfx and _explosion_sfx.stream:
+			_explosion_sfx.play()
+	else:
+		if _misfire_sfx and _misfire_sfx.stream:
+			_misfire_sfx.play()
 	_boom_damage_active = true
 	_damage_applied = false
 	set_physics_process(true)

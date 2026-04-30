@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://ocnpb4spwa80" path="res://system/levels/world3/scripts/world3_random_piece_builder.gd" id="14_piece_builder"]
 [ext_resource type="PackedScene" uid="uid://b2sjxhdmw4rv6" path="res://system/levels/world3/random_pieces/piece_01.tscn" id="15_piece_01"]
 [ext_resource type="PackedScene" uid="uid://cjgjqi2oqg0i8" path="res://system/levels/world3/random_pieces/piece_05.tscn" id="16_piece_05"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="16_rkk35"]
 [ext_resource type="PackedScene" uid="uid://bha6aitbys2hs" path="res://system/可交互物/窗.tscn" id="17_jl37f"]
 [ext_resource type="PackedScene" uid="uid://dq2qesyce1l7i" path="res://system/camera/camera_cue_pan_to_marker.tscn" id="18_gj035"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="18_h3hwr"]
@@ -176,6 +177,8 @@ fallback_shangyang_path = NodePath("")
 
 [node name="PhaseController" type="Node" parent="Systems" unique_id=214180290]
 script = ExtResource("2_phase")
+rope_limb_hint_label_path = NodePath("")
+phase_enter_hint_label_path = NodePath("")
 
 [node name="RandomPieceBuilder" type="Node" parent="Systems" unique_id=1065559332]
 script = ExtResource("14_piece_builder")
@@ -186,37 +189,40 @@ heart_spawn_start_index = 0
 
 [node name="UIHints" type="CanvasLayer" parent="Systems" unique_id=1613001565]
 
-[node name="WarningLabelPlaceholder" type="Label" parent="Systems/UIHints" unique_id=776299288]
-offset_left = 128.0
-offset_top = 64.0
-offset_right = 512.0
-offset_bottom = 96.0
-text = "（20% 强力攻击提示占位）"
-
 [node name="RopeLimbHint" type="Label" parent="Systems/UIHints" unique_id=776299289]
-visible = false
 offset_left = 80.0
 offset_top = 500.0
 offset_right = 1072.0
 offset_bottom = 600.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 20
+theme_override_fonts/font = ExtResource("16_rkk35")
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="PhaseEnterHint" type="RichTextLabel" parent="Systems/UIHints" unique_id=776299290]
-visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -320.0
-offset_top = 24.0
-offset_right = -16.0
-offset_bottom = 72.0
+offset_left = -305.0
+offset_top = 100.0
+offset_right = -1.0
+offset_bottom = 148.0
+grow_horizontal = 0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
+theme_override_fonts/normal_font = ExtResource("16_rkk35")
+theme_override_fonts/bold_font = ExtResource("16_rkk35")
+theme_override_fonts/bold_italics_font = ExtResource("16_rkk35")
+theme_override_fonts/italics_font = ExtResource("16_rkk35")
+theme_override_fonts/mono_font = ExtResource("16_rkk35")
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
 bbcode_enabled = true
 scroll_active = false
 horizontal_alignment = 2

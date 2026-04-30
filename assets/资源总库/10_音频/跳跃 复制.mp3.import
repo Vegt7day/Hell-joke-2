@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dpjy5umhh373o"
+path="res://.godot/imported/跳跃 复制.mp3-57fa8d3ebf412481752cf33729628381.mp3str"
+
+[deps]
+
+source_file="res://assets/资源总库/10_音频/跳跃 复制.mp3"
+dest_files=["res://.godot/imported/跳跃 复制.mp3-57fa8d3ebf412481752cf33729628381.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

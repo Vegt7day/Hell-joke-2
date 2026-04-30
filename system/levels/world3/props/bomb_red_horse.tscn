@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://stsgcauogv8w" path="res://system/levels/world3/props/bomb_red_horse.gd" id="1_bomb"]
 [ext_resource type="Texture2D" uid="uid://ce3epml4ng5gb" path="res://assets/资源总库/06_图像_World3/props/红马召唤物.png" id="2_jfg0j"]
+[ext_resource type="AudioStream" uid="uid://chnxo0qkbrekp" path="res://assets/资源总库/10_音频/红马爆炸.mp3" id="3_gn5ty"]
+[ext_resource type="AudioStream" uid="uid://camjuyo38ftsk" path="res://assets/资源总库/10_音频/红马哑火.mp3" id="4_44gdj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bomb"]
 radius = 62.03225
@@ -196,3 +198,11 @@ visible = false
 libraries/ = SubResource("AnimationLibrary_sbr2e")
 
 [node name="FX" type="Node2D" parent="." unique_id=881052890]
+
+[node name="ExplosionSfx" type="AudioStreamPlayer" parent="." unique_id=1091765287]
+stream = ExtResource("3_gn5ty")
+bus = &"SFX_Enemy"
+
+[node name="MisfireSfx" type="AudioStreamPlayer" parent="." unique_id=1952403459]
+stream = ExtResource("4_44gdj")
+bus = &"SFX_Enemy"

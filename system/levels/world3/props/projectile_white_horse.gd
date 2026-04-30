@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var root_facing_multiplier: float = 1.0
 
 @onready var _animation_player: AnimationPlayer = $AnimationPlayer
+@onready var _hit_sfx: AudioStreamPlayer = $HitSfx
 var _fly_dir_x: float = -1.0
 var _hit_consumed: bool = false
 
@@ -86,6 +87,8 @@ func _run_hit_and_despawn(body: Node2D) -> void:
 	set_deferred("collision_mask", 0)
 	if is_instance_valid(body) and body.has_method("take_damage"):
 		body.call("take_damage", hit_damage)
+	if _hit_sfx and _hit_sfx.stream:
+		_hit_sfx.play()
 	if _animation_player != null and _animation_player.has_animation(&"over"):
 		_animation_player.play(&"over")
 		var over_len: float = _animation_player.get_animation(&"over").length

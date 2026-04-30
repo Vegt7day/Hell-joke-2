@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://crcjrb213eibh" path="res://assets/资源总库/08_图像_机关/桶.png" id="1_om5tm"]
 [ext_resource type="Script" uid="uid://wc33s3teuqb" path="res://system/可交互物/桶.gd" id="2_barrel"]
+[ext_resource type="AudioStream" uid="uid://x4lk3twgwury" path="res://assets/资源总库/10_音频/充水.mp3" id="2_m65kv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m5nc4"]
 atlas = ExtResource("1_om5tm")
@@ -184,6 +185,7 @@ size = Vector2(64, 64)
 collision_layer = 16
 collision_mask = 8
 script = ExtResource("2_barrel")
+trigger_sfx = ExtResource("2_m65kv")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=821578870]
 position = Vector2(64, -64)
@@ -198,4 +200,3 @@ libraries/ = SubResource("AnimationLibrary_lkbo5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1436692806]
 position = Vector2(64, -64)
 shape = SubResource("RectangleShape2D_m65kv")
-

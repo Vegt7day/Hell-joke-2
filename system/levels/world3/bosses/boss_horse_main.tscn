@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://c0k8nly1ooq40" path="res://assets/资源总库/06_图像_World3/bosses/头马.png" id="2_yq0pa"]
 [ext_resource type="PackedScene" uid="uid://b8qdrsdj7p10h" path="res://system/ui/boss_health_bar.tscn" id="3_bar"]
 [ext_resource type="Texture2D" uid="uid://dbglv8k87x5ci" path="res://assets/资源总库/03_图像_UI/马boss名字ui.png" id="5_ry0xf"]
+[ext_resource type="AudioStream" uid="uid://bbgapw320v6wq" path="res://assets/资源总库/10_音频/灰马冲刺.mp3" id="6_iydt5"]
+[ext_resource type="AudioStream" uid="uid://dk3tasf5bmyb8" path="res://assets/资源总库/10_音频/黑马召唤.mp3" id="7_mpst7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ry0xf"]
 size = Vector2(91.000015, 69.00001)
@@ -787,10 +789,6 @@ _data = {
 atlas = ExtResource("5_ry0xf")
 region = Rect2(0, 0, 96, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_iydt5"]
-atlas = ExtResource("5_ry0xf")
-region = Rect2(112, 0, 112, 16)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_mpst7"]
 atlas = ExtResource("5_ry0xf")
 region = Rect2(224, 0, 112, 16)
@@ -835,6 +833,10 @@ region = Rect2(1344, 0, 112, 16)
 atlas = ExtResource("5_ry0xf")
 region = Rect2(1232, 0, 112, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_iydt5"]
+atlas = ExtResource("5_ry0xf")
+region = Rect2(112, 0, 112, 16)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_c040k"]
 atlas = ExtResource("5_ry0xf")
 region = Rect2(0, 0, 112, 16)
@@ -842,9 +844,6 @@ region = Rect2(0, 0, 112, 16)
 [sub_resource type="SpriteFrames" id="SpriteFrames_c040k"]
 animations = [{
 "frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_iydt5")
-}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_mpst7")
 }, {
@@ -877,6 +876,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ipvso")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iydt5")
 }],
 "loop": false,
 "name": &"phase_20",
@@ -937,3 +939,12 @@ position = Vector2(320, -31)
 boss_name_texture = SubResource("AtlasTexture_3k1s6")
 use_animated_name_card = true
 boss_name_sprite_frames = SubResource("SpriteFrames_c040k")
+metadata/_edit_vertical_guides_ = [1152.0]
+
+[node name="GreyDashSfx" type="AudioStreamPlayer" parent="." unique_id=899100831]
+stream = ExtResource("6_iydt5")
+bus = &"SFX_Enemy"
+
+[node name="BlackCloneSfx" type="AudioStreamPlayer" parent="." unique_id=271964504]
+stream = ExtResource("7_mpst7")
+bus = &"SFX_Enemy"

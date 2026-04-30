@@ -1,8 +1,8 @@
 extends Node2D
 
-const INTRO_TIMELINE := "商鞅提出要求"
-const TL_RETURN_SY := "回去看商鞅"
-const TL_GAIN_ABILITY := "获得商鞅能力"
+const INTRO_TIMELINE := "level2/商鞅提出要求"
+const TL_RETURN_SY := "level2/回去看商鞅"
+const TL_GAIN_ABILITY := "level2/获得商鞅能力"
 
 @onready var player: Player = $player
 @onready var shangyang_npc: ShangYang = $商鞅 as ShangYang
@@ -189,8 +189,6 @@ func _start_intro_dialog() -> void:
 		mark_dialog_timeline_completed(INTRO_TIMELINE)
 		_on_intro_dialog_finished()
 		return
-	if dialog.get_parent() == null:
-		get_tree().current_scene.add_child(dialog)
 	_intro_dialog_node = dialog
 
 

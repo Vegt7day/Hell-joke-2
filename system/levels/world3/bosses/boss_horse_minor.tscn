@@ -5,6 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://c0225qa1p3dqs" path="res://assets/资源总库/06_图像_World3/bosses/黑马.png" id="3_mtyuh"]
 [ext_resource type="Texture2D" uid="uid://dsngwuy2ru4rk" path="res://assets/资源总库/06_图像_World3/bosses/红马.png" id="4_c2qlg"]
 [ext_resource type="Texture2D" uid="uid://2g7f3paxurdx" path="res://assets/资源总库/06_图像_World3/bosses/白马.png" id="5_8wa74"]
+[ext_resource type="AudioStream" uid="uid://bbgapw320v6wq" path="res://assets/资源总库/10_音频/灰马冲刺.mp3" id="6_c2qlg"]
+[ext_resource type="AudioStream" uid="uid://dk3tasf5bmyb8" path="res://assets/资源总库/10_音频/黑马召唤.mp3" id="7_8wa74"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_edf2c"]
 size = Vector2(44, 37)
@@ -839,3 +841,11 @@ position = Vector2(32, 0)
 
 [node name="CloneSlot" type="Node2D" parent="." unique_id=395701316]
 position = Vector2(-56, 0)
+
+[node name="GreyDashSfx" type="AudioStreamPlayer" parent="." unique_id=1176332245]
+stream = ExtResource("6_c2qlg")
+bus = &"SFX_Enemy"
+
+[node name="BlackCloneSfx" type="AudioStreamPlayer" parent="." unique_id=1058270968]
+stream = ExtResource("7_8wa74")
+bus = &"SFX_Enemy"

@@ -35,6 +35,8 @@ const DEFAULT_RED_BOMB_SCENE := preload("res://system/levels/world3/props/bomb_r
 ## 黑马技能：召唤分身（弱化版，外观与主马一致）
 const DEFAULT_MAIN_CLONE_SCENE := preload("res://system/levels/world3/bosses/boss_horse_main.tscn")
 const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse_player_bump_area.gd")
+const ENTRY_FONT := preload("res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf")
+const SKILL_FEED_ROW_SCENE := preload("res://system/levels/world3/ui/skill_feed_row.tscn")
 @export var black_clone_scene: PackedScene = DEFAULT_MAIN_CLONE_SCENE
 ## 由大黑马召唤的分身为 true（不扣共享血条、不自动放 Boss 技能）
 @export var is_summoned_clone: bool = false
@@ -52,6 +54,8 @@ const _PLAYER_BUMP_AREA := preload("res://system/levels/world3/bosses/boss_horse
 @onready var stats: Stats = $Stats
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var health_bar: Node2D = $CanvasLayer/boss_health_bar
+@onready var _grey_dash_sfx: AudioStreamPlayer = $GreyDashSfx
+@onready var _black_clone_sfx: AudioStreamPlayer = $BlackCloneSfx
 
 var _phase_controller: Node
 var _intro_timeline_done: bool = false
@@ -270,6 +274,8 @@ func _try_cast_random_skill() -> void:
 func _cast_grey_skill() -> void:
 	await _play_optional(&"to grey")
 	await _play_optional(&"grey_ready")
+	if _grey_dash_sfx and _grey_dash_sfx.stream:
+		_grey_dash_sfx.play()
 	_toggle_root_collision_shape_disabled(false)
 	if animation_player and animation_player.has_animation(&"grey_running"):
 		animation_player.play(&"grey_running")
@@ -295,6 +301,8 @@ func _cast_white_skill() -> void:
 func _cast_black_skill() -> void:
 	await _play_optional(&"to_black")
 	await _play_optional(&"black_ready")
+	if _black_clone_sfx and _black_clone_sfx.stream:
+		_black_clone_sfx.play()
 	var clone := _spawn_black_clone()
 	# 黑马分身出场即播一条“小马”消息，避免体感只看到皇马。
 	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, false)
@@ -730,16 +738,16 @@ func _horse_display_name(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> 
 
 func _horse_color_hex(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> String:
 	if is_main_horse:
-		return "#FFD34D"
+		return "#fbff86"
 	match skill:
 		BossHorseTypes.HorseId.GREY:
-			return "#B8BBC7"
+			return "#c7dcd0"
 		BossHorseTypes.HorseId.WHITE:
-			return "#F4F7FF"
+			return "#ffffff"
 		BossHorseTypes.HorseId.BLACK:
-			return "#8B90A8"
+			return "#3e3546"
 		BossHorseTypes.HorseId.RED:
-			return "#FF6B6B"
+			return "#e83b3b"
 		_:
 			return "#FFFFFF"
 
@@ -747,13 +755,13 @@ func _horse_color_hex(skill: BossHorseTypes.HorseId, is_main_horse: bool) -> Str
 func _skill_color_hex(skill: BossHorseTypes.HorseId) -> String:
 	match skill:
 		BossHorseTypes.HorseId.GREY:
-			return "#B8BBC7"
+			return "#c7dcd0"
 		BossHorseTypes.HorseId.WHITE:
-			return "#F4F7FF"
+			return "#ffffff"
 		BossHorseTypes.HorseId.BLACK:
-			return "#8B90A8"
+			return "#e83b3b"
 		BossHorseTypes.HorseId.RED:
-			return "#FF6B6B"
+			return "#e83b3b"
 		_:
 			return "#FFFFFF"
 
@@ -817,51 +825,23 @@ func _resolve_skill_feed_root() -> Control:
 
 
 func _create_skill_feed_row(feed_root: Control, message_bbcode: String, is_entry: bool = false) -> Control:
-	var container := Control.new()
-	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(1, 1, 1, 0.45)
-	style.set_corner_radius_all(8)
-	style.content_margin_left = 10
-	style.content_margin_right = 10
-	style.content_margin_top = 4
-	style.content_margin_bottom = 4
-
-	if is_entry:
-		style.bg_color = Color(1, 1, 1, 0.6)
-		style.set_corner_radius_all(10)
-		style.content_margin_left = 16
-		style.content_margin_right = 16
-		style.content_margin_top = 8
-		style.content_margin_bottom = 8
-
-	var panel := Panel.new()
-	panel.add_theme_stylebox_override("panel", style)
-	container.add_child(panel)
-
-	var row := RichTextLabel.new()
-	row.bbcode_enabled = true
-	row.fit_content = true
-	row.scroll_active = false
-	row.autowrap_mode = TextServer.AUTOWRAP_OFF
-	row.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.custom_minimum_size = Vector2(0, skill_feed_row_height)
+	var container := SKILL_FEED_ROW_SCENE.instantiate()
+	var row := container.get_child(0) as RichTextLabel
+	row.custom_minimum_size = Vector2(0, 0 if is_entry else skill_feed_row_height)
 	row.theme = feed_root.theme
 	row.theme_type_variation = &""
+	row.add_theme_font_override("normal_font", ENTRY_FONT)
+	row.add_theme_font_override("bold_font", ENTRY_FONT)
+	row.add_theme_font_override("italics_font", ENTRY_FONT)
+	row.add_theme_font_override("bold_italics_font", ENTRY_FONT)
+	row.add_theme_font_override("mono_font", ENTRY_FONT)
+	var font_size := 16 if is_entry else 12
+	row.add_theme_font_size_override("normal_font_size", font_size)
+	row.add_theme_font_size_override("bold_font_size", font_size)
+	row.add_theme_font_size_override("italics_font_size", font_size)
+	row.add_theme_font_size_override("bold_italics_font_size", font_size)
+	row.add_theme_font_size_override("mono_font_size", font_size)
 	row.text = message_bbcode
-	panel.add_child(row)
-
-	# 让 panel / container 大小自适应 row 文本内容
-	row.resized.connect(func():
-		var extra_w := style.content_margin_left + style.content_margin_right
-		var extra_h := style.content_margin_top + style.content_margin_bottom
-		panel.size = row.size + Vector2(extra_w, extra_h)
-		container.custom_minimum_size = panel.size
-	, CONNECT_ONE_SHOT)
-
 	return container
 
 
@@ -889,7 +869,7 @@ func _push_skill_feed_message(feed_root: Control, message_bbcode: String, is_ent
 	container.modulate.a = 1.0
 
 	# 从 container 内取 RichTextLabel 算宽度
-	var row := container.get_child(0).get_child(0) as RichTextLabel
+	var row := container.get_child(0) as RichTextLabel
 	var label_w := maxf(skill_feed_text_width, row.get_content_width())
 	var end_x := -label_w - 24.0 - feed_screen_left
 	var dist := absf(end_x - spawn_x)
@@ -919,8 +899,8 @@ func _pick_danmaku_lane(feed_root: Control) -> int:
 func _is_danmaku_fully_inside_right_boundary(container: Control, lane_right_x: float) -> bool:
 	if container == null or not is_instance_valid(container):
 		return true
-	# container -> Panel -> RichTextLabel
-	var row := container.get_child(0).get_child(0) as RichTextLabel
+	# container -> RichTextLabel
+	var row := container.get_child(0) as RichTextLabel
 	if row == null:
 		return true
 	var content_w := maxf(container.size.x, row.get_content_width())

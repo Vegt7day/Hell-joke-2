@@ -49,7 +49,6 @@ tile_set = SubResource("TileSet_gtqfr")
 
 [node name="bucket" parent="." unique_id=669743261 instance=ExtResource("5_qovbt")]
 position = Vector2(512, 32)
-spawn_offset = Vector2(0, 0)
 
 [node name="Windows" parent="." unique_id=1643735838 instance=ExtResource("7_f0gjl")]
 position = Vector2(320, -64)
@@ -63,23 +62,11 @@ position = Vector2(128, -192)
 [node name="Windows4" parent="." unique_id=1242759414 instance=ExtResource("7_f0gjl")]
 position = Vector2(352, -64)
 
-[node name="Windows5" parent="." unique_id=1181005053 instance=ExtResource("7_f0gjl")]
-position = Vector2(320, -256)
-
-[node name="Windows6" parent="." unique_id=1294273541 instance=ExtResource("7_f0gjl")]
-position = Vector2(352, -256)
-
 [node name="door" parent="." unique_id=1915584955 instance=ExtResource("8_gtqfr")]
 position = Vector2(96, -288)
 
 [node name="door2" parent="." unique_id=688642000 instance=ExtResource("8_gtqfr")]
 position = Vector2(96, -320)
-
-[node name="door3" parent="." unique_id=571029900 instance=ExtResource("8_gtqfr")]
-position = Vector2(64, -96)
-
-[node name="door4" parent="." unique_id=1247125448 instance=ExtResource("8_gtqfr")]
-position = Vector2(32, -96)
 
 [node name="Windows7" parent="." unique_id=417305929 instance=ExtResource("7_f0gjl")]
 position = Vector2(416, 0)
@@ -125,3 +112,21 @@ position = Vector2(992, 384)
 
 [node name="Windows21" parent="." unique_id=1382277943 instance=ExtResource("7_f0gjl")]
 position = Vector2(1024, 384)
+
+[node name="Windows22" parent="." unique_id=969250690 instance=ExtResource("7_f0gjl")]
+position = Vector2(32, -128)
+
+[node name="Windows23" parent="." unique_id=39311345 instance=ExtResource("7_f0gjl")]
+position = Vector2(64, -128)
+
+[node name="Windows24" parent="." unique_id=1468717592 instance=ExtResource("7_f0gjl")]
+position = Vector2(320, -224)
+
+[node name="Windows25" parent="." unique_id=1581456104 instance=ExtResource("7_f0gjl")]
+position = Vector2(352, -224)
+
+[node name="door3" parent="." unique_id=1746171482 instance=ExtResource("8_gtqfr")]
+position = Vector2(288, -320)
+
+[node name="door4" parent="." unique_id=468943513 instance=ExtResource("8_gtqfr")]
+position = Vector2(288, -288)

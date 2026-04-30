@@ -5,7 +5,10 @@ const DEFAULT_MAIN_ARENA_HEART_SCENE := preload("res://system/levels/world3/prop
 
 const _STREAM_ARENA_NORMAL := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 const _STREAM_ARENA_BOSS := preload("res://assets/资源总库/10_音频/boss马伴奏音乐.mp3")
-const _STREAM_ARENA_PHASE_20 := preload("res://assets/资源总库/10_音频/boss马处决音乐.mp3")
+const _STREAM_ARENA_PHASE_20 := preload("uid://dqem8mja12ojh")
+
+
+
 
 enum _ArenaBgmSlot { NORMAL, BOSS, PHASE_20 }
 

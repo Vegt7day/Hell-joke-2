@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://boucohv0gnugf" path="res://system/dialogic/到区域触发对话.gd" id="1_hsc54"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iq86e"]
-size = Vector2(98, 71)
+size = Vector2(312, 174)
 
 [node name="到区域触发对话" type="Area2D" unique_id=865012812]
 collision_layer = 32
@@ -11,7 +11,7 @@ collision_mask = 2
 script = ExtResource("1_hsc54")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=723952496]
-position = Vector2(0, -36)
+position = Vector2(0, -87)
 shape = SubResource("RectangleShape2D_iq86e")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=2070995782]

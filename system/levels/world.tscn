@@ -15,7 +15,6 @@
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="14_3o3xc"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
-[ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/资源总库/01_图像_背景/背景.png" id="16_ambient_bg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hrldk"]
 texture = ExtResource("1_4oalq")
@@ -74,24 +73,13 @@ position = Vector2(27, -109)
 
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=469835150]
 
-[node name="ambient_far" type="ParallaxLayer" parent="ParallaxBackground" unique_id=199910001]
-motion_scale = Vector2(0.1, 0.1)
-motion_mirroring = Vector2(2304, 0)
-
-[node name="AmbientSprite" type="Sprite2D" parent="ParallaxBackground/ambient_far" unique_id=199910002]
-texture = ExtResource("16_ambient_bg")
-position = Vector2(-400, -180)
-scale = Vector2(1.35, 1.35)
-centered = false
-modulate = Color(0.55, 0.52, 0.58, 1)
-
 [node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1822927404]
 position = Vector2(-1154, -72)
 motion_scale = Vector2(0.3, 0.3)
 motion_mirroring = Vector2(1152, 0)
 
 [node name="Background" type="Sprite2D" parent="ParallaxBackground/sky" unique_id=2067258832]
-position = Vector2(-25, -2)
+position = Vector2(-30, -56)
 texture = ExtResource("6_tls4y")
 centered = false
 
@@ -174,18 +162,23 @@ metadata/_edit_use_anchors_ = true
 
 [node name="开关" parent="." unique_id=1755846247 instance=ExtResource("8_y8eji")]
 position = Vector2(-640, 576)
+is_on = true
 
 [node name="door" parent="." unique_id=1915584955 instance=ExtResource("9_25x0f")]
 position = Vector2(-768, 608)
+is_open = true
 
 [node name="door2" parent="door" unique_id=1494383439 instance=ExtResource("9_25x0f")]
 position = Vector2(0, -32)
+is_open = true
 
 [node name="door" parent="door/door2" unique_id=2127837915 instance=ExtResource("9_25x0f")]
 position = Vector2(0, -32)
+is_open = true
 
 [node name="door2" parent="door/door2/door" unique_id=467058907 instance=ExtResource("9_25x0f")]
 position = Vector2(0, -32)
+is_open = true
 
 [node name="到区域触发对话" parent="." unique_id=865012812 instance=ExtResource("10_ytupi")]
 position = Vector2(-448, 576)
@@ -193,7 +186,7 @@ dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/tip_开关与�
 one_shot = false
 
 [node name="到区域触发对话2" parent="." unique_id=734561275 instance=ExtResource("10_ytupi")]
-position = Vector2(-832, 608)
+position = Vector2(-960, 608)
 dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/哈哈，我逃走了.dtl"
 one_shot = false
 
@@ -253,7 +246,7 @@ position = Vector2(32, 0)
 trap_group = "1"
 
 [node name="到区域触发对话3" parent="." unique_id=692808302 instance=ExtResource("10_ytupi")]
-position = Vector2(-992, 704)
+position = Vector2(-992, 800)
 dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/什么？！.dtl"
 one_shot = false
 
@@ -263,6 +256,10 @@ one_shot = false
 position = Vector2(550, 606)
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
+limit_left = -1952
+limit_top = -9999993
+limit_right = 1152
+limit_bottom = 640
 
 [node name="Marker2D5" type="Marker2D" parent="player" unique_id=447389776]
 position = Vector2(14, -8)

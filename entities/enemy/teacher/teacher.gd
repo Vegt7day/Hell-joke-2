@@ -16,7 +16,7 @@ signal student_intro_triggered  # 学生对话触发信号
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var shoot_sound: AudioStreamPlayer = $shoot
 @onready var bullet_spawn_point: Marker2D = $Marker2D  # 子弹发射点
-@onready var dialogic: Marker2D = $Marker2D2
+@onready var dialogic: Marker2D = $DialogMarker
 
 # Stats节点引用
 @onready var teacher_stats: Stats = $stats

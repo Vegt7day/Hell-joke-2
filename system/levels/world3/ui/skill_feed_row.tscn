@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://bhsthd1kcyp2g"]
+
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="1_l4x87"]
+
+[node name="SkillFeedRow" type="Control" unique_id=41537202]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=604310972]
+layout_mode = 0
+mouse_filter = 2
+theme_override_constants/shadow_outline_size = 0
+theme_override_constants/outline_size = 2
+theme_override_fonts/normal_font = ExtResource("1_l4x87")
+theme_override_fonts/bold_font = ExtResource("1_l4x87")
+theme_override_fonts/bold_italics_font = ExtResource("1_l4x87")
+theme_override_fonts/italics_font = ExtResource("1_l4x87")
+theme_override_fonts/mono_font = ExtResource("1_l4x87")
+bbcode_enabled = true
+text = "撒大大"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1

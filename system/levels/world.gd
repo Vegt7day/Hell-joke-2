@@ -2,9 +2,9 @@ extends Node2D
 class_name WorldController
 
 # 场景参数
-@export var level_duration: float = 5.0
-@export var teacher_intro_timeline: String = "teacher_intro"
-@export var student_escape_timeline: String = "student_intro"
+@export var level_duration: float = 120
+@export var teacher_intro_timeline: String = "12_Dialogic工程/teacher_intro"
+@export var student_escape_timeline: String = "12_Dialogic工程/student_intro"
 @export var door_area_path: NodePath
 
 # 节点引用
@@ -197,9 +197,6 @@ func start_dialogue():
 		_on_intro_dialogue_ended()
 		return
 
-	# Dialogic.start 返回的布局节点可能已在树内，避免重复 add_child
-	if dialog.get_parent() == null:
-		get_tree().current_scene.add_child(dialog)
 	current_dialog = dialog
 
 	# 使用 Dialogic 全局 timeline_ended，而不是布局节点不存在的 event_end
@@ -353,9 +350,6 @@ func play_ending_dialogue(is_victory: bool):
 		show_level_result()
 		return
 
-	# Dialogic.start 返回的布局节点可能已在树内，避免重复 add_child
-	if dialog.get_parent() == null:
-		get_tree().current_scene.add_child(dialog)
 	current_dialog = dialog
 
 	# 结局同样监听 timeline_ended

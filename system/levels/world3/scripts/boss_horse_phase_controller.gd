@@ -1943,6 +1943,17 @@ func _tween_pull_horses_then_limbs(pairs: Array[Dictionary], main_horse: Node2D,
 			func() -> void:
 				if is_instance_valid(shangyang):
 					shangyang.call("play_be_pull_animation")
+				# 肢体离开商鞅时，播放两次全屏白闪
+				if Game != null and Game.has_method("_play_world3_death_fullscreen_flash"):
+					Game._play_world3_death_fullscreen_flash()
+					var flash2 := get_tree().create_timer(0.2)
+					flash2.timeout.connect(
+						func():
+							if Game != null and is_instance_valid(Game):
+								Game._play_world3_death_fullscreen_flash()
+					,
+						CONNECT_ONE_SHOT
+					)
 		,
 			CONNECT_ONE_SHOT
 		)

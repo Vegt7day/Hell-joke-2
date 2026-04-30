@@ -191,7 +191,9 @@ func stick_to_collider(target: Node2D):
 	# 播放附着动画
 	animation_player.play("disappear")
 	
-	# 播放碰撞音效
+	# 停止蚊子叫，播放蚊子吸血音效
+	if shoot_sound and shoot_sound.playing:
+		shoot_sound.stop()
 	if disappear_sound and disappear_sound.stream:
 		disappear_sound.play()
 	
@@ -212,6 +214,12 @@ func destroy():
 		return
 	
 	is_destroyed = true
+	
+	# 停止所有音效
+	if shoot_sound and shoot_sound.playing:
+		shoot_sound.stop()
+	if disappear_sound and disappear_sound.playing:
+		disappear_sound.stop()
 	
 	# 停止所有计时器
 	lifetime_timer.stop()
