@@ -10,6 +10,7 @@ const SAVE_SLOT_HEART := "heart"
 const SAVE_PATH_SAVEPOINT := "user://data_savepoint.sav"
 const SAVE_PATH_HEART := "user://data_heart.sav"
 const WORLD3_BOSS_SCENE_PATH := "res://system/levels/world3/world3_boss_arena.tscn"
+const TITLE_SCENE_PATH := "res://system/scene/title_screen.tscn"
 const WORLD3_DEATH_UI_SCENE := preload("res://system/ui/world3_death_retry_ui.tscn")
 var _world3_death_ui_opened: bool = false
 
@@ -29,9 +30,23 @@ func bind_player_stats_runtime(new_stats: Stats) -> void:
 	# 运行时切换玩家 Stats 数据源时，必须重连 health_changed，否则死亡 UI 不会触发
 	if new_stats == null:
 		return
-	if player_stats != null and player_stats.health_changed.is_connected(_on_player_stats_changed):
+	if player_stats != null and is_instance_valid(player_stats) and player_stats.health_changed.is_connected(_on_player_stats_changed):
 		player_stats.health_changed.disconnect(_on_player_stats_changed)
 	player_stats = new_stats
+	if not player_stats.health_changed.is_connected(_on_player_stats_changed):
+		player_stats.health_changed.connect(_on_player_stats_changed)
+
+
+func _rebind_player_stats_to_embedded() -> void:
+	# 关卡玩家的 Stats 随场景释放；会话重置时必须回到 Autoload Game 下的嵌入式 PlayerStats
+	var embedded := get_node_or_null("PlayerStats") as Stats
+	if embedded == null:
+		push_error("Game: 找不到嵌入式 PlayerStats，无法重置会话")
+		return
+	if player_stats != null and player_stats != embedded:
+		if is_instance_valid(player_stats) and player_stats.health_changed.is_connected(_on_player_stats_changed):
+			player_stats.health_changed.disconnect(_on_player_stats_changed)
+	player_stats = embedded
 	if not player_stats.health_changed.is_connected(_on_player_stats_changed):
 		player_stats.health_changed.connect(_on_player_stats_changed)
 
@@ -42,9 +57,45 @@ func _is_autoload_game() -> bool:
 		return false
 	return get_parent() == tree.root and name == "Game"
 
+
+func _current_scene_is_title(p_tree: SceneTree = null) -> bool:
+	var tree := p_tree if p_tree != null else get_tree()
+	if tree == null or tree.current_scene == null:
+		return false
+	return tree.current_scene.scene_file_path == TITLE_SCENE_PATH
+
+
+func _shutdown_dialogic_for_navigation() -> void:
+	# Dialogic 布局挂全局；不切干净则回标题后仍会吞输入/继续推进事件
+	var dlg := get_node_or_null("/root/Dialogic") as Node
+	if dlg == null or not dlg.has_method("clear"):
+		return
+	await dlg.clear()
+
+
+func strip_dialogic_mouse_blockers() -> void:
+	# dialogic_default_action 绑定了鼠标左键：残留的 FullAdvanceInputLayer / DialogicNode_Input 会拦住 GUI 点击（键盘 ui_accept 仍可用）
+	if not _is_autoload_game():
+		return
+	var dlg: Variant = get_node_or_null("/root/Dialogic")
+	if dlg != null:
+		var styles: Variant = dlg.Styles
+		if styles != null and styles.has_method("has_active_layout_node") and styles.has_active_layout_node():
+			var layout_root: Variant = styles.get_layout_node()
+			if layout_root is Node and is_instance_valid(layout_root):
+				(layout_root as Node).queue_free()
+	var tree := get_tree()
+	if tree == null:
+		return
+	for n in tree.get_nodes_in_group(&"dialogic_input"):
+		if is_instance_valid(n):
+			n.queue_free()
+
+
 func change_scene(path: String, params: Dictionary = {}) -> void:
 	MechanismLinkBus.clear_last_states()
 	var tree := get_tree()
+	await _shutdown_dialogic_for_navigation()
 	
 	# 1. 首先保存当前场景的状态（在开始切换前）
 	if tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty() and tree.current_scene.has_method("to_dict"):
@@ -109,6 +160,8 @@ func change_scene(path: String, params: Dictionary = {}) -> void:
 	
 	# 10. 恢复游戏
 	tree.paused = false
+	if tree.current_scene.scene_file_path == TITLE_SCENE_PATH:
+		call_deferred("strip_dialogic_mouse_blockers")
 	
 	# 11. 淡入动画
 	await tree.process_frame
@@ -216,6 +269,12 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 		if cam != null:
 			player_camera_local = cam.position
 	
+	var player_inventory_dict := {}
+	if player_node != null and (player_node as Node).has_node("PlayerInventory"):
+		var inv := (player_node as Node).get_node("PlayerInventory")
+		if inv.has_method("to_dict"):
+			player_inventory_dict = inv.to_dict()
+
 	var data := {
 		"world_states": world_states,
 		"character_registry": character_registry_data,
@@ -223,6 +282,7 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 		"mechanism_bus": MechanismLinkBus.export_state(),
 		"bucket_states": _export_bucket_states(scene),
 		"camera_cue_states": _export_camera_cue_states(scene),
+		"player_inventory": player_inventory_dict,
 		"scene": scene.scene_file_path,
 		"player": {
 			"direction": player_direction,
@@ -338,6 +398,7 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	Engine.set_meta("__pending_mechanism_bus_state", data.get("mechanism_bus", {}))
 	Engine.set_meta("__pending_bucket_states", data.get("bucket_states", {}))
 	Engine.set_meta("__pending_camera_cue_states", data.get("camera_cue_states", {}))
+	Engine.set_meta("__pending_player_inventory", data.get("player_inventory", {}))
 	
 	# 获取玩家位置和方向
 	var player_data = data.get("player", {})
@@ -383,6 +444,7 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 	if tree == null:
 		push_error("读档失败：SceneTree 不可用")
 		return
+	await _shutdown_dialogic_for_navigation()
 	tree.paused = true
 	if color_rect != null:
 		var fade_out := create_tween()
@@ -414,6 +476,16 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 		if cs is Dictionary:
 			_apply_camera_cue_states(tree.current_scene, cs as Dictionary)
 		Engine.remove_meta("__pending_camera_cue_states")
+	# 恢复玩家背包
+	if Engine.has_meta("__pending_player_inventory"):
+		var pid: Variant = Engine.get_meta("__pending_player_inventory")
+		if pid is Dictionary and not pid.is_empty():
+			var pn := _find_player_node_under_scene(tree.current_scene)
+			if pn != null and (pn as Node).has_node("PlayerInventory"):
+				var inv := (pn as Node).get_node("PlayerInventory")
+				if inv.has_method("from_dict"):
+					inv.from_dict(pid as Dictionary)
+		Engine.remove_meta("__pending_player_inventory")
 	if new_name in world_states and tree.current_scene.has_method("from_dict"):
 		tree.current_scene.from_dict(world_states[new_name])
 		print("读档恢复场景状态: ", new_name)
@@ -437,22 +509,38 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 		var fade_in := create_tween()
 		fade_in.tween_property(color_rect, "color:a", 0, 0.2)
 
-func new_game() -> void:
-	# 新游戏：在进入关卡前清空会话状态（勿依赖 change_scene 的 params，避免与步骤 8 的 from_dict 顺序纠缠）
+func _reset_session_for_new_run() -> void:
 	world_states.clear()
-	player_stats.from_dict(default_player_stats)
+	_rebind_player_stats_to_embedded()
+	if player_stats != null and is_instance_valid(player_stats):
+		player_stats.from_dict(default_player_stats)
 	var registry = get_node_or_null(DIALOGIC_REGISTRY_PATH)
 	if registry and registry.has_method("clear_all"):
 		registry.clear_all()
+	_world3_death_ui_opened = false
+
+
+func new_game() -> void:
+	# 新游戏：在进入关卡前清空会话状态（勿依赖 change_scene 的 params，避免与步骤 8 的 from_dict 顺序纠缠）
+	_reset_session_for_new_run()
 	change_scene("res://system/levels/world.tscn", {})
+
+
+func return_to_title_screen() -> void:
+	# 返回标题：会话重置与 new_game 一致，但进入主菜单而非关卡
+	_reset_session_for_new_run()
+	change_scene(TITLE_SCENE_PATH, {})
 
 func _unhandled_input(event: InputEvent) -> void:
 	# 场景内若实例化了 Game 节点，只允许 Autoload(/root/Game)处理全局存读档输入，避免重入读档卡住。
 	if not _is_autoload_game():
 		return
+	var tree_h := get_tree()
+	if _current_scene_is_title(tree_h):
+		return
 	if event.is_action_pressed("ui_cancel"):
-		print("保存游戏")
-		save_game(SAVE_SLOT_SAVEPOINT)
+		_open_pause_menu()
+		return
 	elif event is InputEventKey:
 		var key_event := event as InputEventKey
 		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_R:
@@ -460,12 +548,38 @@ func _unhandled_input(event: InputEvent) -> void:
 			load_game(true, SAVE_SLOT_SAVEPOINT)
 
 
+func _open_pause_menu() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if _current_scene_is_title(tree):
+		return
+	# 检查 Dialogic 是否活跃（避免冲突）
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	# 已有暂停菜单则不重复打开
+	for child in tree.root.get_children():
+		if child.get_script() != null and child.get_script().resource_path.ends_with("pause_menu.gd"):
+			return
+	tree.paused = true
+	var menu_scene := load("res://system/ui/pause_menu.tscn")
+	if menu_scene == null:
+		tree.paused = false
+		return
+	var menu: Node = menu_scene.instantiate()
+	if menu == null:
+		tree.paused = false
+		return
+	tree.root.add_child(menu)
+
+
 func _is_world3_boss_scene(scene: Node) -> bool:
 	return scene != null and scene.scene_file_path == WORLD3_BOSS_SCENE_PATH
 
 
 func _on_player_stats_changed() -> void:
-	if player_stats == null:
+	if player_stats == null or not is_instance_valid(player_stats):
 		return
 	if player_stats.health > 0:
 		return

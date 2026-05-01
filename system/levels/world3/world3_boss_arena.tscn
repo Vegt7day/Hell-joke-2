@@ -255,9 +255,8 @@ position = Vector2(960, 192)
 
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("8_bch5w")]
 position = Vector2(608, 448)
-lookahead_camera_move_speed = 50.0
-lookahead_x_start_speed = 50.0
-lookahead_y_up_distance = 15.0
+lookahead_camera_move_speed = 60.0
+lookahead_y_up_distance = 10.0
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=106270531]
 position = Vector2(0, -200)

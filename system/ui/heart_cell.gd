@@ -86,11 +86,13 @@ func _play_if_exists(anim_name: StringName) -> void:
 	var len: float = 0.12
 	if sprite.sprite_frames != null:
 		len = _estimate_animation_seconds(sprite.sprite_frames, anim_name, 0.12)
+	if not is_inside_tree():
+		return
 	var tree := get_tree()
 	if tree == null:
 		return
 	var t: SceneTreeTimer = tree.create_timer(maxf(0.03, len))
-	while not done and is_instance_valid(sprite):
+	while not done and is_instance_valid(sprite) and is_inside_tree():
 		if not await _await_next_frame_safe():
 			return
 		if t.time_left <= 0.0:
@@ -112,8 +114,10 @@ func _estimate_animation_seconds(frames: SpriteFrames, anim_name: StringName, fa
 
 
 func _await_next_frame_safe() -> bool:
+	if not is_inside_tree():
+		return false
 	var tree := get_tree()
 	if tree == null:
 		return false
 	await tree.process_frame
-	return true
+	return is_inside_tree()

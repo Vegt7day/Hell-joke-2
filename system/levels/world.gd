@@ -2,10 +2,15 @@ extends Node2D
 class_name WorldController
 
 # 场景参数
+const _AUDIO_UTILS := preload("res://system/globals/audio_utils.gd")
+const _STREAM_LEVEL_NORMAL_BGM := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 @export var level_duration: float = 120
 @export var teacher_intro_timeline: String = "12_Dialogic工程/teacher_intro"
 @export var student_escape_timeline: String = "12_Dialogic工程/student_intro"
 @export var door_area_path: NodePath
+@export var wakeup_intro_animation_player_path: NodePath
+@export var wakeup_intro_sprite_path: NodePath
+@export var wakeup_intro_animation_name: StringName = &"wakeup_intro"
 
 # 节点引用
 @onready var teacher: CharacterBody2D = $teacher
@@ -34,6 +39,7 @@ var registry_initialized: bool = false
 
 ## 本场景已播放完成的时间线（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
+var _level_bgm_player: AudioStreamPlayer
 
 
 func mark_dialog_timeline_completed(timeline_id: String) -> void:
@@ -47,6 +53,8 @@ func has_completed_timeline(timeline_id: String) -> bool:
 
 func _ready():
 	print("世界场景控制器加载中...")
+	_setup_level_bgm()
+	await _play_wakeup_intro_if_configured()
 	MechanismLinkBus.clear_last_states()
 	
 	# 初始化关卡计时器
@@ -76,8 +84,32 @@ func _ready():
 	await get_tree().process_frame
 	
 	# 启动对话
-	await get_tree().create_timer(0.5).timeout
 	start_dialogue()
+
+
+func _setup_level_bgm() -> void:
+	_level_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, _level_bgm_player, _STREAM_LEVEL_NORMAL_BGM, &"BGM", &"LevelNormalBgm")
+
+
+func _play_wakeup_intro_if_configured() -> void:
+	if wakeup_intro_animation_player_path.is_empty() or wakeup_intro_animation_name.is_empty():
+		return
+	var ap := get_node_or_null(wakeup_intro_animation_player_path) as AnimationPlayer
+	if ap == null:
+		push_warning("world: 未找到开场睡醒动画 AnimationPlayer，path=%s" % String(wakeup_intro_animation_player_path))
+		return
+	if not ap.has_animation(wakeup_intro_animation_name):
+		push_warning("world: 开场睡醒动画不存在，name=%s" % String(wakeup_intro_animation_name))
+		return
+	var wake_sprite := get_node_or_null(wakeup_intro_sprite_path) as Node2D if not wakeup_intro_sprite_path.is_empty() else null
+	if wake_sprite != null:
+		var vr := get_viewport().get_visible_rect()
+		wake_sprite.position = vr.size * 0.5
+	ap.play(wakeup_intro_animation_name)
+	var len := ap.get_animation(wakeup_intro_animation_name).length
+	if len <= 0.0:
+		len = 0.01
+	await get_tree().create_timer(len).timeout
 
 # 全局注册角色
 func register_characters_globally() -> void:

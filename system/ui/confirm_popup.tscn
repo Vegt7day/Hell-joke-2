@@ -1,0 +1,102 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvydidmndx64c"]
+
+[ext_resource type="Script" path="res://system/ui/confirm_popup.gd" id="1_pop"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+
+[node name="ConfirmPopup" type="CanvasLayer" node_paths=PackedStringArray("dim_bg","title_label","message_label","btn_confirm","btn_cancel")]
+layer = 120
+script = ExtResource("1_pop")
+dim_bg = NodePath("Root/DimBG")
+title_label = NodePath("Root/Panel/TitleLabel")
+message_label = NodePath("Root/Panel/MessageLabel")
+btn_confirm = NodePath("Root/Panel/BtnConfirm")
+btn_cancel = NodePath("Root/Panel/BtnCancel")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="DimBG" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.102, 0.102, 0.102, 0.8)
+
+[node name="Panel" type="Panel" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -80.0
+offset_right = 160.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 10.0
+offset_right = 120.0
+offset_bottom = 34.0
+grow_horizontal = 2
+text = "确认"
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 40.0
+offset_right = 130.0
+offset_bottom = 64.0
+grow_horizontal = 2
+text = "消息内容"
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+horizontal_alignment = 1
+
+[node name="BtnConfirm" type="Button" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 72.0
+offset_right = -20.0
+offset_bottom = 100.0
+grow_horizontal = 2
+text = "确定"
+
+[node name="BtnCancel" type="Button" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 20.0
+offset_top = 72.0
+offset_right = 130.0
+offset_bottom = 100.0
+grow_horizontal = 2
+text = "取消"

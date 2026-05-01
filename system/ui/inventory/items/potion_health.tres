@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="InventoryItem" load_steps=2 format=3 uid="uid://bpthdnvv8x84n"]
+
+[ext_resource type="Script" uid="uid://dv2fbkhc1x6dt" path="res://system/ui/inventory/inventory_item.gd" id="1_ivr"]
+
+[resource]
+script = ExtResource("1_ivr")
+id = "potion_health"
+name = "血药"
+description = "恢复 1 颗心"
+stackable = true
+max_stack = 9
+item_type = 0

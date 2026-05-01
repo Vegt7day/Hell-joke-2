@@ -1,8 +1,13 @@
 extends Node2D
 
+const _AUDIO_UTILS := preload("res://system/globals/audio_utils.gd")
+const _STREAM_LEVEL_NORMAL_BGM := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 const INTRO_TIMELINE := "level2/商鞅提出要求"
 const TL_RETURN_SY := "level2/回去看商鞅"
 const TL_GAIN_ABILITY := "level2/获得商鞅能力"
+@export var wakeup_intro_animation_player_path: NodePath
+@export var wakeup_intro_sprite_path: NodePath
+@export var wakeup_intro_animation_name: StringName = &"wakeup_intro"
 
 @onready var player: Player = $player
 @onready var shangyang_npc: ShangYang = $商鞅 as ShangYang
@@ -17,6 +22,7 @@ var _sy_awaiting_interact_restore: bool = false
 var _sy_story_state_from_save: Dictionary = {}
 ## 本场景已播放完成的时间线 / 演出键（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
+var _level_bgm_player: AudioStreamPlayer
 
 
 func mark_dialog_timeline_completed(timeline_id: String) -> void:
@@ -95,10 +101,37 @@ func _infer_cutscene_completions_from_saved_limbs() -> void:
 
 
 func _ready() -> void:
+	_setup_level_bgm()
+	await _play_wakeup_intro_if_configured()
 	MechanismLinkBus.clear_last_states()
 	await get_tree().process_frame
 	# Game.change_scene 会在全场景 _ready 之后调用 from_dict，故任务逻辑延后一帧
 	call_deferred("_world2_quest_setup")
+
+
+func _setup_level_bgm() -> void:
+	_level_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, _level_bgm_player, _STREAM_LEVEL_NORMAL_BGM, &"BGM", &"LevelNormalBgm")
+
+
+func _play_wakeup_intro_if_configured() -> void:
+	if wakeup_intro_animation_player_path.is_empty() or wakeup_intro_animation_name.is_empty():
+		return
+	var ap := get_node_or_null(wakeup_intro_animation_player_path) as AnimationPlayer
+	if ap == null:
+		push_warning("world2: 未找到开场睡醒动画 AnimationPlayer，path=%s" % String(wakeup_intro_animation_player_path))
+		return
+	if not ap.has_animation(wakeup_intro_animation_name):
+		push_warning("world2: 开场睡醒动画不存在，name=%s" % String(wakeup_intro_animation_name))
+		return
+	var wake_sprite := get_node_or_null(wakeup_intro_sprite_path) as Node2D if not wakeup_intro_sprite_path.is_empty() else null
+	if wake_sprite != null:
+		var vr := get_viewport().get_visible_rect()
+		wake_sprite.position = vr.size * 0.5
+	ap.play(wakeup_intro_animation_name)
+	var len := ap.get_animation(wakeup_intro_animation_name).length
+	if len <= 0.0:
+		len = 0.01
+	await get_tree().create_timer(len).timeout
 
 
 func _world2_quest_setup() -> void:

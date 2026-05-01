@@ -6,8 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://1colpcddw04k" path="res://entities/enemy/teacher/teacher.tscn" id="4_4yksg"]
 [ext_resource type="PackedScene" uid="uid://2x5jatopou75" path="res://system/可交互物/auto_teleporter.tscn" id="4_js66a"]
 [ext_resource type="PackedScene" uid="uid://cf8ltmxevvjay" path="res://system/可交互物/contact_trigger.tscn" id="4_kv7wa"]
-[ext_resource type="Texture2D" uid="uid://cr4u6bgdertuh" path="res://assets/资源总库/01_图像_背景/高楼 学校背景.png" id="6_tls4y"]
-[ext_resource type="Texture2D" uid="uid://kis6x72yoqeu" path="res://assets/资源总库/01_图像_背景/school.png" id="7_b258r"]
+[ext_resource type="Texture2D" uid="uid://fej4ptod6cqm" path="res://assets/资源总库/01_图像_背景/教学楼背景.png" id="5_hrldk"]
+[ext_resource type="Texture2D" uid="uid://h5t4xg23nuwa" path="res://assets/资源总库/01_图像_背景/教室.png" id="6_hrldk"]
 [ext_resource type="PackedScene" uid="uid://uiik2odgtuve" path="res://system/可交互物/开关.tscn" id="8_y8eji"]
 [ext_resource type="PackedScene" uid="uid://cjkbtgsoyodw3" path="res://system/可交互物/门.tscn" id="9_25x0f"]
 [ext_resource type="PackedScene" uid="uid://b814penuao5ry" path="res://system/可交互物/触发器.tscn" id="10_m8c1u"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="11_tls4y"]
 [ext_resource type="PackedScene" uid="uid://0hq3gxsgrf3d" path="res://entities/player/real player/student.tscn" id="14_3o3xc"]
 [ext_resource type="PackedScene" uid="uid://cwnvqmdyl2j3i" path="res://system/globals/game/game.tscn" id="14_xr4xx"]
+[ext_resource type="Texture2D" uid="uid://bq7dj4g5ypx4c" path="res://assets/资源总库/03_图像_UI/清醒特效.png" id="15_wakeup"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hrldk"]
 texture = ExtResource("1_4oalq")
@@ -44,20 +45,134 @@ physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_hrldk")
 sources/1 = SubResource("TileSetAtlasSource_kv7wa")
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_b258r"]
-atlas = ExtResource("7_b258r")
-region = Rect2(2304, 0, 1152, 648)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_25x0f"]
-atlas = ExtResource("7_b258r")
-region = Rect2(0, 0, 1152, 648)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gnt6p"]
 size = Vector2(770, 237)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_wakeup_atlas"]
+atlas = ExtResource("15_wakeup")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wakeup_frame"]
+atlas = SubResource("AtlasTexture_wakeup_atlas")
+
+[sub_resource type="Animation" id="Animation_world_wakeup_reset"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 6400, 1440)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:vframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_world_wakeup_intro"]
+resource_name = "wakeup_intro"
+length = 3.5
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 6400, 1440)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:vframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.90000004, 1, 1.1, 1.2, 1.3000001, 1.4, 1.5, 1.7, 1.8, 2, 2.1000001, 2.3, 2.4, 2.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 27, 28, 29, 31, 32, 34, 35]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_world_wakeup"]
+_data = {
+&"RESET": SubResource("Animation_world_wakeup_reset"),
+&"wakeup_intro": SubResource("Animation_world_wakeup_intro")
+}
+
 [node name="World" type="Node2D" unique_id=1385105138]
 script = ExtResource("1_pk68g")
-metadata/_edit_vertical_guides_ = [-193.0, 1280.0, 320.0]
+level_duration = null
+teacher_intro_timeline = null
+student_escape_timeline = null
+door_area_path = null
+wakeup_intro_animation_player_path = NodePath("WakeupOverlay/AnimationPlayer")
+wakeup_intro_sprite_path = NodePath("WakeupOverlay/Sprite2D")
+wakeup_intro_animation_name = null
 metadata/_edit_horizontal_guides_ = [640.0, -514.0, 720.0, 90.0]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=635298548]
@@ -74,91 +189,21 @@ position = Vector2(27, -109)
 [node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=469835150]
 
 [node name="sky" type="ParallaxLayer" parent="ParallaxBackground" unique_id=1822927404]
-position = Vector2(-1154, -72)
 motion_scale = Vector2(0.3, 0.3)
-motion_mirroring = Vector2(1152, 0)
+motion_mirroring = Vector2(640, 0)
 
 [node name="Background" type="Sprite2D" parent="ParallaxBackground/sky" unique_id=2067258832]
-position = Vector2(-30, -56)
-texture = ExtResource("6_tls4y")
-centered = false
-
-[node name="trees" type="ParallaxLayer" parent="ParallaxBackground" unique_id=195031564]
-motion_scale = Vector2(0.5, 0.5)
-motion_mirroring = Vector2(1152, 0)
-
-[node name="midground" type="Sprite2D" parent="ParallaxBackground/trees" unique_id=1292585755]
-position = Vector2(4, -10)
-texture = SubResource("AtlasTexture_b258r")
+texture = ExtResource("5_hrldk")
 centered = false
 
 [node name="classroom" type="ParallaxLayer" parent="ParallaxBackground" unique_id=105475237]
-position = Vector2(451, 252)
-scale = Vector2(0.6, 0.6)
+position = Vector2(-1, 0)
+motion_offset = Vector2(0, 279.165)
+motion_mirroring = Vector2(640, 0)
 
-[node name="forward3" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1222085690]
-position = Vector2(-1712, 320)
-texture = SubResource("AtlasTexture_25x0f")
-
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward3" unique_id=1878013892]
-anchors_preset = -1
-anchor_left = 0.053819444
-anchor_top = -0.029320987
-anchor_right = 0.053819444
-offset_left = -669.0
-offset_top = 101.0
-offset_right = 483.0
-offset_bottom = 601.0
-color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
-metadata/_edit_use_anchors_ = true
-
-[node name="forward2" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1045716298]
-position = Vector2(-560, 320)
-texture = SubResource("AtlasTexture_25x0f")
-
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward2" unique_id=1336607545]
-anchors_preset = -1
-anchor_left = 0.053819444
-anchor_top = -0.029320987
-anchor_right = 0.053819444
-offset_left = -669.0
-offset_top = 101.0
-offset_right = 483.0
-offset_bottom = 601.0
-color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
-metadata/_edit_use_anchors_ = true
-
-[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=1441166388]
-position = Vector2(592, 320)
-texture = SubResource("AtlasTexture_25x0f")
-
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward" unique_id=308698223]
-anchors_preset = -1
-anchor_left = -0.055555556
-anchor_top = -0.029320987
-anchor_right = -0.013020833
-offset_left = -543.0
-offset_top = 101.0
-offset_right = 609.0
-offset_bottom = 601.0
-color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
-metadata/_edit_use_anchors_ = true
-
-[node name="forward" type="Sprite2D" parent="ParallaxBackground/classroom/forward" unique_id=162288856]
-position = Vector2(-3456.9998, 0)
-texture = SubResource("AtlasTexture_25x0f")
-
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/classroom/forward/forward" unique_id=1733367241]
-anchors_preset = -1
-anchor_left = -0.055555556
-anchor_top = -0.029320987
-anchor_right = -0.013020833
-offset_left = -561.00006
-offset_top = 98.99998
-offset_right = 590.99994
-offset_bottom = 599.0
-color = Color(0.6124548, 0.2371889, 0.19878268, 0.46666667)
-metadata/_edit_use_anchors_ = true
+[node name="midground" type="Sprite2D" parent="ParallaxBackground/classroom" unique_id=54798544]
+texture = ExtResource("6_hrldk")
+centered = false
 
 [node name="开关" parent="." unique_id=1755846247 instance=ExtResource("8_y8eji")]
 position = Vector2(-640, 576)
@@ -181,7 +226,7 @@ position = Vector2(0, -32)
 is_open = true
 
 [node name="到区域触发对话" parent="." unique_id=865012812 instance=ExtResource("10_ytupi")]
-position = Vector2(-448, 576)
+position = Vector2(-581, 617)
 dialogue_timeline = "res://assets/资源总库/12_Dialogic工程/tip_开关与门1.dtl"
 one_shot = false
 
@@ -254,6 +299,8 @@ one_shot = false
 
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("14_3o3xc")]
 position = Vector2(550, 606)
+lookahead_camera_move_speed = 60.0
+lookahead_y_up_distance = 10.0
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=453642508]
 limit_left = -1952
@@ -274,3 +321,18 @@ shape = SubResource("RectangleShape2D_gnt6p")
 [node name="地下传送门" parent="." unique_id=922243628 instance=ExtResource("4_js66a")]
 position = Vector2(-961, 742)
 path = "uid://cothuryi4ghn8"
+
+[node name="WakeupOverlay" type="CanvasLayer" parent="." unique_id=840297145]
+layer = 64
+
+[node name="Sprite2D" type="Sprite2D" parent="WakeupOverlay" unique_id=1483511269]
+z_index = 4096
+position = Vector2(320, 180)
+texture = SubResource("AtlasTexture_wakeup_frame")
+hframes = 10
+vframes = 4
+region_enabled = true
+region_rect = Rect2(0, 0, 6400, 1440)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WakeupOverlay" unique_id=144900015]
+libraries/ = SubResource("AnimationLibrary_world_wakeup")

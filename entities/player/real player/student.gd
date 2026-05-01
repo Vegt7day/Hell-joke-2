@@ -111,11 +111,11 @@ var _camera_focus_move_speed: float = 220.0
 
 ## ===== 相机前瞻（Camera2D.position） =====
 @export var camera_lookahead_enabled: bool = true
-@export var lookahead_camera_move_speed: float = 320.0
-@export var lookahead_x_distance: float = 44.0
-@export var lookahead_x_start_speed: float = 10.0
-@export var lookahead_y_up_distance: float = 26.0
-@export var lookahead_y_down_distance: float = 44.0
+@export var lookahead_camera_move_speed: float = 60.0
+@export var lookahead_x_distance: float = 10.0
+@export var lookahead_x_start_speed: float = 1.0
+@export var lookahead_y_up_distance: float = 10.0
+@export var lookahead_y_down_distance: float = 30.0
 @export var lookahead_y_fall_threshold: float = 10.0
 @export var lookahead_xy_lerp_speed: float = 10.0
 

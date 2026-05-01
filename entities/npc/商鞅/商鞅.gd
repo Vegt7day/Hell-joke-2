@@ -70,6 +70,8 @@ var _boss_fatal_warning_damage_immune: bool = false
 var _summoned_despawn_token: int = 0
 var _summoned_despawn_cancelled: bool = false
 var _summoned_disappearing: bool = false
+const TL_RETURN_SY := "level2/回去看商鞅"
+const TL_GAIN_ABILITY := "level2/获得商鞅能力"
 
 # 动画名称映射
 var _damage_animations: Array[String] = ["less_1", "less_2", "less_3", "less_4"]
@@ -282,7 +284,9 @@ func _start_return_to_sy_dialog() -> void:
 	if dlg:
 		_listening_return_sy_timeline = true
 		dlg.timeline_ended.connect(_on_dialogic_timeline_ended_for_return_sy)
-	var dialog := Dialogic.start("回去看商鞅")
+	var dialog := Dialogic.start(TL_RETURN_SY)
+	if dialog == null:
+		dialog = Dialogic.start("回去看商鞅")
 	if dialog == null:
 		_disconnect_dialogic_return_sy_listener()
 		_return_sy_dialog_active = false
@@ -332,7 +336,9 @@ func _start_world2_ability_dialog() -> void:
 	if dlg and not dlg.signal_event.is_connected(_on_ability_dialogic_signal):
 		dlg.signal_event.connect(_on_ability_dialogic_signal)
 	_listening_for_ability_dialog_signal = true
-	var dialog := Dialogic.start("获得商鞅能力")
+	var dialog := Dialogic.start(TL_GAIN_ABILITY)
+	if dialog == null:
+		dialog = Dialogic.start("获得商鞅能力")
 	if dialog == null:
 		_on_ability_dialogic_signal("ShangYang_dialogic_over")
 		return

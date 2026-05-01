@@ -4,10 +4,19 @@ extends Control
 
 @onready var v: VBoxContainer = $V
 
-func _ready()->  void:
-	new_game.grab_focus()
-	for button:Button in v.get_children():
+func _ready() -> void:
+	# 根节点若不 IGNORE，全屏 Control 可能在某些层级下影响命中；让点击交给子控件
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	call_deferred("_grab_initial_focus")
+	for button: Button in v.get_children():
 		button.mouse_entered.connect(button.grab_focus)
+
+
+func _grab_initial_focus() -> void:
+	if is_instance_valid(Game):
+		Game.strip_dialogic_mouse_blockers()
+	if is_instance_valid(new_game):
+		new_game.grab_focus()
 		
 
 

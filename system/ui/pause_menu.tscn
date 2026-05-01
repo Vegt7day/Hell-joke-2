@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2yae8oxrhx6f"]
+
+[ext_resource type="Script" path="res://system/ui/pause_menu.gd" id="1_pm"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+
+[node name="PauseMenu" type="CanvasLayer" node_paths=PackedStringArray("btn_resume","btn_inventory","btn_save","btn_title","btn_quit")]
+layer = 100
+script = ExtResource("1_pm")
+btn_resume = NodePath("Root/Center/VBox/BtnResume")
+btn_inventory = NodePath("Root/Center/VBox/BtnInventory")
+btn_save = NodePath("Root/Center/VBox/BtnSave")
+btn_title = NodePath("Root/Center/VBox/BtnTitle")
+btn_quit = NodePath("Root/Center/VBox/BtnQuit")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="DimBG" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.102, 0.102, 0.102, 0.8)
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Center"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Root/Center/VBox"]
+layout_mode = 2
+text = "暂停"
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="BtnResume" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "继续游戏"
+
+[node name="BtnInventory" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "背包 / 物品栏"
+
+[node name="BtnSettings" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "设置"
+
+[node name="BtnSave" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "保存游戏"
+
+[node name="BtnLoad" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "读取存档"
+
+[node name="BtnTitle" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "返回标题画面"
+
+[node name="BtnQuit" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "离开游戏"

@@ -246,9 +246,9 @@ func _cast_grey_dash_skill() -> void:
 	if _is_casting_skill or not _movement_enabled:
 		return
 	_is_casting_skill = true
+	await _play_optional(&"grey_ready")
 	if _grey_dash_sfx and _grey_dash_sfx.stream:
 		_grey_dash_sfx.play()
-	await _play_optional(&"grey_ready")
 	if animation_player and animation_player.has_animation(&"grey_run"):
 		animation_player.play(&"grey_run")
 	await _move_to_position(global_position + Vector2.LEFT * grey_dash_distance, grey_dash_duration)
