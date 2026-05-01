@@ -40,6 +40,8 @@ var registry_initialized: bool = false
 ## 本场景已播放完成的时间线（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
 var _level_bgm_player: AudioStreamPlayer
+## 开场睡醒/眨眼动画是否已播过（写入 world_states，读档后不再播放）
+var _wakeup_intro_completed: bool = false
 
 
 func mark_dialog_timeline_completed(timeline_id: String) -> void:
@@ -51,38 +53,43 @@ func mark_dialog_timeline_completed(timeline_id: String) -> void:
 func has_completed_timeline(timeline_id: String) -> bool:
 	return timeline_id in _completed_timelines
 
-func _ready():
+func _ready() -> void:
 	print("世界场景控制器加载中...")
 	_setup_level_bgm()
+	# 延后到 deferred：`Game.change_scene` / 读档的 `from_dict` 会先写入 `_wakeup_intro_completed`，避免先开播再放存档标记导致仍会眨眼
+	call_deferred(&"_continue_world_ready")
+
+
+func _continue_world_ready() -> void:
 	await _play_wakeup_intro_if_configured()
 	MechanismLinkBus.clear_last_states()
-	
+
 	# 初始化关卡计时器
 	add_child(level_timer)
 	level_timer.one_shot = true
 	level_timer.wait_time = level_duration
 	level_timer.timeout.connect(_on_level_timer_timeout)
-	
+
 	# 连接门区域信号
 	if door_area and door_area is Area2D:
 		door_area.body_entered.connect(_on_door_area_entered)
-	
+
 	# 等待一帧确保所有节点初始化完成
 	await get_tree().process_frame
-	
+
 	# 检查玩家节点是否有效
 	if player and player.has_method("disable_action"):
 		player.disable_action("move_left")
 		player.disable_action("move_right")
 		player.disable_action("attack")
 		player.enable_action("jump")
-	
+
 	# 注册角色到全局注册表
 	register_characters_globally()
-	
+
 	# 等待注册完成
 	await get_tree().process_frame
-	
+
 	# 启动对话
 	start_dialogue()
 
@@ -92,6 +99,8 @@ func _setup_level_bgm() -> void:
 
 
 func _play_wakeup_intro_if_configured() -> void:
+	if _wakeup_intro_completed:
+		return
 	if wakeup_intro_animation_player_path.is_empty() or wakeup_intro_animation_name.is_empty():
 		return
 	var ap := get_node_or_null(wakeup_intro_animation_player_path) as AnimationPlayer
@@ -110,6 +119,7 @@ func _play_wakeup_intro_if_configured() -> void:
 	if len <= 0.0:
 		len = 0.01
 	await get_tree().create_timer(len).timeout
+	_wakeup_intro_completed = true
 
 # 全局注册角色
 func register_characters_globally() -> void:
@@ -442,6 +452,7 @@ func to_dict() -> Dictionary:
 	return {
 		"enemies_alive": enemies_alive,
 		"completed_timelines": _completed_timelines.duplicate(),
+		"wakeup_intro_completed": _wakeup_intro_completed,
 	}
 
 func from_dict(dict: Dictionary) -> void:
@@ -455,7 +466,9 @@ func from_dict(dict: Dictionary) -> void:
 	_completed_timelines.clear()
 	for x in dict.get("completed_timelines", []):
 		_completed_timelines.append(String(x))
-		
+	_wakeup_intro_completed = bool(dict.get("wakeup_intro_completed", false))
+
+
 func update_player(position: Vector2, direction: int = 1) -> void:
 	if has_node("player"):
 		var player_node = $player

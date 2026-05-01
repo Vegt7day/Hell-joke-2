@@ -24,6 +24,9 @@ extends CharacterBody2D
 ## 单次攻击消耗的墨水（与 ATTACK_SHOOT 中扣除量一致）
 const ATTACK_INK_COST: int = 1
 
+## 当前工程唯一可用召唤书 id（装备后才可按 F 召唤）
+const SUMMON_SHANGYANG_ID := &"summon_shangyang"
+
 ## world2 剧情完成后解锁；由存档恢复
 var shangyang_summon_unlocked: bool = false
 
@@ -208,6 +211,34 @@ func _ready():
 			# 重置速度，防止初始速度过大
 			velocity = Vector2.ZERO
 			change_state(PlayerState.JUMP_FALL)
+
+	_ensure_inventory_after_ready()
+
+
+func _ensure_inventory_after_ready() -> void:
+	var inv := get_node_or_null("PlayerInventory") as PlayerInventory
+	if inv == null:
+		return
+	if not inv.item_used.is_connected(_on_inventory_item_used):
+		inv.item_used.connect(_on_inventory_item_used)
+	if shangyang_summon_unlocked and inv.active_summon_item == null:
+		for slot in inv.slots:
+			if slot.item != null and slot.item.id == SUMMON_SHANGYANG_ID:
+				inv.equip_summon(slot.item)
+				break
+
+
+func _on_inventory_item_used(item: InventoryItem) -> void:
+	if item == null:
+		return
+	match item.id:
+		&"potion_health":
+			if stats != null:
+				stats.health += 1
+		&"potion_speed":
+			push_warning("加速药效果占位（Phase 2）")
+		_:
+			pass
 
 
 func _resolve_and_bind_stats_source() -> void:
@@ -424,11 +455,6 @@ func update_idle(delta: float):
 		start_attack()
 		return
 	
-	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
-		try_summon_shangyang()
-		return
-	
 	# 应用水平减速
 	if velocity.x != 0:
 		velocity.x = move_toward(velocity.x, 0, friction)
@@ -462,12 +488,6 @@ func update_walk(delta: float):
 		start_attack()
 		return
 	
-	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
-		try_summon_shangyang()
-		return
-
-
 func _ensure_walk_sound_loop() -> void:
 	if walk_sound == null or walk_sound.stream == null:
 		return
@@ -506,11 +526,6 @@ func update_jump_ascend(delta: float):
 		start_attack()
 		return
 	
-	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
-		try_summon_shangyang()
-		return
-
 func update_jump_fall(delta: float):
 	# 处理水平移动
 	var input_direction = _get_move_input_axis()
@@ -534,11 +549,6 @@ func update_jump_fall(delta: float):
 		start_attack()
 		return
 	
-	# 检查召唤
-	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now():
-		try_summon_shangyang()
-		return
-
 func update_attack_start(delta: float):
 	# 攻击期间不能移动
 	velocity.x = move_toward(velocity.x, 0, friction)
@@ -609,6 +619,13 @@ func can_summon_shangyang_now() -> bool:
 		return false
 	if not shangyang_summon_unlocked:
 		return false
+	var inv := get_node_or_null("PlayerInventory") as PlayerInventory
+	if inv == null or inv.active_summon_item == null:
+		return false
+	if inv.active_summon_item.item_type != InventoryItem.ItemType.SUMMON_BOOK:
+		return false
+	if inv.active_summon_item.id != SUMMON_SHANGYANG_ID:
+		return false
 	if not can_summon:
 		return false
 	if shangyang_summon_scene == null:
@@ -629,6 +646,12 @@ func start_attack():
 # ========== 召唤功能 ==========
 func unlock_shangyang_summon() -> void:
 	shangyang_summon_unlocked = true
+	var inv := get_node_or_null("PlayerInventory") as PlayerInventory
+	if inv == null:
+		return
+	var item := InventoryDb.load_item_by_id("summon_shangyang")
+	if item != null and not inv.has_item_with_id(item.id):
+		inv.add_item(item, 1)
 
 
 func _boss_fatal_summon_warning_active() -> bool:
@@ -703,6 +726,24 @@ func calculate_summon_position() -> Vector2:
 		base_position.y + offset.y
 	)
 
+
+func _try_use_action() -> void:
+	# F（InputMap: summon）：仅召唤 + 快捷栏消耗；世界交互只用 E（interact）
+	if not enable_input_control:
+		return
+	if not Input.is_action_just_pressed("summon"):
+		return
+	if current_state == PlayerState.SUMMON_START or current_state == PlayerState.STUNNED:
+		return
+	if can_summon_shangyang_now():
+		try_summon_shangyang()
+		return
+	if is_instance_valid(Game) and Game.has_method("inventory_ui_is_open") and not Game.inventory_ui_is_open():
+		var inv_u := get_node_or_null("PlayerInventory") as PlayerInventory
+		if inv_u != null:
+			inv_u.use_hotbar_selection()
+
+
 # ========== 辅助函数 ==========
 func return_to_normal_state():
 	# 根据当前状态返回到合适的正常状态
@@ -736,9 +777,10 @@ func _physics_process(delta):
 	# 更新当前状态
 	update_state(delta)
 	
-	# 处理互动输入
-	if enable_input_control and Input.is_action_just_pressed("interact") and not interacting_with.is_empty():
-		interacting_with.back().interact()
+	# E：仅与世界交互物交互（召唤 / 道具为 F）
+	if enable_input_control and Input.is_action_just_pressed("interact"):
+		if not interacting_with.is_empty():
+			interacting_with.back().interact()
 	if enable_input_control and not _contact_triggers.is_empty():
 		_contact_triggers.back().interact()
 	
@@ -746,13 +788,12 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("attack") and can_attack_now() and current_state != PlayerState.ATTACK_START and current_state != PlayerState.ATTACK_SHOOT and current_state != PlayerState.ATTACK_END and current_state != PlayerState.SUMMON_START and current_state != PlayerState.STUNNED:
 		start_attack()
 	
-	# 处理召唤输入
-	if Input.is_action_just_pressed("summon") and can_summon_shangyang_now() and current_state != PlayerState.SUMMON_START and current_state != PlayerState.STUNNED:
-		try_summon_shangyang()
+	_try_use_action()
 	
 	# 应用移动
 	move_and_slide()
-	
+	Game.register_map_exploration_at_world(global_position)
+
 	# 更新朝向
 	update_facing()
 	# 可选：仅在相机焦点系统接管时更新 Camera2D.position 偏移

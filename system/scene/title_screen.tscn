@@ -1,7 +1,8 @@
 [gd_scene format=4 uid="uid://cge0gbh6xo5ib"]
 
-[ext_resource type="FontFile" uid="uid://ci3qopnqiloaf" path="res://assets/资源总库/11_字体/DejaVuSans.ttf" id="1_1nhfq"]
 [ext_resource type="Script" uid="uid://c26pocbqytqju" path="res://system/scene/title_screen.gd" id="2_3lcxb"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="5_v12"]
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="4_v16"]
 [ext_resource type="Texture2D" uid="uid://qc5fioixflpq" path="res://assets/资源总库/01_图像_背景/背景.png" id="2_hc2gf"]
 [ext_resource type="Texture2D" uid="uid://3pex15s1h4b" path="res://assets/资源总库/02_图像_地图/地.png" id="5_8wm77"]
 [ext_resource type="Texture2D" uid="uid://uesl6bfaxcpk" path="res://assets/资源总库/02_图像_地图/墙.png" id="6_5a8sg"]
@@ -14,7 +15,7 @@ content_margin_right = 4.0
 content_margin_bottom = 4.0
 
 [sub_resource type="Theme" id="Theme_3lcxb"]
-default_font = ExtResource("1_1nhfq")
+default_font = ExtResource("4_v16")
 Button/styles/disabled = SubResource("StyleBoxEmpty_hc2gf")
 Button/styles/disabled_mirrored = SubResource("StyleBoxEmpty_hc2gf")
 Button/styles/hover = SubResource("StyleBoxEmpty_hc2gf")
@@ -428,8 +429,8 @@ theme_override_colors/font_shadow_color = Color(0.13064611, 0.09868077, 0.039285
 theme_override_constants/shadow_offset_x = 4
 theme_override_constants/shadow_offset_y = 2
 theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("1_1nhfq")
-theme_override_font_sizes/font_size = 23
+theme_override_fonts/font = ExtResource("5_v12")
+theme_override_font_sizes/font_size = 12
 text = "平凡中学生和商鞅劳大哈基米在地狱笑话中成长的旅行"
 
 [node name="V" type="VBoxContainer" parent="." unique_id=2072554946]
@@ -449,20 +450,26 @@ grow_vertical = 0
 
 [node name="new_game" type="Button" parent="V" unique_id=1369377240]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_1nhfq")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("4_v16")
+theme_override_font_sizes/font_size = 16
 text = "梦的开始"
 
 [node name="load_game" type="Button" parent="V" unique_id=427928644]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_1nhfq")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("4_v16")
+theme_override_font_sizes/font_size = 16
 text = "继续冒险"
+
+[node name="settings" type="Button" parent="V" unique_id=1369377241]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_v16")
+theme_override_font_sizes/font_size = 16
+text = "设置"
 
 [node name="exit_game" type="Button" parent="V" unique_id=689740176]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_1nhfq")
-theme_override_font_sizes/font_size = 25
+theme_override_fonts/font = ExtResource("4_v16")
+theme_override_font_sizes/font_size = 16
 text = "离开游戏"
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=169350659]
@@ -497,4 +504,5 @@ region_rect = Rect2(0, 0, 3744, 96)
 
 [connection signal="pressed" from="V/new_game" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="V/load_game" to="." method="_on_load_game_pressed"]
+[connection signal="pressed" from="V/settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="V/exit_game" to="." method="_on_exit_game_pressed"]

@@ -27,5 +27,11 @@ func _on_new_game_pressed() -> void:
 func _on_load_game_pressed() -> void:
 	Game.load_game()
 
+
+func _on_settings_pressed() -> void:
+	if is_instance_valid(Game):
+		Game.open_settings_ui(false)
+
+
 func _on_exit_game_pressed() -> void:
 	get_tree().quit()

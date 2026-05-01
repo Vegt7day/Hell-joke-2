@@ -23,6 +23,8 @@ var _sy_story_state_from_save: Dictionary = {}
 ## 本场景已播放完成的时间线 / 演出键（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
 var _level_bgm_player: AudioStreamPlayer
+## 开场睡醒/眨眼动画是否已播过（写入存档 world_states，读档后不再播放）
+var _wakeup_intro_completed: bool = false
 
 
 func mark_dialog_timeline_completed(timeline_id: String) -> void:
@@ -102,10 +104,14 @@ func _infer_cutscene_completions_from_saved_limbs() -> void:
 
 func _ready() -> void:
 	_setup_level_bgm()
+	# deferred：`from_dict` 先于本函数写入 `_wakeup_intro_completed`，避免读档仍播放眨眼
+	call_deferred(&"_world2_ready_after_restore")
+
+
+func _world2_ready_after_restore() -> void:
 	await _play_wakeup_intro_if_configured()
 	MechanismLinkBus.clear_last_states()
 	await get_tree().process_frame
-	# Game.change_scene 会在全场景 _ready 之后调用 from_dict，故任务逻辑延后一帧
 	call_deferred("_world2_quest_setup")
 
 
@@ -114,6 +120,8 @@ func _setup_level_bgm() -> void:
 
 
 func _play_wakeup_intro_if_configured() -> void:
+	if _wakeup_intro_completed:
+		return
 	if wakeup_intro_animation_player_path.is_empty() or wakeup_intro_animation_name.is_empty():
 		return
 	var ap := get_node_or_null(wakeup_intro_animation_player_path) as AnimationPlayer
@@ -132,6 +140,7 @@ func _play_wakeup_intro_if_configured() -> void:
 	if len <= 0.0:
 		len = 0.01
 	await get_tree().create_timer(len).timeout
+	_wakeup_intro_completed = true
 
 
 func _world2_quest_setup() -> void:
@@ -254,6 +263,7 @@ func to_dict() -> Dictionary:
 		"sy_npc_removed": sy_npc_removed,
 		"sy_awaiting_sy_interact": awaiting_interact,
 		"completed_timelines": _completed_timelines.duplicate(),
+		"wakeup_intro_completed": _wakeup_intro_completed,
 	}
 
 
@@ -276,6 +286,7 @@ func from_dict(dict: Dictionary) -> void:
 	_sy_story_state_from_save = dict.get("sy_story_state", {})
 	sy_npc_removed = dict.get("sy_npc_removed", false)
 	_sy_awaiting_interact_restore = dict.get("sy_awaiting_sy_interact", false)
+	_wakeup_intro_completed = bool(dict.get("wakeup_intro_completed", false))
 
 
 func update_player(position: Vector2, direction: int = 1) -> void:

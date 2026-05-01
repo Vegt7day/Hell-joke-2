@@ -1,7 +1,7 @@
 class_name PlayerInventory
 extends Node
 
-## 主背包格子（初始 24 格，当前固定）
+## 主背包格子（分页 UI 每页 8×6=48 格；默认共 3 页 → 144 格）
 var slots: Array[InventorySlot] = []
 ## 快捷栏格子（固定 8 格）
 var hotbar: Array[InventorySlot] = []
@@ -10,7 +10,7 @@ var hotbar_selection: int = 0
 ## 当前装备的召唤书（同时只能装备 1 本）
 var active_summon_item: InventoryItem = null
 
-const _DEFAULT_SLOT_COUNT := 24
+const _DEFAULT_SLOT_COUNT := 144
 const _HOTBAR_SLOT_COUNT := 8
 
 signal inventory_changed
@@ -29,6 +29,13 @@ func _initialize_slots() -> void:
 		slots.append(InventorySlot.new())
 		if i < _HOTBAR_SLOT_COUNT:
 			hotbar.append(slots[i])
+
+
+func has_item_with_id(item_id: StringName) -> bool:
+	for slot in slots:
+		if slot.item != null and slot.item.id == item_id:
+			return true
+	return false
 
 
 ## 添加物品，优先堆叠已有可堆叠物品，否则放入空格
@@ -129,12 +136,23 @@ func use_item(slot_index: int) -> void:
 		return
 	match slot.item.item_type:
 		InventoryItem.ItemType.CONSUMABLE:
+			var used: InventoryItem = slot.item
 			remove_item(slot_index, 1)
-			item_used.emit(slot.item)
+			item_used.emit(used)
 		InventoryItem.ItemType.SUMMON_BOOK:
 			equip_summon(slot.item)
 		_:
 			pass # EQUIPMENT / QUEST 暂不处理
+
+
+## 将主背包某一格绑定到快捷栏第 bar_index 格（引用同一 InventorySlot）
+func assign_slot_to_hotbar(slot_index: int, bar_index: int) -> void:
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+	if bar_index < 0 or bar_index >= _HOTBAR_SLOT_COUNT:
+		return
+	hotbar[bar_index] = slots[slot_index]
+	inventory_changed.emit()
 
 
 ## 设置快捷栏选中索引
@@ -239,10 +257,4 @@ func from_dict(dict: Dictionary) -> void:
 
 
 func _load_item_by_id(item_id: String) -> InventoryItem:
-	# 按约定路径加载物品资源
-	var path := "res://system/ui/inventory/items/" + item_id + ".tres"
-	if ResourceLoader.exists(path):
-		var res := load(path)
-		if res is InventoryItem:
-			return res as InventoryItem
-	return null
+	return InventoryDb.load_item_by_id(item_id)

@@ -1,0 +1,184 @@
+[gd_scene format=3 uid="uid://b5l7gmkve2ie"]
+
+[ext_resource type="Script" path="res://system/ui/inventory/inventory_ui.gd" id="1_inv"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+
+[node name="InventoryUi" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_inv")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="DimBG" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.06, 0.06, 0.08, 0.82)
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="PanelContainer" parent="Root/Center"]
+custom_minimum_size = Vector2(608, 0)
+layout_mode = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="Root/Center/MainPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Root/Center/MainPanel/MainVBox"]
+layout_mode = 2
+text = "背包"
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+
+[node name="BodyHBox" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="LeftGrow" type="Control" parent="Root/Center/MainPanel/MainVBox/BodyHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PageCenter" type="CenterContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftColumn" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HotbarHint" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+layout_mode = 2
+text = "快捷栏：1–8 切换选中格"
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 1
+
+[node name="HotbarRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="SlotGrid" type="GridContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 8
+
+[node name="PageNavRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="BtnPagePrev" type="Button" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+custom_minimum_size = Vector2(36, 26)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 14
+text = "<"
+
+[node name="PageLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
+horizontal_alignment = 1
+text = "第 1 / 3 页"
+
+[node name="BtnPageNext" type="Button" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+custom_minimum_size = Vector2(36, 26)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 14
+text = ">"
+
+[node name="RightVBox" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox"]
+custom_minimum_size = Vector2(218, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DetailPanel" type="PanelContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DetailVBox" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ItemIconLarge" type="TextureRect" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ItemNameLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 1
+autowrap_mode = 3
+text = "——"
+
+[node name="ItemDescLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
+custom_minimum_size = Vector2(190, 108)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+autowrap_mode = 3
+text = ""
+
+[node name="BtnRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="BtnUse" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
+custom_minimum_size = Vector2(78, 28)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 13
+text = "使用"
+
+[node name="BtnDrop" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
+custom_minimum_size = Vector2(78, 28)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 13
+text = "丢弃"
+
+[node name="BtnUnequipSummon" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
+custom_minimum_size = Vector2(92, 28)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 13
+text = "卸下召唤"

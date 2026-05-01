@@ -4,14 +4,9 @@
 [ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
 
-[node name="PauseMenu" type="CanvasLayer" node_paths=PackedStringArray("btn_resume","btn_inventory","btn_save","btn_title","btn_quit")]
+[node name="PauseMenu" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_pm")
-btn_resume = NodePath("Root/Center/VBox/BtnResume")
-btn_inventory = NodePath("Root/Center/VBox/BtnInventory")
-btn_save = NodePath("Root/Center/VBox/BtnSave")
-btn_title = NodePath("Root/Center/VBox/BtnTitle")
-btn_quit = NodePath("Root/Center/VBox/BtnQuit")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
@@ -60,6 +55,11 @@ text = "继续游戏"
 custom_minimum_size = Vector2(240, 40)
 layout_mode = 2
 text = "背包 / 物品栏"
+
+[node name="BtnMap" type="Button" parent="Root/Center/VBox"]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "关卡地图（推导）"
 
 [node name="BtnSettings" type="Button" parent="Root/Center/VBox"]
 custom_minimum_size = Vector2(240, 40)

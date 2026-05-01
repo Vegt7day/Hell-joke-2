@@ -2,6 +2,19 @@ extends Node
 
 var world_states := {}
 
+## 地图探索：场景文件 basename → { "gx_gy": true }（玩家经过的逻辑格，存档持久化）
+var map_exploration: Dictionary = {}
+## 已在存档点选择「存档」或「传送」并登记的存档点，键："scene_bn::save_point_id"（地图上「存」显示红色）
+var save_points_known: Dictionary = {}
+## 地图详图：相对足迹的轴对齐矩形（逻辑格）。左/右各 10，上 7（y 减小），下 3（y 增大）
+const MAP_DETAIL_HALF_W := 10
+const MAP_DETAIL_UP := 7
+const MAP_DETAIL_DOWN := 3
+## 地图灰块：相对足迹更大矩形。左/右各 20，上 14，下 6（仅外形无字）
+const MAP_DIM_HALF_W := 20
+const MAP_DIM_UP := 14
+const MAP_DIM_DOWN := 6
+
 @onready var color_rect: ColorRect = $ColorRect
 @onready var player_stats: Stats = $PlayerStats
 @onready var default_player_stats := player_stats.to_dict()
@@ -11,8 +24,14 @@ const SAVE_PATH_SAVEPOINT := "user://data_savepoint.sav"
 const SAVE_PATH_HEART := "user://data_heart.sav"
 const WORLD3_BOSS_SCENE_PATH := "res://system/levels/world3/world3_boss_arena.tscn"
 const TITLE_SCENE_PATH := "res://system/scene/title_screen.tscn"
+const SETTINGS_CFG_PATH := "user://settings.cfg"
+const SETTINGS_UI_GROUP := &"settings_ui"
+const AUDIO_VOL_MIN_DB := -80.0
+const AUDIO_VOL_MAX_DB := 0.0
 const WORLD3_DEATH_UI_SCENE := preload("res://system/ui/world3_death_retry_ui.tscn")
 var _world3_death_ui_opened: bool = false
+var _settings_window_width: int = 640
+var _settings_window_height: int = 360
 
 ## World3 死亡：先全屏白闪再出死亡 UI（Tween 在暂停下仍推进）
 @export var world3_death_flash_peak_alpha: float = 0.92
@@ -24,6 +43,7 @@ func _ready() -> void:
 	if player_stats != null and not player_stats.health_changed.is_connected(_on_player_stats_changed):
 		player_stats.health_changed.connect(_on_player_stats_changed)
 	print("游戏管理器初始化完成")
+	call_deferred(&"apply_saved_settings")
 
 
 func bind_player_stats_runtime(new_stats: Stats) -> void:
@@ -277,6 +297,8 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 
 	var data := {
 		"world_states": world_states,
+		"map_exploration": map_exploration,
+		"save_points_known": save_points_known,
 		"character_registry": character_registry_data,
 		"stats": player_stats.to_dict(),
 		"mechanism_bus": MechanismLinkBus.export_state(),
@@ -390,6 +412,8 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	
 	# 恢复世界状态
 	world_states = data.get("world_states", {})
+	map_exploration = data.get("map_exploration", {})
+	save_points_known = data.get("save_points_known", {})
 	
 	# 恢复玩家状态
 	player_stats.from_dict(data.stats)
@@ -511,6 +535,8 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 
 func _reset_session_for_new_run() -> void:
 	world_states.clear()
+	map_exploration.clear()
+	save_points_known.clear()
 	_rebind_player_stats_to_embedded()
 	if player_stats != null and is_instance_valid(player_stats):
 		player_stats.from_dict(default_player_stats)
@@ -531,21 +557,379 @@ func return_to_title_screen() -> void:
 	_reset_session_for_new_run()
 	change_scene(TITLE_SCENE_PATH, {})
 
+
+func inventory_ui_is_open() -> bool:
+	var tree := get_tree()
+	return tree != null and tree.get_first_node_in_group(&"inventory_ui") != null
+
+
+func open_inventory_ui() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if _current_scene_is_title(tree):
+		return
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	if inventory_ui_is_open():
+		return
+	tree.paused = true
+	var ps := load("res://system/ui/inventory/inventory_ui.tscn") as PackedScene
+	if ps == null:
+		tree.paused = false
+		return
+	var ui := ps.instantiate()
+	if ui == null:
+		tree.paused = false
+		return
+	tree.root.add_child(ui)
+
+
+func close_inventory_ui() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	for n in tree.get_nodes_in_group(&"inventory_ui"):
+		if is_instance_valid(n):
+			n.queue_free()
+
+
+func abstract_map_ui_is_open() -> bool:
+	var tree := get_tree()
+	return tree != null and tree.get_first_node_in_group(&"abstract_map_ui") != null
+
+
+func open_abstract_map_ui(for_teleport_pick: bool = false) -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if _current_scene_is_title(tree):
+		return
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if inventory_ui_is_open() or abstract_map_ui_is_open():
+		return
+	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	tree.paused = true
+	var ps := load("res://system/ui/abstract_map/abstract_map_ui.tscn") as PackedScene
+	if ps == null:
+		tree.paused = false
+		return
+	var ui := ps.instantiate()
+	if ui == null:
+		tree.paused = false
+		return
+	ui.set_meta(&"abstract_map_teleport_pick", for_teleport_pick)
+	tree.root.add_child(ui)
+
+
+func close_abstract_map_ui() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	for n in tree.get_nodes_in_group(&"abstract_map_ui"):
+		if is_instance_valid(n):
+			n.queue_free()
+
+
+func settings_ui_is_open() -> bool:
+	var tree := get_tree()
+	return tree != null and tree.get_first_node_in_group(SETTINGS_UI_GROUP) != null
+
+
+func get_audio_bus_slider_normalized(bus_name: StringName) -> float:
+	var idx := AudioServer.get_bus_index(bus_name)
+	if idx < 0:
+		return 1.0
+	var db := AudioServer.get_bus_volume_db(idx)
+	return clampf((db - AUDIO_VOL_MIN_DB) / (AUDIO_VOL_MAX_DB - AUDIO_VOL_MIN_DB), 0.0, 1.0)
+
+
+func set_audio_bus_from_normalized(bus_name: StringName, t: float) -> void:
+	var idx := AudioServer.get_bus_index(bus_name)
+	if idx < 0:
+		return
+	var db := lerpf(AUDIO_VOL_MIN_DB, AUDIO_VOL_MAX_DB, clampf(t, 0.0, 1.0))
+	AudioServer.set_bus_volume_db(idx, db)
+
+
+func _main_window_id() -> int:
+	var vp := get_viewport()
+	if vp == null:
+		return 0
+	return vp.get_window_id()
+
+
+func display_is_fullscreen() -> bool:
+	var win_id: int = _main_window_id()
+	var m := DisplayServer.window_get_mode(win_id)
+	return m == DisplayServer.WINDOW_MODE_FULLSCREEN or m == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+
+
+func get_settings_window_width() -> int:
+	return _settings_window_width
+
+
+func get_settings_window_height() -> int:
+	return _settings_window_height
+
+
+func apply_display_settings(fullscreen: bool, window_w: int, window_h: int) -> void:
+	_settings_window_width = clampi(window_w, 320, 7680)
+	_settings_window_height = clampi(window_h, 240, 4320)
+	var win_id: int = _main_window_id()
+	if fullscreen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN, win_id)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED, win_id)
+		DisplayServer.window_set_size(Vector2i(_settings_window_width, _settings_window_height), win_id)
+		var scr := DisplayServer.screen_get_size(DisplayServer.window_get_current_screen(win_id))
+		var sz := DisplayServer.window_get_size(win_id)
+		var pos := Vector2i((scr.x - sz.x) / 2, (scr.y - sz.y) / 2)
+		DisplayServer.window_set_position(pos, win_id)
+
+
+func apply_saved_settings() -> void:
+	var cf := ConfigFile.new()
+	if cf.load(SETTINGS_CFG_PATH) != OK:
+		return
+	for bus_key in [&"Master", &"BGM", &"SFX", &"UI"]:
+		var k := String(bus_key).to_lower()
+		if cf.has_section_key("audio", k):
+			set_audio_bus_from_normalized(bus_key, float(cf.get_value("audio", k)))
+	var fs := bool(cf.get_value("display", "fullscreen", false))
+	_settings_window_width = int(cf.get_value("display", "window_width", 640))
+	_settings_window_height = int(cf.get_value("display", "window_height", 360))
+	apply_display_settings(fs, _settings_window_width, _settings_window_height)
+
+
+func persist_settings_to_disk() -> void:
+	var cf := ConfigFile.new()
+	cf.load(SETTINGS_CFG_PATH)
+	for bus_key in [&"Master", &"BGM", &"SFX", &"UI"]:
+		cf.set_value("audio", String(bus_key).to_lower(), get_audio_bus_slider_normalized(bus_key))
+	cf.set_value("display", "fullscreen", display_is_fullscreen())
+	cf.set_value("display", "window_width", _settings_window_width)
+	cf.set_value("display", "window_height", _settings_window_height)
+	cf.save(SETTINGS_CFG_PATH)
+
+
+func open_settings_ui(reopen_pause_menu: bool = false) -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if settings_ui_is_open():
+		return
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	if inventory_ui_is_open() or abstract_map_ui_is_open():
+		return
+	var ps := load("res://system/ui/settings_panel.tscn") as PackedScene
+	if ps == null:
+		return
+	var ui := ps.instantiate()
+	if ui == null:
+		return
+	if ui.has_method(&"setup"):
+		ui.call(&"setup", reopen_pause_menu)
+	if not _current_scene_is_title(tree):
+		tree.paused = true
+	tree.root.add_child(ui)
+
+
+func open_pause_menu_after_settings() -> void:
+	await get_tree().process_frame
+	_open_pause_menu()
+
+
+func get_current_scene_basename() -> String:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return ""
+	var p := tree.current_scene.scene_file_path
+	if p.is_empty():
+		return ""
+	return p.get_file().get_basename()
+
+
+func save_point_known_key(scene_bn: String, save_id: String) -> String:
+	return "%s::%s" % [scene_bn, save_id]
+
+
+func mark_save_point_known(scene_bn: String, save_id: String) -> void:
+	if scene_bn.is_empty() or save_id.is_empty():
+		return
+	save_points_known[save_point_known_key(scene_bn, save_id)] = true
+
+
+func is_save_point_known(scene_bn: String, save_id: String) -> bool:
+	if scene_bn.is_empty() or save_id.is_empty():
+		return false
+	return bool(save_points_known.get(save_point_known_key(scene_bn, save_id), false))
+
+
+func on_save_point_panel_exited() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if abstract_map_ui_is_open():
+		return
+	if inventory_ui_is_open():
+		return
+	tree.paused = false
+
+
+func open_save_point_choice_ui(save_point: SavePointInteractable) -> void:
+	var tree := get_tree()
+	if tree == null or save_point == null:
+		return
+	if _current_scene_is_title(tree):
+		return
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if inventory_ui_is_open() or abstract_map_ui_is_open():
+		return
+	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	tree.paused = true
+	var ps := load("res://system/ui/save_point_panel.tscn") as PackedScene
+	if ps == null:
+		tree.paused = false
+		return
+	var ui := ps.instantiate()
+	if ui == null:
+		tree.paused = false
+		return
+	if ui.has_method(&"setup"):
+		ui.call(&"setup", save_point)
+	tree.root.add_child(ui)
+
+
+func teleport_player_to_world(global_pos: Vector2, direction: int = -999) -> void:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+	var sc := tree.current_scene
+	if not sc.has_method(&"update_player"):
+		return
+	var dir := direction
+	if dir == -999:
+		dir = 1
+		var pl := tree.get_first_node_in_group(&"player")
+		if pl != null and "direction" in pl:
+			dir = int(pl.direction)
+	sc.call(&"update_player", global_pos, dir)
+
+
+func register_map_exploration_at_world(world: Vector2) -> void:
+	if not _is_autoload_game():
+		return
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+	if _current_scene_is_title(tree):
+		return
+	var path_str := tree.current_scene.scene_file_path
+	if path_str.is_empty():
+		return
+	var scene_bn := path_str.get_file().get_basename()
+	var cs := LevelMapScanner.get_logic_cell_size_for_scene(tree.current_scene)
+	var g := LevelMapScanner.world_to_logic_grid(world, cs)
+	var k := "%d_%d" % [g.x, g.y]
+	var sub: Variant = map_exploration.get(scene_bn, {})
+	var subd: Dictionary = sub as Dictionary if sub is Dictionary else {}
+	if bool(subd.get(k, false)):
+		return
+	subd[k] = true
+	map_exploration[scene_bn] = subd
+
+
+## 由已访问格扩展：详图为矩形并集；灰块为更大矩形并集减去详图（用于地图绘制）
+func build_map_reveal_masks(scene_basename: String) -> Dictionary:
+	var visited: Variant = map_exploration.get(scene_basename, {})
+	if visited == null or not (visited is Dictionary):
+		return {&"full": {}, &"dim": {}}
+	var vd := visited as Dictionary
+	var full: Dictionary = {}
+	var dim: Dictionary = {}
+	for vk in vd.keys():
+		if not bool(vd[vk]):
+			continue
+		var parts := String(vk).split("_")
+		if parts.size() != 2:
+			continue
+		var gx := int(parts[0])
+		var gy := int(parts[1])
+		for dx in range(-MAP_DIM_HALF_W, MAP_DIM_HALF_W + 1):
+			for dy in range(-MAP_DIM_UP, MAP_DIM_DOWN + 1):
+				var ck := "%d_%d" % [gx + dx, gy + dy]
+				var in_detail := absi(dx) <= MAP_DETAIL_HALF_W and dy >= -MAP_DETAIL_UP and dy <= MAP_DETAIL_DOWN
+				if in_detail:
+					full[ck] = true
+				else:
+					dim[ck] = true
+	for fk in full.keys():
+		dim.erase(fk)
+	return {&"full": full, &"dim": dim}
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	# 场景内若实例化了 Game 节点，只允许 Autoload(/root/Game)处理全局存读档输入，避免重入读档卡住。
 	if not _is_autoload_game():
 		return
 	var tree_h := get_tree()
+	if settings_ui_is_open():
+		return
 	if _current_scene_is_title(tree_h):
+		return
+	if tree_h.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	if event.is_action_pressed("ui_inventory"):
+		if inventory_ui_is_open():
+			close_inventory_ui()
+		else:
+			open_inventory_ui()
+		get_viewport().set_input_as_handled()
+		return
+	if inventory_ui_is_open():
+		return
+	if event.is_action_pressed(&"ui_map"):
+		if abstract_map_ui_is_open():
+			close_abstract_map_ui()
+		else:
+			open_abstract_map_ui()
+		get_viewport().set_input_as_handled()
+		return
+	if abstract_map_ui_is_open():
 		return
 	if event.is_action_pressed("ui_cancel"):
 		_open_pause_menu()
 		return
 	elif event is InputEventKey:
 		var key_event := event as InputEventKey
-		if key_event.pressed and not key_event.echo and key_event.keycode == KEY_R:
-			print("读取存档（SavePoint槽）")
-			load_game(true, SAVE_SLOT_SAVEPOINT)
+		if key_event.pressed and not key_event.echo:
+			var pk := key_event.physical_keycode
+			if pk >= KEY_1 and pk <= KEY_8:
+				var digit := int(pk - KEY_1)
+				var pl := tree_h.get_first_node_in_group(&"player")
+				if pl != null:
+					var inv := pl.get_node_or_null("PlayerInventory") as PlayerInventory
+					if inv != null:
+						inv.set_hotbar_selection(digit)
+				get_viewport().set_input_as_handled()
+				return
+			if key_event.keycode == KEY_R:
+				print("读取存档（SavePoint槽）")
+				load_game(true, SAVE_SLOT_SAVEPOINT)
 
 
 func _open_pause_menu() -> void:
@@ -554,9 +938,15 @@ func _open_pause_menu() -> void:
 		return
 	if _current_scene_is_title(tree):
 		return
+	if settings_ui_is_open():
+		return
 	# 检查 Dialogic 是否活跃（避免冲突）
 	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
 	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	if inventory_ui_is_open() or abstract_map_ui_is_open():
 		return
 	# 已有暂停菜单则不重复打开
 	for child in tree.root.get_children():
