@@ -2,8 +2,6 @@ extends Node2D
 class_name WorldController
 
 # 场景参数
-const _AUDIO_UTILS := preload("res://system/globals/audio_utils.gd")
-const _STREAM_LEVEL_NORMAL_BGM := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 @export var level_duration: float = 120
 @export var teacher_intro_timeline: String = "12_Dialogic工程/teacher_intro"
 @export var student_escape_timeline: String = "12_Dialogic工程/student_intro"
@@ -39,8 +37,7 @@ var registry_initialized: bool = false
 
 ## 本场景已播放完成的时间线（与存档 completed_timelines 同步）
 var _completed_timelines: Array[String] = []
-var _level_bgm_player: AudioStreamPlayer
-## 开场睡醒/眨眼动画是否已播过（写入 world_states，读档后不再播放）
+## 开场睡醒/眨眼是否已触发（一旦 ap.play 即 true，中途存档读档也不再播放）
 var _wakeup_intro_completed: bool = false
 
 
@@ -56,8 +53,48 @@ func has_completed_timeline(timeline_id: String) -> bool:
 func _ready() -> void:
 	print("世界场景控制器加载中...")
 	_setup_level_bgm()
-	# 延后到 deferred：`Game.change_scene` / 读档的 `from_dict` 会先写入 `_wakeup_intro_completed`，避免先开播再放存档标记导致仍会眨眼
+	_hydrate_wakeup_intro_from_saved_world_state()
+	if _wakeup_intro_completed:
+		_hide_wakeup_overlay()
+	# 延后到 deferred：`reload_scene_from_save` 里还会 `from_dict`；此处先从 Game.world_states 同步，避免 deferred 早于 from_dict 仍播眨眼
 	call_deferred(&"_continue_world_ready")
+
+
+func _hydrate_wakeup_intro_from_saved_world_state() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	var cs := tree.current_scene
+	if cs != self:
+		return
+	if not is_instance_valid(Game):
+		return
+	var path_str := cs.scene_file_path
+	if path_str.is_empty():
+		return
+	var bn := path_str.get_file().get_basename()
+	var ws: Variant = Game.world_states.get(bn, null)
+	if ws is Dictionary and (ws as Dictionary).has("wakeup_intro_completed"):
+		_wakeup_intro_completed = bool((ws as Dictionary)["wakeup_intro_completed"])
+
+
+func _hide_wakeup_overlay() -> void:
+	var layer: CanvasLayer = null
+	if not wakeup_intro_animation_player_path.is_empty():
+		var ap := get_node_or_null(wakeup_intro_animation_player_path) as AnimationPlayer
+		if ap != null and ap.get_parent() is CanvasLayer:
+			layer = ap.get_parent() as CanvasLayer
+	if layer == null:
+		var n := get_node_or_null(NodePath("WakeupOverlay"))
+		if n is CanvasLayer:
+			layer = n as CanvasLayer
+	if layer == null:
+		return
+	layer.visible = false
+	if not wakeup_intro_sprite_path.is_empty():
+		var spr := get_node_or_null(wakeup_intro_sprite_path) as CanvasItem
+		if spr != null:
+			spr.modulate = Color(1.0, 1.0, 1.0, 0.0)
 
 
 func _continue_world_ready() -> void:
@@ -95,11 +132,13 @@ func _continue_world_ready() -> void:
 
 
 func _setup_level_bgm() -> void:
-	_level_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, _level_bgm_player, _STREAM_LEVEL_NORMAL_BGM, &"BGM", &"LevelNormalBgm")
+	if is_instance_valid(Game):
+		Game.ensure_continuous_bgm_playing()
 
 
 func _play_wakeup_intro_if_configured() -> void:
 	if _wakeup_intro_completed:
+		_hide_wakeup_overlay()
 		return
 	if wakeup_intro_animation_player_path.is_empty() or wakeup_intro_animation_name.is_empty():
 		return
@@ -115,11 +154,12 @@ func _play_wakeup_intro_if_configured() -> void:
 		var vr := get_viewport().get_visible_rect()
 		wake_sprite.position = vr.size * 0.5
 	ap.play(wakeup_intro_animation_name)
+	_wakeup_intro_completed = true
 	var len := ap.get_animation(wakeup_intro_animation_name).length
 	if len <= 0.0:
 		len = 0.01
 	await get_tree().create_timer(len).timeout
-	_wakeup_intro_completed = true
+	_hide_wakeup_overlay()
 
 # 全局注册角色
 func register_characters_globally() -> void:
@@ -467,6 +507,8 @@ func from_dict(dict: Dictionary) -> void:
 	for x in dict.get("completed_timelines", []):
 		_completed_timelines.append(String(x))
 	_wakeup_intro_completed = bool(dict.get("wakeup_intro_completed", false))
+	if _wakeup_intro_completed:
+		_hide_wakeup_overlay()
 
 
 func update_player(position: Vector2, direction: int = 1) -> void:

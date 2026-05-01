@@ -99,6 +99,8 @@ var _contact_triggers: Array[ContactTrigger] = []
 
 ## 距上次被马撞击击飞的时间（秒），用于节流
 var _horse_bump_time_since: float = 999.0
+## 最近一次马撞击后、落地前：空中向右移动的加速度减半
+var _horse_bump_air_right_accel_reduced: bool = false
 
 var _hurt_flash_modulate_base: Color = Color.WHITE
 var _shake_tween: Tween
@@ -114,11 +116,11 @@ var _camera_focus_move_speed: float = 220.0
 
 ## ===== 相机前瞻（Camera2D.position） =====
 @export var camera_lookahead_enabled: bool = true
-@export var lookahead_camera_move_speed: float = 60.0
-@export var lookahead_x_distance: float = 10.0
+@export var lookahead_camera_move_speed: float = 30.0
+@export var lookahead_x_distance: float = 15.0
 @export var lookahead_x_start_speed: float = 1.0
 @export var lookahead_y_up_distance: float = 10.0
-@export var lookahead_y_down_distance: float = 30.0
+@export var lookahead_y_down_distance: float = 10.0
 @export var lookahead_y_fall_threshold: float = 10.0
 @export var lookahead_xy_lerp_speed: float = 10.0
 
@@ -438,6 +440,8 @@ func handle_common_updates(delta: float):
 
 # ========== 状态更新函数 ==========
 func update_idle(delta: float):
+	if is_on_floor():
+		_horse_bump_air_right_accel_reduced = false
 	var input_direction = _get_move_input_axis()
 	
 	# 检查移动输入
@@ -460,6 +464,8 @@ func update_idle(delta: float):
 		velocity.x = move_toward(velocity.x, 0, friction)
 
 func update_walk(delta: float):
+	if is_on_floor():
+		_horse_bump_air_right_accel_reduced = false
 	var input_direction = _get_move_input_axis()
 	if not walk_sound.playing:
 		walk_sound.play()
@@ -503,7 +509,8 @@ func update_jump_ascend(delta: float):
 	# 处理水平移动
 	var input_direction = _get_move_input_axis()
 	if input_direction != 0:
-		velocity.x = move_toward(velocity.x, input_direction * move_speed, acceleration)
+		var accel := _horse_bump_air_horizontal_acceleration(input_direction)
+		velocity.x = move_toward(velocity.x, input_direction * move_speed, accel)
 		if (input_direction > 0 and direction != 1) or (input_direction < 0 and direction != 0):
 			direction = 1 if input_direction > 0 else 0
 			update_facing()
@@ -530,7 +537,8 @@ func update_jump_fall(delta: float):
 	# 处理水平移动
 	var input_direction = _get_move_input_axis()
 	if input_direction != 0:
-		velocity.x = move_toward(velocity.x, input_direction * move_speed, acceleration)
+		var accel := _horse_bump_air_horizontal_acceleration(input_direction)
+		velocity.x = move_toward(velocity.x, input_direction * move_speed, accel)
 		if (input_direction > 0 and direction != 1) or (input_direction < 0 and direction != 0):
 			direction = 1 if input_direction > 0 else 0
 			update_facing()
@@ -550,16 +558,17 @@ func update_jump_fall(delta: float):
 		return
 	
 func update_attack_start(delta: float):
-	# 攻击期间不能移动
-	velocity.x = move_toward(velocity.x, 0, friction)
+	# 地面攻击：水平刹车（手感偏扎根）；空中攻击：保留起跳/空中的水平动量
+	if is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, friction)
 	
 	# 应用重力
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
 func update_attack_shoot(delta: float):
-	# 子弹已发射，等待攻击结束
-	velocity.x = move_toward(velocity.x, 0, friction)
+	if is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, friction)
 	
 	# 应用重力
 	if not is_on_floor():
@@ -748,6 +757,7 @@ func _try_use_action() -> void:
 func return_to_normal_state():
 	# 根据当前状态返回到合适的正常状态
 	if is_on_floor():
+		_horse_bump_air_right_accel_reduced = false
 		if abs(velocity.x) > 10:
 			change_state(PlayerState.WALK)
 		else:
@@ -879,6 +889,13 @@ func _get_move_input_axis() -> float:
 	return Input.get_axis("move_left", "move_right")
 
 
+func _horse_bump_air_horizontal_acceleration(input_direction: float) -> float:
+	var a := acceleration
+	if _horse_bump_air_right_accel_reduced and input_direction > 0.0:
+		a *= 0.5
+	return a
+
+
 ## 外部（如 CameraFocusArea）调用：将相机焦点移向一个世界坐标点
 func set_camera_focus_target_world(target_world: Vector2, move_speed: float = 220.0) -> void:
 	_camera_focus_has_control = true
@@ -975,13 +992,16 @@ func calculate_shoot_position() -> Vector2:
 		base_position.y + offset.y
 	)
 
-## 被 World3 马身撞击区调用：叠加速度，带全局限流。
+## 被 World3 马身撞击区调用：按撞击冲量设定速度（不计入撞击前速度），带全局限流。
 func apply_bump_from_horse(impulse: Vector2) -> bool:
 	if impulse.length_squared() < 1.0:
 		return false
+	if current_state == PlayerState.ATTACK_START or current_state == PlayerState.ATTACK_SHOOT or current_state == PlayerState.ATTACK_END:
+		return false
 	if _horse_bump_time_since < horse_bump_global_min_interval:
 		return false
-	velocity += impulse
+	velocity = impulse
+	_horse_bump_air_right_accel_reduced = true
 	_horse_bump_time_since = 0.0
 	return true
 

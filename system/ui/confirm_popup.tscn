@@ -5,7 +5,7 @@
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
 
 [node name="ConfirmPopup" type="CanvasLayer" node_paths=PackedStringArray("dim_bg","title_label","message_label","btn_confirm","btn_cancel")]
-layer = 120
+layer = 130
 script = ExtResource("1_pop")
 dim_bg = NodePath("Root/DimBG")
 title_label = NodePath("Root/Panel/TitleLabel")
@@ -88,6 +88,8 @@ offset_right = -20.0
 offset_bottom = 100.0
 grow_horizontal = 2
 text = "确定"
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 16
 
 [node name="BtnCancel" type="Button" parent="Root/Panel"]
 layout_mode = 1
@@ -100,3 +102,5 @@ offset_right = 130.0
 offset_bottom = 100.0
 grow_horizontal = 2
 text = "取消"
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 16

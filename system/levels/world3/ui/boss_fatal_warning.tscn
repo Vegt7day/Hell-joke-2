@@ -42,8 +42,8 @@ _data = {
 }
 
 [node name="BossFatalWarning" type="CanvasLayer" unique_id=1097914406]
-process_mode = 3
-layer = 1000
+process_mode = 1
+layer = 110
 script = ExtResource("1_script")
 
 [node name="Dim" type="ColorRect" parent="." unique_id=859463286]

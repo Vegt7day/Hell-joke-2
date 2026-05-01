@@ -26,8 +26,6 @@ const _BOSS_BGM_SILENT_DB := -60.0
 @onready var minors_root: Node2D = $Bosses/Minors
 @onready var phase_controller: Node = $Systems/PhaseController
 @onready var random_piece_builder: Node = $Systems/RandomPieceBuilder
-@onready var _boss_bgm_a: AudioStreamPlayer = $ArenaBgmA
-@onready var _boss_bgm_b: AudioStreamPlayer = $ArenaBgmB
 @onready var boss_phase_stinger: AudioStreamPlayer = get_node_or_null("BossPhaseStinger") as AudioStreamPlayer
 var _pending_shared_hp_override_for_save: int = -1
 var _death_ground_y: float = 0.0
@@ -39,8 +37,6 @@ var _pending_heart_save_target_minor: StringName = StringName()
 var _pending_heart_save_elapsed: float = 0.0
 
 var _boss_bgm_active_kind: _ArenaBgmSlot = _ArenaBgmSlot.NORMAL
-var _boss_bgm_active_is_a: bool = true
-var _boss_bgm_fade_tween: Tween
 var _boss_bgm_fade_pending_slot: Variant = null
 var _combat_bgm_unlocked: bool = false
 
@@ -90,68 +86,38 @@ func _boss_bgm_stream_for(slot: _ArenaBgmSlot) -> AudioStream:
 
 
 func _kill_boss_bgm_tween() -> void:
-	if _boss_bgm_fade_tween != null and is_instance_valid(_boss_bgm_fade_tween):
-		_boss_bgm_fade_tween.kill()
-	_boss_bgm_fade_tween = null
+	if is_instance_valid(Game):
+		Game.boss_bgm_kill_crossfade_tween()
 	_boss_bgm_fade_pending_slot = null
 
 
-func _boss_bgm_active_player() -> AudioStreamPlayer:
-	return _boss_bgm_a if _boss_bgm_active_is_a else _boss_bgm_b
-
-
-func _boss_bgm_incoming_player() -> AudioStreamPlayer:
-	return _boss_bgm_b if _boss_bgm_active_is_a else _boss_bgm_a
-
-
 func _boss_bgm_start_initial_normal() -> void:
-	_kill_boss_bgm_tween()
-	_boss_bgm_a.stream = _STREAM_ARENA_NORMAL
-	_boss_bgm_a.volume_db = boss_bgm_playing_volume_db
-	_boss_bgm_a.play()
-	_boss_bgm_b.stop()
-	_boss_bgm_b.volume_db = _BOSS_BGM_SILENT_DB
-	_boss_bgm_active_is_a = true
+	if not is_instance_valid(Game):
+		return
+	Game.boss_bgm_kill_crossfade_tween()
+	Game.boss_bgm_crossfade_start(_STREAM_ARENA_NORMAL, boss_bgm_playing_volume_db)
 	_boss_bgm_active_kind = _ArenaBgmSlot.NORMAL
 	_combat_bgm_unlocked = false
 
 
-func _boss_bgm_crossfade_to(target: _ArenaBgmSlot, duration_override: float = -1.0) -> void:
-	if _boss_bgm_fade_tween != null and _boss_bgm_fade_pending_slot != null and int(_boss_bgm_fade_pending_slot) == int(target):
-		return
-	if target == _boss_bgm_active_kind and _boss_bgm_fade_tween == null:
-		var cur := _boss_bgm_active_player()
-		if cur.playing and cur.volume_db > _BOSS_BGM_SILENT_DB + 6.0:
-			return
-	var dur: float = boss_bgm_crossfade_seconds if duration_override < 0.0 else duration_override
-	var outgoing := _boss_bgm_active_player()
-	var incoming := _boss_bgm_incoming_player()
-	var stream_new := _boss_bgm_stream_for(target)
-	incoming.stream = stream_new
-	incoming.volume_db = _BOSS_BGM_SILENT_DB
-	if not incoming.playing:
-		incoming.play(0.0)
-	_kill_boss_bgm_tween()
-	_boss_bgm_fade_pending_slot = target
-	_boss_bgm_fade_tween = create_tween()
-	_boss_bgm_fade_tween.set_parallel(true)
-	_boss_bgm_fade_tween.tween_property(outgoing, "volume_db", _BOSS_BGM_SILENT_DB, dur).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_boss_bgm_fade_tween.tween_property(incoming, "volume_db", boss_bgm_playing_volume_db, dur).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	var out_player := outgoing
-	var set_active_is_a := not _boss_bgm_active_is_a
-	var finished_kind := target
-	_boss_bgm_fade_tween.finished.connect(
-		_boss_bgm_on_crossfade_finished.bind(out_player, set_active_is_a, finished_kind),
-		CONNECT_ONE_SHOT
-	)
-
-
-func _boss_bgm_on_crossfade_finished(out_player: AudioStreamPlayer, set_active_is_a: bool, finished_kind: _ArenaBgmSlot) -> void:
-	if is_instance_valid(out_player):
-		out_player.stop()
-	_boss_bgm_active_is_a = set_active_is_a
+func _boss_bgm_on_crossfade_finished_kind(finished_kind: _ArenaBgmSlot) -> void:
 	_boss_bgm_active_kind = finished_kind
 	_boss_bgm_fade_pending_slot = null
+
+
+func _boss_bgm_crossfade_to(target: _ArenaBgmSlot, duration_override: float = -1.0) -> void:
+	if not is_instance_valid(Game):
+		return
+	if Game.boss_bgm_has_active_crossfade_tween() and _boss_bgm_fade_pending_slot != null and int(_boss_bgm_fade_pending_slot) == int(target):
+		return
+	if target == _boss_bgm_active_kind and not Game.boss_bgm_has_active_crossfade_tween():
+		if Game.boss_bgm_active_output_is_audible(_BOSS_BGM_SILENT_DB + 6.0):
+			return
+	var dur: float = boss_bgm_crossfade_seconds if duration_override < 0.0 else duration_override
+	var stream_new := _boss_bgm_stream_for(target)
+	_kill_boss_bgm_tween()
+	_boss_bgm_fade_pending_slot = target
+	Game.boss_bgm_crossfade_to(stream_new, dur, boss_bgm_playing_volume_db, func(): _boss_bgm_on_crossfade_finished_kind(target))
 
 
 func _on_boss_phase_changed(new_phase: Variant) -> void:
@@ -323,11 +289,20 @@ func from_dict(dict: Dictionary) -> void:
 			st.health = boss_shared_hp
 	var saved_phase: Variant = dict.get("current_phase", null)
 	var saved_phase_int: int = int(saved_phase) if saved_phase != null else int(BossHorseTypes.BossPhase.INTRO)
+	# 存档若在 FINAL_WARNING（处决流程写过档），但回档血量已高于 20%，必须按血量降级阶段；
+	# 否则仍会 request_phase(FINAL_WARNING)，处决锁存打开且阶段永久卡在 FINAL，再次跌破 20% 时 request_phase 同阶段直接 return，处决不会第二次触发。
+	var restore_phase_int: int = saved_phase_int
+	if boss_shared_hp >= 0 and shared_max_hp > 0 and phase_controller != null and phase_controller.has_method(&"get_phase_matching_current_shared_hp"):
+		var hp_phase: Variant = phase_controller.call(&"get_phase_matching_current_shared_hp")
+		var hp_pi := int(hp_phase)
+		if saved_phase_int == int(BossHorseTypes.BossPhase.FINAL_WARNING_20) and hp_pi != int(BossHorseTypes.BossPhase.FINAL_WARNING_20):
+			restore_phase_int = hp_pi
 	if saved_phase != null and phase_controller != null and phase_controller.has_method("request_phase"):
-		phase_controller.call_deferred("request_phase", saved_phase_int)
+		phase_controller.call_deferred("request_phase", restore_phase_int)
 	#region agent log
 	_debug_log("run11", "H5", "world3_boss_arena.gd:from_dict", "after_request_phase_deferred", {
 		"saved_phase_int": saved_phase_int,
+		"restore_phase_int": restore_phase_int,
 		"controller_current_phase_now": int(phase_controller.get("current_phase")) if phase_controller != null else -1
 	})
 	#endregion
@@ -353,7 +328,7 @@ func from_dict(dict: Dictionary) -> void:
 	if should_skip_intro_gate and not should_restore_direct_minors and phase_controller != null and phase_controller.has_method("force_main_si_enter_battle_from_save"):
 		phase_controller.call_deferred("force_main_si_enter_battle_from_save")
 	if should_skip_intro_gate and phase_controller != null and phase_controller.has_method("restore_combat_state_from_save"):
-		phase_controller.call_deferred("restore_combat_state_from_save", saved_phase_int, should_restore_direct_minors)
+		phase_controller.call_deferred("restore_combat_state_from_save", restore_phase_int, should_restore_direct_minors)
 	#region agent log
 	_debug_log("run11", "H4", "world3_boss_arena.gd:from_dict", "gate_path_taken", {
 		"should_restore_direct_minors": should_restore_direct_minors,

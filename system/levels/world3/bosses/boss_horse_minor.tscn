@@ -632,6 +632,18 @@ tracks/1/keys = {
 "update": 1,
 "values": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [23]
+}
 
 [sub_resource type="Animation" id="Animation_h1h5y"]
 resource_name = "white_call"
@@ -814,7 +826,7 @@ _data = {
 [node name="BossHorseMinor" type="CharacterBody2D" unique_id=190626765]
 collision_layer = 0
 collision_mask = 0
-collision_priority = 0.3
+collision_priority = 0.99
 script = ExtResource("1_minor")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=897553087]

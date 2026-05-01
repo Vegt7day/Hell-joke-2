@@ -21,9 +21,14 @@ const _ATLAS_RED := preload("res://assets/资源总库/06_图像_World3/bosses/�
 @export var skill_cast_inset_from_left_px: float = 256.0
 @export var skill_cast_inset_from_right_px: float = 16.0
 @export var auto_use_skill: bool = true
-@export var grey_dash_distance: float = 165.0
-@export var grey_dash_duration: float = 0.3
+@export var grey_dash_distance: float = 330.0
+@export var grey_dash_duration: float = 0.45
 @export var grey_skill_cooldown: float = 4.6
+## 冲刺挡位：落在 layer1，mask 含主角所在 layer2（与 PlayerBumpArea.mask 一致）；本体常态 layer/mask 为 0 不参与物理挡位
+const _GREY_DASH_PHYSICS_LAYER := 1
+const _GREY_DASH_PHYSICS_MASK := 2
+const _GREY_MINOR_BUMP_SCALE := 0.75
+
 const DEFAULT_SWORD_SCENE := preload("res://system/levels/world3/props/projectile_white_horse.tscn")
 @export var sword_scene: PackedScene = DEFAULT_SWORD_SCENE
 @export var white_skill_cooldown: float = 4.8
@@ -54,6 +59,8 @@ var _offscreen_elapsed: float = 0.0
 var _follow_owner_for_black_clone: bool = false
 var _owner_minor_for_clone: Node2D
 var _owner_follow_offset: Vector2 = Vector2.ZERO
+var _grey_dash_saved_collision_layer: int = 0
+var _grey_dash_saved_collision_mask: int = 0
 
 
 func _ready() -> void:
@@ -85,6 +92,8 @@ func _ensure_player_bump_area() -> void:
 	var a := _PLAYER_BUMP_AREA.new() as BossHorsePlayerBumpArea
 	a.name = "PlayerBumpArea"
 	a.setup_shape_from_horse(self)
+	if horse_id == BossHorseTypes.HorseId.GREY:
+		a.bump_impulse_multiplier = BossHorsePlayerBumpArea.STANDARD_IMPULSE_MULTIPLIER * _GREY_MINOR_BUMP_SCALE
 	add_child(a)
 
 
@@ -155,6 +164,12 @@ func _process(delta: float) -> void:
 		call_deferred("_cast_white_summon_skill")
 	elif horse_id == BossHorseTypes.HorseId.RED:
 		call_deferred("_cast_red_bomb_skill")
+
+
+func _notify_skill_feed_minor(skill: BossHorseTypes.HorseId) -> void:
+	var main := get_tree().get_first_node_in_group(&"boss_horse_main") as Node
+	if main != null and main.has_method(&"post_skill_broadcast"):
+		main.call(&"post_skill_broadcast", int(skill), false)
 
 
 func _resolve_phase_controller() -> void:
@@ -247,11 +262,21 @@ func _cast_grey_dash_skill() -> void:
 		return
 	_is_casting_skill = true
 	await _play_optional(&"grey_ready")
+	_notify_skill_feed_minor(BossHorseTypes.HorseId.GREY)
 	if _grey_dash_sfx and _grey_dash_sfx.stream:
 		_grey_dash_sfx.play()
 	if animation_player and animation_player.has_animation(&"grey_run"):
 		animation_player.play(&"grey_run")
+	var bump := get_node_or_null("PlayerBumpArea") as BossHorsePlayerBumpArea
+	var prev_impulse_mult := 1.0
+	if bump:
+		prev_impulse_mult = bump.bump_impulse_multiplier
+		bump.bump_impulse_multiplier = BossHorsePlayerBumpArea.GREY_DASH_IMPULSE_MULTIPLIER * _GREY_MINOR_BUMP_SCALE
+	_begin_grey_dash_physical_block()
 	await _move_to_position(global_position + Vector2.LEFT * grey_dash_distance, grey_dash_duration)
+	_end_grey_dash_physical_block()
+	if bump:
+		bump.bump_impulse_multiplier = prev_impulse_mult
 	await _play_optional(&"grey_over")
 	if animation_player and animation_player.has_animation(&"grey_jump"):
 		animation_player.play(&"grey_jump")
@@ -264,6 +289,7 @@ func _cast_white_summon_skill() -> void:
 		return
 	_is_casting_skill = true
 	await _play_optional(&"white_ready")
+	_notify_skill_feed_minor(BossHorseTypes.HorseId.WHITE)
 	await _play_optional(&"white_call")
 	await _spawn_white_sword()
 	if animation_player and animation_player.has_animation(&"white_jump"):
@@ -277,6 +303,7 @@ func _cast_red_bomb_skill() -> void:
 		return
 	_is_casting_skill = true
 	await _play_optional(&"red_ready")
+	_notify_skill_feed_minor(BossHorseTypes.HorseId.RED)
 	await _play_optional(&"red_call")
 	await _spawn_red_bomb()
 	if animation_player and animation_player.has_animation(&"red_jump"):
@@ -289,6 +316,26 @@ func _move_to_position(target: Vector2, duration: float) -> void:
 	var tw := create_tween()
 	tw.tween_property(self, NodePath("global_position"), target, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await tw.finished
+
+
+func _toggle_root_collision_shape_disabled(disabled: bool) -> void:
+	var shape := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape:
+		shape.disabled = disabled
+
+
+func _begin_grey_dash_physical_block() -> void:
+	_grey_dash_saved_collision_layer = collision_layer
+	_grey_dash_saved_collision_mask = collision_mask
+	collision_layer = _GREY_DASH_PHYSICS_LAYER
+	collision_mask = _GREY_DASH_PHYSICS_MASK
+	_toggle_root_collision_shape_disabled(false)
+
+
+func _end_grey_dash_physical_block() -> void:
+	_toggle_root_collision_shape_disabled(true)
+	collision_layer = _grey_dash_saved_collision_layer
+	collision_mask = _grey_dash_saved_collision_mask
 
 
 func _play_optional(anim_name: StringName, fallback_seconds: float = 0.12) -> void:
@@ -384,6 +431,7 @@ func _spawn_black_minor_clone() -> void:
 		_black_summon_locked = false
 		return
 	await _play_optional(&"black_ready", 0.08)
+	_notify_skill_feed_minor(BossHorseTypes.HorseId.BLACK)
 	var clone := _MINOR_SELF_SCENE.instantiate() as CharacterBody2D
 	if clone == null:
 		_black_summon_locked = false

@@ -14,6 +14,8 @@
 [ext_resource type="AudioStream" uid="uid://7bys6fgqvpfj" path="res://assets/资源总库/10_音频/玩家受击.mp3" id="7_mijgj"]
 [ext_resource type="AudioStream" uid="uid://25oc835mles5" path="res://assets/资源总库/10_音频/draw.mp3" id="9_cdn5u"]
 [ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="10_heal"]
+[ext_resource type="Script" uid="uid://f3smtc2higsx" path="res://entities/player/real player/viewport_nav_hud.gd" id="11_nav"]
+[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="12_v16"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dnbur"]
 radius = 6.000001
@@ -367,9 +369,6 @@ platform_floor_layers = 4294967231
 script = ExtResource("1_wkr24")
 ink_bullet_scene = ExtResource("2_dnbur")
 shangyang_summon_scene = ExtResource("2_vmijo")
-lookahead_camera_move_speed = 100.0
-lookahead_x_distance = 25.0
-lookahead_y_up_distance = 20.0
 metadata/_edit_vertical_guides_ = [320.0, 32.0]
 metadata/_edit_horizontal_guides_ = [328.0]
 
@@ -377,7 +376,7 @@ metadata/_edit_horizontal_guides_ = [328.0]
 position = Vector2(21, -2)
 
 [node name="CameraAimMarker" type="Marker2D" parent="." unique_id=2063090130]
-position = Vector2(0, -91)
+position = Vector2(0, -48)
 
 [node name="walk" type="AudioStreamPlayer" parent="." unique_id=1011524790]
 stream = ExtResource("4_avp68")
@@ -419,7 +418,7 @@ max_ink = 6.0
 stats = NodePath("../../Stats")
 
 [node name="ViewportHotbarHud" type="CanvasLayer" parent="." unique_id=1753854152]
-layer = 16
+layer = 115
 
 [node name="HotbarRoot" type="Control" parent="ViewportHotbarHud" unique_id=591325326]
 layout_mode = 3
@@ -433,6 +432,49 @@ offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("11_nav")
+
+[node name="BtnMenuNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325329]
+layout_mode = 1
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 150.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("12_v16")
+theme_override_font_sizes/font_size = 16
+text = "菜单 [Esc]"
+
+[node name="BtnPackNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325327]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -24.0
+offset_right = 130.0
+offset_bottom = 24.0
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("12_v16")
+theme_override_font_sizes/font_size = 16
+text = "背包 [B]"
+
+[node name="BtnMapNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325328]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -124.0
+offset_top = -52.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("12_v16")
+theme_override_font_sizes/font_size = 16
+text = "地图 [M]"
 
 [node name="HotbarRow" type="HBoxContainer" parent="ViewportHotbarHud/HotbarRoot" unique_id=1354368424]
 layout_mode = 1

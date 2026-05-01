@@ -22,6 +22,7 @@ func _ready() -> void:
 	if btn_savepoint != null and not btn_savepoint.pressed.is_connected(_on_press_savepoint):
 		btn_savepoint.pressed.connect(_on_press_savepoint)
 	_refresh_heart_button_state()
+	_refresh_savepoint_button_state()
 	# 如果后续配置了“死”图片，就隐藏文字；未配置时用文字占位。
 	if dead_texture != null and dead_texture.texture != null:
 		if dead_label != null:
@@ -34,6 +35,7 @@ func _ready() -> void:
 func bind_game(game_node: Node) -> void:
 	_game = game_node
 	_refresh_heart_button_state()
+	_refresh_savepoint_button_state()
 
 
 func _refresh_heart_button_state() -> void:
@@ -43,6 +45,15 @@ func _refresh_heart_button_state() -> void:
 		btn_heart.disabled = not bool(_game.call("has_save", "heart"))
 	else:
 		btn_heart.disabled = false
+
+
+func _refresh_savepoint_button_state() -> void:
+	if btn_savepoint == null:
+		return
+	if _game != null and _game.has_method("has_any_manual_save"):
+		btn_savepoint.disabled = not bool(_game.call("has_any_manual_save"))
+	else:
+		btn_savepoint.disabled = false
 
 
 func _on_press_heart() -> void:

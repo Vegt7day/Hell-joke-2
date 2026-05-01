@@ -1,64 +1,80 @@
 class_name PauseMenu
 extends CanvasLayer
 
-@onready var btn_resume: Button = $Root/Center/VBox/BtnResume
-@onready var btn_inventory: Button = $Root/Center/VBox/BtnInventory
-@onready var btn_map: Button = $Root/Center/VBox/BtnMap
-@onready var btn_settings: Button = $Root/Center/VBox/BtnSettings
-@onready var btn_save: Button = $Root/Center/VBox/BtnSave
-@onready var btn_title: Button = $Root/Center/VBox/BtnTitle
-@onready var btn_quit: Button = $Root/Center/VBox/BtnQuit
+@onready var page_main: VBoxContainer = $Root/Center/PageMain
+@onready var page_settings: Control = $Root/Center/PageSettings
+@onready var btn_resume: Button = $Root/Center/PageMain/BtnResume
+@onready var btn_settings: Button = $Root/Center/PageMain/BtnSettings
+@onready var btn_load: Button = $Root/Center/PageMain/BtnLoad
+@onready var btn_title: Button = $Root/Center/PageMain/BtnTitle
+@onready var btn_quit: Button = $Root/Center/PageMain/BtnQuit
+
+var _in_settings: bool = false
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	layer = 120
 	btn_resume.pressed.connect(_on_resume)
-	btn_inventory.pressed.connect(_on_inventory)
-	btn_map.pressed.connect(_on_map)
 	btn_settings.pressed.connect(_on_settings)
-	btn_save.pressed.connect(_on_save)
+	btn_load.pressed.connect(_on_load)
 	btn_title.pressed.connect(_on_title)
 	btn_quit.pressed.connect(_on_quit)
+	if page_settings.has_signal(&"close_requested"):
+		page_settings.close_requested.connect(_on_settings_close_requested)
 	btn_resume.grab_focus()
 
 
-func _close() -> void:
+func _close_pause() -> void:
 	queue_free()
 	get_tree().paused = false
 
 
+func close_pause_external() -> void:
+	_close_pause()
+
+
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		_close()
+	if is_instance_valid(Game) and Game.save_slots_sheet_is_open():
+		return
+	if event.is_action_pressed(&"ui_cancel"):
+		get_viewport().set_input_as_handled()
+		if _in_settings:
+			_leave_settings_page()
+			return
+		_close_pause()
+
+
+func _leave_settings_page() -> void:
+	_in_settings = false
+	page_settings.visible = false
+	page_main.visible = true
+	btn_settings.grab_focus()
+
+
+func _on_settings_close_requested() -> void:
+	if _in_settings:
+		_leave_settings_page()
 
 
 func _on_resume() -> void:
-	_close()
-
-
-func _on_inventory() -> void:
-	if not is_instance_valid(Game):
-		return
-	queue_free()
-	Game.open_inventory_ui()
-
-
-func _on_map() -> void:
-	if not is_instance_valid(Game):
-		return
-	queue_free()
-	Game.open_abstract_map_ui()
+	_close_pause()
 
 
 func _on_settings() -> void:
-	if not is_instance_valid(Game):
-		return
-	queue_free()
-	Game.open_settings_ui(true)
+	_in_settings = true
+	page_main.visible = false
+	page_settings.visible = true
+	if page_settings.has_method(&"refresh_from_game"):
+		page_settings.call(&"refresh_from_game")
+	var back_btn_path := NodePath("Center/VBox/BtnBack")
+	if page_settings.has_node(back_btn_path):
+		(page_settings.get_node(back_btn_path) as Button).grab_focus()
 
 
-func _on_save() -> void:
-	if is_instance_valid(Game) and Game.has_method("save_game"):
-		Game.save_game("savepoint")
+func _on_load() -> void:
+	if is_instance_valid(Game):
+		Game.open_save_slots_sheet(Game.SaveSlotsSheetMode.LOAD, self)
 
 
 func _on_title() -> void:

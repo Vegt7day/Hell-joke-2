@@ -62,10 +62,12 @@ func interact() -> void:
 				if not skip_damage_this_use:
 					predicted_drop = max(1, int(round(float(st.max_health) * clampf(damage_percent, 0.01, 1.0))))
 				var predicted_hp: int = max(st.health - predicted_drop, 0)
-				var cur_percent := float(st.health) / float(st.max_health)
-				var predicted_percent := float(predicted_hp) / float(st.max_health)
-				var crosses_into_final_20 := cur_percent > 0.2 and predicted_percent <= 0.2
+				var mxh: int = st.max_health
+				var cur_h: int = st.health
+				var crosses_into_final_20 := cur_h * 5 > mxh and predicted_hp * 5 <= mxh
 				if not crosses_into_final_20:
+					var cur_percent := float(cur_h) / float(mxh)
+					var predicted_percent := float(predicted_hp) / float(mxh)
 					var scn := get_tree().current_scene
 					var target_minor := _resolve_newly_unlocked_minor_name(cur_percent, predicted_percent)
 					_mark_piece_heart_used_state_before_save()

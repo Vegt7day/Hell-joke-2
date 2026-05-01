@@ -25,12 +25,13 @@ func _on_new_game_pressed() -> void:
 	Game.new_game()
 
 func _on_load_game_pressed() -> void:
-	Game.load_game()
+	if is_instance_valid(Game):
+		Game.open_save_slots_sheet(Game.SaveSlotsSheetMode.LOAD)
 
 
 func _on_settings_pressed() -> void:
 	if is_instance_valid(Game):
-		Game.open_settings_ui(false)
+		Game.open_settings_ui()
 
 
 func _on_exit_game_pressed() -> void:

@@ -40,7 +40,7 @@ func run_save_sequence_and_heal() -> void:
 	if _is_processing_interact:
 		return
 	_is_processing_interact = true
-	# 打开存档点界面时 tree.paused=true，默认 AnimationPlayer 不会推进，await animation_finished 会永远挂起
+	# 其它 UI（暂停菜单等）仍可能暂停树；此处始终推进 AnimationPlayer，避免 await animation_finished 挂起
 	var prev_pm := process_mode
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var prev_anim_pm := Node.PROCESS_MODE_INHERIT
@@ -60,8 +60,6 @@ func run_save_sequence_and_heal() -> void:
 			p.call(&"recover_full_health")
 	if animation_player != null and animation_player.has_animation(ready_anim_name):
 		animation_player.play(ready_anim_name)
-	if is_instance_valid(Game) and Game.has_method(&"save_game"):
-		Game.save_game("savepoint")
 	if animation_player != null and animation_player.has_animation(ready_anim_name):
 		await animation_player.animation_finished
 	if animation_player != null and animation_player.has_animation(save_anim_name):

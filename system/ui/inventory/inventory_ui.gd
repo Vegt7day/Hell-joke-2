@@ -38,7 +38,7 @@ var _style_selected: StyleBoxFlat
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = 100
+	layer = 115
 	add_to_group(&"inventory_ui")
 	_style_normal = StyleBoxFlat.new()
 	_style_normal.bg_color = Color(0.12, 0.12, 0.14, 0.92)

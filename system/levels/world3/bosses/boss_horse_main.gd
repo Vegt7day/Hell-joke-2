@@ -19,8 +19,8 @@ extends CharacterBody2D
 ## X 轴始终向左；当越过玩家后不再改变 X 方向（不转向右）
 @export var stop_x_adjust_after_pass_player: bool = true
 ## 灰马技能：朝左冲刺
-@export var grey_dash_distance: float = 200.0
-@export var grey_dash_duration: float = 0.34
+@export var grey_dash_distance: float = 400.0
+@export var grey_dash_duration: float = 0.68
 ## 白马技能：召唤剑
 const DEFAULT_SWORD_SCENE := preload("res://system/levels/world3/props/projectile_white_horse.tscn")
 @export var sword_scene: PackedScene = DEFAULT_SWORD_SCENE
@@ -253,9 +253,6 @@ func _try_cast_random_skill() -> void:
 		return
 	_is_casting_skill = true
 	var picked := _unlocked_skills[randi() % _unlocked_skills.size()]
-	_show_skill_broadcast(picked, true)
-	# 按需求：小马技能播报也要出现（与皇马播报并行入队）
-	_show_skill_broadcast(picked, false)
 	match picked:
 		BossHorseTypes.HorseId.GREY:
 			await _cast_grey_skill()
@@ -274,14 +271,23 @@ func _try_cast_random_skill() -> void:
 func _cast_grey_skill() -> void:
 	await _play_optional(&"to grey")
 	await _play_optional(&"grey_ready")
+	_show_skill_broadcast(BossHorseTypes.HorseId.GREY, true)
+	_show_skill_broadcast(BossHorseTypes.HorseId.GREY, false)
 	if _grey_dash_sfx and _grey_dash_sfx.stream:
 		_grey_dash_sfx.play()
+	var bump := get_node_or_null("PlayerBumpArea") as BossHorsePlayerBumpArea
+	var prev_impulse_mult := 1.0
+	if bump:
+		prev_impulse_mult = bump.bump_impulse_multiplier
+		bump.bump_impulse_multiplier = BossHorsePlayerBumpArea.GREY_DASH_IMPULSE_MULTIPLIER
 	_toggle_root_collision_shape_disabled(false)
 	if animation_player and animation_player.has_animation(&"grey_running"):
 		animation_player.play(&"grey_running")
 	var dash_to := global_position + Vector2.LEFT * grey_dash_distance
 	await _move_to_position(dash_to, grey_dash_duration)
 	_toggle_root_collision_shape_disabled(true)
+	if bump:
+		bump.bump_impulse_multiplier = prev_impulse_mult
 	await _play_optional(&"grey_over")
 	_restore_idle_jump()
 
@@ -293,6 +299,8 @@ func _cast_white_skill() -> void:
 		if i > 0:
 			await get_tree().create_timer(white_sword_spawn_delay).timeout
 		await _play_optional(&"white_call")
+		_show_skill_broadcast(BossHorseTypes.HorseId.WHITE, true)
+		_show_skill_broadcast(BossHorseTypes.HorseId.WHITE, false)
 		await _spawn_white_swords(white_sword_count_per_cast)
 	await _play_optional(&"to grey")
 	_restore_idle_jump()
@@ -301,11 +309,11 @@ func _cast_white_skill() -> void:
 func _cast_black_skill() -> void:
 	await _play_optional(&"to_black")
 	await _play_optional(&"black_ready")
+	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, true)
+	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, false)
 	if _black_clone_sfx and _black_clone_sfx.stream:
 		_black_clone_sfx.play()
 	var clone := _spawn_black_clone()
-	# 黑马分身出场即播一条“小马”消息，避免体感只看到皇马。
-	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, false)
 	var clone_ap := _get_clone_animation_player(clone)
 	var call_len := _play_anim_sync(animation_player, clone_ap, &"black_call", 0.12)
 	if call_len > 0.0:
@@ -319,6 +327,8 @@ func _cast_black_skill() -> void:
 func _cast_red_skill() -> void:
 	await _play_optional(&"to red")
 	await _play_optional(&"red_ready")
+	_show_skill_broadcast(BossHorseTypes.HorseId.RED, true)
+	_show_skill_broadcast(BossHorseTypes.HorseId.RED, false)
 	await _play_optional(&"red_call")
 	await _spawn_red_bombs(red_bomb_count_per_cast)
 	await _play_optional(&"to grey")
@@ -594,11 +604,11 @@ func _pick_clone_skill() -> BossHorseTypes.HorseId:
 
 func _cast_clone_skill(clone: CharacterBody2D, skill: BossHorseTypes.HorseId) -> void:
 	var ap := clone.get_node_or_null("AnimationPlayer") as AnimationPlayer
-	_show_skill_broadcast(skill, false)
 	match skill:
 		BossHorseTypes.HorseId.GREY:
 			await _play_optional_on(ap, &"to grey", 0.05)
 			await _play_optional_on(ap, &"grey_ready", 0.05)
+			_show_skill_broadcast(skill, false)
 			if ap:
 				if ap.has_animation(&"grey_running"):
 					ap.play(&"grey_running")
@@ -611,12 +621,14 @@ func _cast_clone_skill(clone: CharacterBody2D, skill: BossHorseTypes.HorseId) ->
 		BossHorseTypes.HorseId.WHITE:
 			await _play_optional_on(ap, &"to white", 0.05)
 			await _play_optional_on(ap, &"white_ready", 0.05)
+			_show_skill_broadcast(skill, false)
 			await _play_optional_on(ap, &"white_call", 0.05)
 			await _spawn_white_sword_at(clone.global_position)
 			await _play_optional_on(ap, &"to_black", 0.05)
 		BossHorseTypes.HorseId.RED:
 			await _play_optional_on(ap, &"to red", 0.05)
 			await _play_optional_on(ap, &"red_ready", 0.05)
+			_show_skill_broadcast(skill, false)
 			await _play_optional_on(ap, &"red_call", 0.05)
 			await _spawn_red_bombs(red_bomb_count_per_cast)
 			await _play_optional_on(ap, &"to_black", 0.05)
@@ -855,7 +867,7 @@ func _push_skill_feed_message(feed_root: Control, message_bbcode: String, is_ent
 			_skill_feed_lane_active[lane] = null
 	var lane_idx := _pick_danmaku_lane(feed_root)
 	if lane_idx < 0:
-		return
+		lane_idx = 0
 	var container := _create_skill_feed_row(feed_root, message_bbcode, is_entry)
 	feed_root.add_child(container)
 	_skill_feed_lane_active[lane_idx] = container

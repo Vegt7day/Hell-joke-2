@@ -5,7 +5,7 @@
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
 
 [node name="SavePointPanel" type="CanvasLayer"]
-layer = 105
+layer = 115
 script = ExtResource("1_sp")
 
 [node name="Root" type="Control" parent="."]

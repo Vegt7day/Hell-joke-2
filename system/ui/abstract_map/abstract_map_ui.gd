@@ -9,7 +9,7 @@ const CONFIRM_POPUP_SCENE := preload("res://system/ui/confirm_popup.tscn")
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = 100
+	layer = 115
 	add_to_group(&"abstract_map_ui")
 
 	if bool(get_meta(&"abstract_map_teleport_pick", false)):

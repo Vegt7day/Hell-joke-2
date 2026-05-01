@@ -4,6 +4,7 @@ const SAVE_POINT_PANEL_GROUP := &"save_point_choice_ui"
 
 var _save_point: SavePointInteractable
 var _opening_map_teleport := false
+var _opening_save_slots_sheet := false
 
 
 func setup(save_point: SavePointInteractable) -> void:
@@ -12,15 +13,18 @@ func setup(save_point: SavePointInteractable) -> void:
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	layer = 105
+	layer = 115
 	add_to_group(SAVE_POINT_PANEL_GROUP)
 
 
 func _exit_tree() -> void:
 	if _opening_map_teleport:
 		return
-	if is_instance_valid(Game) and Game.has_method(&"on_save_point_panel_exited"):
-		Game.on_save_point_panel_exited()
+	if _opening_save_slots_sheet:
+		return
+	var tree := get_tree()
+	if tree != null:
+		tree.paused = false
 
 
 func _on_save_pressed() -> void:
@@ -29,8 +33,15 @@ func _on_save_pressed() -> void:
 		return
 	var scene_bn := Game.get_current_scene_basename()
 	Game.mark_save_point_known(scene_bn, _save_point.get_save_point_id())
-	await _save_point.run_save_sequence_and_heal()
+	if not is_instance_valid(Game):
+		queue_free()
+		return
+	# 先关掉存档点 UI，再开槽位界面（避免两层叠在一起）
+	remove_from_group(SAVE_POINT_PANEL_GROUP)
+	_opening_save_slots_sheet = true
+	await get_tree().process_frame
 	queue_free()
+	Game.open_save_slots_sheet(Game.SaveSlotsSheetMode.SAVE, null, _save_point)
 
 
 func _on_teleport_pressed() -> void:

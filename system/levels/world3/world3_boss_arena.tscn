@@ -81,14 +81,6 @@ position = Vector2(-1, -24)
 texture = ExtResource("3_rkk35")
 centered = false
 
-[node name="ArenaBgmA" type="AudioStreamPlayer" parent="." unique_id=199931001]
-volume_db = -5.0
-bus = &"BGM_Boss"
-
-[node name="ArenaBgmB" type="AudioStreamPlayer" parent="." unique_id=199931003]
-volume_db = -5.0
-bus = &"BGM_Boss"
-
 [node name="BossPhaseStinger" type="AudioStreamPlayer" parent="." unique_id=199931002]
 stream = ExtResource("23_phase_sting")
 volume_db = -9.0
@@ -188,6 +180,7 @@ spawn_heart_every_n = 1
 heart_spawn_start_index = 0
 
 [node name="UIHints" type="CanvasLayer" parent="Systems" unique_id=1613001565]
+layer = 100
 
 [node name="RopeLimbHint" type="Label" parent="Systems/UIHints" unique_id=776299289]
 offset_left = 80.0
@@ -255,11 +248,11 @@ position = Vector2(960, 192)
 
 [node name="player" parent="." unique_id=396663958 instance=ExtResource("8_bch5w")]
 position = Vector2(608, 448)
-lookahead_camera_move_speed = 60.0
+lookahead_camera_move_speed = 10.0
 lookahead_y_up_distance = 10.0
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=106270531]
-position = Vector2(0, -200)
+position = Vector2(-287, -263)
 limit_left = 512
 limit_top = -9999951
 limit_right = 9999985

@@ -17,6 +17,7 @@ var _pending_message: String = ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	layer = 130
 	visible = false
 	btn_confirm.pressed.connect(_on_confirm_pressed)
 	btn_cancel.pressed.connect(_on_cancel_pressed)

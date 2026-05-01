@@ -20,16 +20,36 @@ const MAP_DIM_DOWN := 6
 @onready var default_player_stats := player_stats.to_dict()
 const SAVE_SLOT_SAVEPOINT := "savepoint"
 const SAVE_SLOT_HEART := "heart"
+## 暂停菜单 / 标题 / 存档点共用的三个手动槽位（同一套文件）
+const SAVE_SLOT_MANUAL_1 := "manual_1"
+const SAVE_SLOT_MANUAL_2 := "manual_2"
+const SAVE_SLOT_MANUAL_3 := "manual_3"
 const SAVE_PATH_SAVEPOINT := "user://data_savepoint.sav"
 const SAVE_PATH_HEART := "user://data_heart.sav"
+const SAVE_PATH_MANUAL_1 := "user://save_slot_1.sav"
+const SAVE_PATH_MANUAL_2 := "user://save_slot_2.sav"
+const SAVE_PATH_MANUAL_3 := "user://save_slot_3.sav"
+
+enum SaveSlotsSheetMode {
+	SAVE,
+	LOAD,
+}
 const WORLD3_BOSS_SCENE_PATH := "res://system/levels/world3/world3_boss_arena.tscn"
 const TITLE_SCENE_PATH := "res://system/scene/title_screen.tscn"
 const SETTINGS_CFG_PATH := "user://settings.cfg"
 const SETTINGS_UI_GROUP := &"settings_ui"
+const SAVE_SLOTS_SHEET_GROUP := &"save_slots_sheet"
 const AUDIO_VOL_MIN_DB := -80.0
 const AUDIO_VOL_MAX_DB := 0.0
 const WORLD3_DEATH_UI_SCENE := preload("res://system/ui/world3_death_retry_ui.tscn")
+const _AUDIO_UTILS := preload("res://system/globals/audio_utils.gd")
+const _STREAM_DEFAULT_BGM := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 var _world3_death_ui_opened: bool = false
+var _continuous_bgm_player: AudioStreamPlayer
+var _continuous_bgm_player_b: AudioStreamPlayer
+var _continuous_bgm_crossfade_active_is_a: bool = true
+var _continuous_bgm_crossfade_tween: Tween
+const _BOSS_BGM_SILENT_DB := -60.0
 var _settings_window_width: int = 640
 var _settings_window_height: int = 360
 
@@ -44,6 +64,7 @@ func _ready() -> void:
 		player_stats.health_changed.connect(_on_player_stats_changed)
 	print("游戏管理器初始化完成")
 	call_deferred(&"apply_saved_settings")
+	call_deferred(&"ensure_continuous_bgm_playing")
 
 
 func bind_player_stats_runtime(new_stats: Stats) -> void:
@@ -83,6 +104,115 @@ func _current_scene_is_title(p_tree: SceneTree = null) -> bool:
 	if tree == null or tree.current_scene == null:
 		return false
 	return tree.current_scene.scene_file_path == TITLE_SCENE_PATH
+
+
+## 标题 / 关卡 / 切换场景共用同一 BGM 节点，避免切段；关卡脚本在进入时也调用以保持播放。
+func ensure_continuous_bgm_playing() -> void:
+	if not _is_autoload_game():
+		return
+	var tree := get_tree()
+	var on_boss_arena := tree != null and tree.current_scene != null and tree.current_scene.scene_file_path == WORLD3_BOSS_SCENE_PATH
+	if not on_boss_arena:
+		_normalize_continuous_bgm_after_leaving_boss_arena()
+	if _continuous_bgm_player == null or not is_instance_valid(_continuous_bgm_player):
+		_continuous_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, null, _STREAM_DEFAULT_BGM, &"BGM", &"ContinuousBgm")
+	elif not _continuous_bgm_player.playing:
+		_continuous_bgm_player.play()
+
+
+func _normalize_continuous_bgm_after_leaving_boss_arena() -> void:
+	boss_bgm_kill_crossfade_tween()
+	if _continuous_bgm_player_b != null and is_instance_valid(_continuous_bgm_player_b):
+		_continuous_bgm_player_b.stop()
+	if _continuous_bgm_player != null and is_instance_valid(_continuous_bgm_player):
+		_continuous_bgm_player.volume_db = 0.0
+		_AUDIO_UTILS.assign_looping_stream_to_player(_continuous_bgm_player, _STREAM_DEFAULT_BGM)
+		if not _continuous_bgm_player.playing:
+			_continuous_bgm_player.play()
+	_continuous_bgm_crossfade_active_is_a = true
+
+
+func _ensure_continuous_bgm_player_b() -> void:
+	if _continuous_bgm_player_b != null and is_instance_valid(_continuous_bgm_player_b):
+		return
+	var p := AudioStreamPlayer.new()
+	p.name = "ContinuousBgmB"
+	p.process_mode = Node.PROCESS_MODE_ALWAYS
+	p.bus = &"BGM"
+	add_child(p)
+	_continuous_bgm_player_b = p
+
+
+func _continuous_bgm_active_player() -> AudioStreamPlayer:
+	return _continuous_bgm_player if _continuous_bgm_crossfade_active_is_a else _continuous_bgm_player_b
+
+
+func _continuous_bgm_incoming_player() -> AudioStreamPlayer:
+	return _continuous_bgm_player_b if _continuous_bgm_crossfade_active_is_a else _continuous_bgm_player
+
+
+func boss_bgm_kill_crossfade_tween() -> void:
+	if _continuous_bgm_crossfade_tween != null and is_instance_valid(_continuous_bgm_crossfade_tween):
+		_continuous_bgm_crossfade_tween.kill()
+	_continuous_bgm_crossfade_tween = null
+
+
+func boss_bgm_has_active_crossfade_tween() -> bool:
+	return _continuous_bgm_crossfade_tween != null and is_instance_valid(_continuous_bgm_crossfade_tween)
+
+
+func boss_bgm_active_output_is_audible(threshold_db: float = -54.0) -> bool:
+	if _continuous_bgm_player == null:
+		return false
+	var p := _continuous_bgm_active_player()
+	return p != null and is_instance_valid(p) and p.playing and p.volume_db > threshold_db
+
+
+## Boss 场开局：使用 Autoload 上的 ContinuousBgm / ContinuousBgmB 做双轨交叉淡化（与关卡共用同一对节点）。
+func boss_bgm_crossfade_start(initial_stream: AudioStream, volume_db: float) -> void:
+	if not _is_autoload_game():
+		return
+	boss_bgm_kill_crossfade_tween()
+	if _continuous_bgm_player == null or not is_instance_valid(_continuous_bgm_player):
+		_continuous_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, null, initial_stream, &"BGM", &"ContinuousBgm")
+	else:
+		_AUDIO_UTILS.assign_looping_stream_to_player(_continuous_bgm_player, initial_stream)
+	_continuous_bgm_player.volume_db = volume_db
+	_continuous_bgm_player.play()
+	_ensure_continuous_bgm_player_b()
+	if _continuous_bgm_player_b != null:
+		_continuous_bgm_player_b.stop()
+		_continuous_bgm_player_b.volume_db = _BOSS_BGM_SILENT_DB
+	_continuous_bgm_crossfade_active_is_a = true
+
+
+func boss_bgm_crossfade_to(target_stream: AudioStream, duration_seconds: float, volume_db: float, fade_finished: Callable = Callable()) -> void:
+	if not _is_autoload_game():
+		return
+	ensure_continuous_bgm_playing()
+	_ensure_continuous_bgm_player_b()
+	var outgoing := _continuous_bgm_active_player()
+	var incoming := _continuous_bgm_incoming_player()
+	if outgoing == null or incoming == null:
+		return
+	_AUDIO_UTILS.assign_looping_stream_to_player(incoming, target_stream)
+	incoming.volume_db = _BOSS_BGM_SILENT_DB
+	if not incoming.playing:
+		incoming.play(0.0)
+	boss_bgm_kill_crossfade_tween()
+	_continuous_bgm_crossfade_tween = create_tween()
+	_continuous_bgm_crossfade_tween.set_parallel(true)
+	_continuous_bgm_crossfade_tween.tween_property(outgoing, "volume_db", _BOSS_BGM_SILENT_DB, duration_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_continuous_bgm_crossfade_tween.tween_property(incoming, "volume_db", volume_db, duration_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var out_player := outgoing
+	var set_active_is_a := not _continuous_bgm_crossfade_active_is_a
+	var on_crossfade_done := func():
+		if is_instance_valid(out_player):
+			out_player.stop()
+		_continuous_bgm_crossfade_active_is_a = set_active_is_a
+		if fade_finished.is_valid():
+			fade_finished.call()
+	_continuous_bgm_crossfade_tween.finished.connect(on_crossfade_done, CONNECT_ONE_SHOT)
 
 
 func _shutdown_dialogic_for_navigation() -> void:
@@ -182,6 +312,7 @@ func change_scene(path: String, params: Dictionary = {}) -> void:
 	tree.paused = false
 	if tree.current_scene.scene_file_path == TITLE_SCENE_PATH:
 		call_deferred("strip_dialogic_mouse_blockers")
+	ensure_continuous_bgm_playing()
 	
 	# 11. 淡入动画
 	await tree.process_frame
@@ -220,10 +351,118 @@ func _find_player_node_under_scene(scene: Node) -> Node:
 	return null
 
 
+func _resolve_player_inventory_dict(scene: Node) -> Dictionary:
+	if scene == null:
+		return {}
+	var q: Array[Node] = [scene]
+	while not q.is_empty():
+		var n: Node = q.pop_front()
+		if n is PlayerInventory:
+			var inv := n as PlayerInventory
+			if inv.has_method(&"to_dict"):
+				return inv.to_dict()
+		for ch in n.get_children():
+			q.append(ch)
+	return {}
+
+
 func _save_path_for_slot(slot: String) -> String:
-	if slot == SAVE_SLOT_HEART:
-		return SAVE_PATH_HEART
-	return SAVE_PATH_SAVEPOINT
+	match slot:
+		SAVE_SLOT_HEART:
+			return SAVE_PATH_HEART
+		SAVE_SLOT_SAVEPOINT:
+			return SAVE_PATH_SAVEPOINT
+		SAVE_SLOT_MANUAL_1:
+			return SAVE_PATH_MANUAL_1
+		SAVE_SLOT_MANUAL_2:
+			return SAVE_PATH_MANUAL_2
+		SAVE_SLOT_MANUAL_3:
+			return SAVE_PATH_MANUAL_3
+		_:
+			return SAVE_PATH_SAVEPOINT
+
+
+func manual_save_slot_ids() -> PackedStringArray:
+	return PackedStringArray([SAVE_SLOT_MANUAL_1, SAVE_SLOT_MANUAL_2, SAVE_SLOT_MANUAL_3])
+
+
+func manual_save_slot_id(index_zero_based: int) -> String:
+	var ids := manual_save_slot_ids()
+	if index_zero_based < 0 or index_zero_based >= ids.size():
+		return SAVE_SLOT_MANUAL_1
+	return ids[index_zero_based]
+
+
+## Unix 秒 → 本机 wall-clock（年月日时分）。引擎内部 dict-from-unix 按 UTC 拆分，此处用 OS 时区 bias（含夏令时偏移）对齐电脑时钟。
+func format_unix_timestamp_local_wall_datetime(unix_ts: float) -> String:
+	var ts := int(floor(unix_ts + 0.5))
+	var tz := Time.get_time_zone_from_system()
+	var bias_min := int(tz.get("bias", 0))
+	var dt := Time.get_datetime_dict_from_unix_time(ts + bias_min * 60)
+	return "%04d-%02d-%02d %02d:%02d" % [int(dt.year), int(dt.month), int(dt.day), int(dt.hour), int(dt.minute)]
+
+
+## 读取手动槽存档摘要（供槽位选择 UI）；无文件或损坏返回 empty=true
+func read_manual_save_slot_summary(slot_id: String) -> Dictionary:
+	var path := _save_path_for_slot(slot_id)
+	var empty_ret := {"empty": true}
+	if not FileAccess.file_exists(path):
+		return empty_ret
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return empty_ret
+	var json_text := file.get_as_text()
+	file = null
+	var parsed: Variant = JSON.parse_string(json_text)
+	if parsed == null or not (parsed is Dictionary):
+		return empty_ret
+	var d: Dictionary = parsed as Dictionary
+	var scene_path := str(d.get("scene", ""))
+	var basename_fallback := scene_path.get_file().get_basename() if not scene_path.is_empty() else ""
+	var map_label := basename_fallback
+	var time_text := ""
+	var saved_unix := -1.0
+	var meta: Variant = d.get("save_meta", null)
+	if meta is Dictionary:
+		var m: Dictionary = meta as Dictionary
+		var bn := str(m.get("scene_basename", "")).strip_edges()
+		if not bn.is_empty():
+			map_label = bn
+		elif m.has("scene_path"):
+			map_label = str(m.get("scene_path", "")).get_file().get_basename()
+		if m.has("saved_at_unix"):
+			saved_unix = float(m.get("saved_at_unix", -1.0))
+	if map_label.is_empty():
+		map_label = "未知地图"
+	if saved_unix >= 0.0:
+		time_text = format_unix_timestamp_local_wall_datetime(saved_unix)
+	return {"empty": false, "map_label": map_label, "time_text": time_text, "saved_at_unix": saved_unix}
+
+
+func has_any_manual_save() -> bool:
+	for id in manual_save_slot_ids():
+		if has_save(id):
+			return true
+	return false
+
+
+## 用于死亡重试 / 快捷键：取三个手动槽中最近一次存档（优先 save_meta 时间，否则文件修改时间）
+func find_latest_manual_save_slot_id() -> String:
+	var best_id := ""
+	var best_key := -1.0
+	for id in manual_save_slot_ids():
+		var summ := read_manual_save_slot_summary(id)
+		if bool(summ.get("empty", true)):
+			continue
+		var u := float(summ.get("saved_at_unix", -1.0))
+		var key := u
+		if key < 0.0:
+			var p := _save_path_for_slot(id)
+			key = float(FileAccess.get_modified_time(p))
+		if key > best_key:
+			best_key = key
+			best_id = id
+	return best_id
 
 
 func has_save(slot: String = SAVE_SLOT_SAVEPOINT) -> bool:
@@ -289,11 +528,7 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 		if cam != null:
 			player_camera_local = cam.position
 	
-	var player_inventory_dict := {}
-	if player_node != null and (player_node as Node).has_node("PlayerInventory"):
-		var inv := (player_node as Node).get_node("PlayerInventory")
-		if inv.has_method("to_dict"):
-			player_inventory_dict = inv.to_dict()
+	var player_inventory_dict := _resolve_player_inventory_dict(scene)
 
 	var data := {
 		"world_states": world_states,
@@ -314,7 +549,12 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 			},
 			"camera_local": {"x": player_camera_local.x, "y": player_camera_local.y},
 			"shangyang_summon_unlocked": summon_unlocked
-		}
+		},
+		"save_meta": {
+			"scene_path": scene.scene_file_path,
+			"scene_basename": scene_name,
+			"saved_at_unix": Time.get_unix_time_from_system(),
+		},
 	}
 	
 	var json := JSON.stringify(data)
@@ -385,30 +625,30 @@ func _apply_camera_cue_states(scene: Node, states: Dictionary) -> void:
 		if node != null and (node as Node).has_method("apply_save_state"):
 			(node as Node).call("apply_save_state", states[key])
 
-func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEPOINT) -> void:
+func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEPOINT) -> bool:
 	var path := _save_path_for_slot(slot)
 	if not FileAccess.file_exists(path):
 		print("存档文件不存在")
-		return
+		return false
 	
 	var file := FileAccess.open(path, FileAccess.READ)
 	if not file:
 		print("读取存档失败：无法打开文件")
-		return
+		return false
 	
 	var json := file.get_as_text()
 	var parse_result = JSON.parse_string(json)
 	
 	if not parse_result or not (parse_result is Dictionary):
 		print("存档文件格式错误")
-		return
+		return false
 	
 	var data := parse_result as Dictionary
 	
 	# 验证必要字段
 	if not data.has("scene") or not data.has("player") or not data.has("stats"):
 		print("存档文件缺少必要字段")
-		return
+		return false
 	
 	# 恢复世界状态
 	world_states = data.get("world_states", {})
@@ -459,6 +699,8 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	}
 	_world3_death_ui_opened = false
 	await reload_scene_from_save(data.scene, load_params)
+	var tr := get_tree()
+	return tr != null and tr.current_scene != null
 
 
 func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
@@ -528,6 +770,7 @@ func reload_scene_from_save(path: String, params: Dictionary = {}) -> void:
 		if pn is Player:
 			(pn as Player).shangyang_summon_unlocked = bool(params["shangyang_summon_unlocked"])
 	tree.paused = false
+	ensure_continuous_bgm_playing()
 	if color_rect != null:
 		await tree.process_frame
 		var fade_in := create_tween()
@@ -719,9 +962,11 @@ func persist_settings_to_disk() -> void:
 	cf.save(SETTINGS_CFG_PATH)
 
 
-func open_settings_ui(reopen_pause_menu: bool = false) -> void:
+func open_settings_ui() -> void:
 	var tree := get_tree()
 	if tree == null:
+		return
+	if not _current_scene_is_title(tree):
 		return
 	if settings_ui_is_open():
 		return
@@ -738,16 +983,69 @@ func open_settings_ui(reopen_pause_menu: bool = false) -> void:
 	var ui := ps.instantiate()
 	if ui == null:
 		return
-	if ui.has_method(&"setup"):
-		ui.call(&"setup", reopen_pause_menu)
-	if not _current_scene_is_title(tree):
-		tree.paused = true
 	tree.root.add_child(ui)
 
 
-func open_pause_menu_after_settings() -> void:
-	await get_tree().process_frame
-	_open_pause_menu()
+func save_slots_sheet_is_open() -> bool:
+	var tree := get_tree()
+	return tree != null and tree.get_first_node_in_group(SAVE_SLOTS_SHEET_GROUP) != null
+
+
+func close_save_point_choice_ui() -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	var n := tree.get_first_node_in_group(&"save_point_choice_ui")
+	if n != null and is_instance_valid(n):
+		n.queue_free()
+
+
+## 存档点交互打开菜单时：先把当前场景快照写入 world_states，选槽写入文件时数据已就绪
+func prepare_save_point_session(_save_point: SavePointInteractable) -> void:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+	var sc := tree.current_scene
+	if sc.scene_file_path.is_empty():
+		return
+	var scene_name := sc.scene_file_path.get_file().get_basename()
+	if sc.has_method(&"to_dict"):
+		world_states[scene_name] = sc.to_dict()
+
+
+## 槽位保存完成并已解除暂停后：后台播放存档点演出（不阻塞、不在此处改 paused）
+func start_save_point_post_save_feedback(save_point: SavePointInteractable) -> void:
+	if save_point == null or not is_instance_valid(save_point):
+		return
+	save_point.run_save_sequence_and_heal()
+
+
+func open_save_slots_sheet(mode: SaveSlotsSheetMode, pause_menu: Node = null, save_point_after_save: SavePointInteractable = null) -> void:
+	var tree := get_tree()
+	if tree == null:
+		return
+	if mode == SaveSlotsSheetMode.SAVE and _current_scene_is_title(tree):
+		return
+	if save_slots_sheet_is_open():
+		return
+	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
+	if dlg_autoload and dlg_autoload.has_method("has_active_timeline") and dlg_autoload.has_active_timeline():
+		return
+	if save_point_after_save == null and tree.get_first_node_in_group(&"save_point_choice_ui") != null:
+		return
+	if inventory_ui_is_open() or abstract_map_ui_is_open():
+		return
+	if settings_ui_is_open():
+		return
+	var ps := load("res://system/ui/save_slots_sheet.tscn") as PackedScene
+	if ps == null:
+		return
+	var sheet := ps.instantiate()
+	if sheet == null:
+		return
+	if sheet.has_method(&"setup"):
+		sheet.call(&"setup", mode, pause_menu, save_point_after_save)
+	tree.root.add_child(sheet)
 
 
 func get_current_scene_basename() -> String:
@@ -776,17 +1074,6 @@ func is_save_point_known(scene_bn: String, save_id: String) -> bool:
 	return bool(save_points_known.get(save_point_known_key(scene_bn, save_id), false))
 
 
-func on_save_point_panel_exited() -> void:
-	var tree := get_tree()
-	if tree == null:
-		return
-	if abstract_map_ui_is_open():
-		return
-	if inventory_ui_is_open():
-		return
-	tree.paused = false
-
-
 func open_save_point_choice_ui(save_point: SavePointInteractable) -> void:
 	var tree := get_tree()
 	if tree == null or save_point == null:
@@ -801,6 +1088,7 @@ func open_save_point_choice_ui(save_point: SavePointInteractable) -> void:
 	if tree.get_first_node_in_group(&"save_point_choice_ui") != null:
 		return
 	tree.paused = true
+	prepare_save_point_session(save_point)
 	var ps := load("res://system/ui/save_point_panel.tscn") as PackedScene
 	if ps == null:
 		tree.paused = false
@@ -889,6 +1177,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	var tree_h := get_tree()
 	if settings_ui_is_open():
 		return
+	if save_slots_sheet_is_open():
+		return
 	if _current_scene_is_title(tree_h):
 		return
 	if tree_h.get_first_node_in_group(&"save_point_choice_ui") != null:
@@ -912,7 +1202,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if abstract_map_ui_is_open():
 		return
 	if event.is_action_pressed("ui_cancel"):
-		_open_pause_menu()
+		open_pause_menu()
 		return
 	elif event is InputEventKey:
 		var key_event := event as InputEventKey
@@ -928,17 +1218,23 @@ func _unhandled_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				return
 			if key_event.keycode == KEY_R:
-				print("读取存档（SavePoint槽）")
-				load_game(true, SAVE_SLOT_SAVEPOINT)
+				var latest := find_latest_manual_save_slot_id()
+				if latest.is_empty():
+					print("没有可读的手动存档槽")
+				else:
+					print("读取最近手动存档槽: ", latest)
+					load_game(true, latest)
 
 
-func _open_pause_menu() -> void:
+func open_pause_menu() -> void:
 	var tree := get_tree()
 	if tree == null:
 		return
 	if _current_scene_is_title(tree):
 		return
 	if settings_ui_is_open():
+		return
+	if save_slots_sheet_is_open():
 		return
 	# 检查 Dialogic 是否活跃（避免冲突）
 	var dlg_autoload := DialogicUtil.autoload() if DialogicUtil else null
@@ -1037,8 +1333,9 @@ func on_world3_death_choice_load_heart() -> void:
 
 
 func on_world3_death_choice_load_savepoint() -> void:
-	if not has_save(SAVE_SLOT_SAVEPOINT):
-		print("存档点存档不存在，无法读取。")
+	var latest := find_latest_manual_save_slot_id()
+	if latest.is_empty():
+		print("没有可读的手动存档，无法从存档点回溯。")
 		return
 	get_tree().paused = false
-	load_game(true, SAVE_SLOT_SAVEPOINT)
+	load_game(true, latest)

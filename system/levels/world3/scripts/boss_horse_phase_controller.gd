@@ -357,7 +357,8 @@ func _on_main_health_changed() -> void:
 	var hp_percent := _get_hp_percent()
 	shared_health_changed.emit(_main_stats.health, _main_stats.max_health, hp_percent)
 	print("[BossPhase] HP 更新: ", _main_stats.health, "/", _main_stats.max_health, " (", snapped(hp_percent * 100.0, 0.1), "%)")
-	if _intro_done:
+	# 首次心/剑交互后会立刻 mark 入场战斗，但入场 Timeline 可能尚未跑到 _intro_done；此处也必须按血量推进阶段，否则 20% 处决不会触发
+	if _intro_done or _intro_first_heart_sword_triggered:
 		_update_phase_by_hp_percent(hp_percent)
 	if _main_stats.health <= 0:
 		_cleanup_all_summoned_clones_on_boss_death()
@@ -384,6 +385,9 @@ func request_phase(next: BossHorseTypes.BossPhase) -> void:
 		return
 	var old_phase := current_phase
 	current_phase = next
+	# 离开 20% 处决阶段后必须清除，否则回档/回血抬高血量后再跌破 20% 时不会再排队 `_fatal_attack_launcher`
+	if next != BossHorseTypes.BossPhase.FINAL_WARNING_20:
+		_final_warning_sequence_started = false
 	phase_changed.emit(next)
 	print("[BossPhase] 阶段切换: ", BossHorseTypes.phase_to_text(old_phase), " -> ", BossHorseTypes.phase_to_text(next))
 	_show_phase_enter_hint_if_needed(next)
@@ -504,6 +508,8 @@ func _get_hp_percent() -> float:
 
 
 func _update_phase_by_hp_percent(hp_percent: float) -> void:
+	if _main_stats == null or _main_stats.health <= 0:
+		return
 	var target_phase := _resolve_target_phase_by_hp(hp_percent)
 	if target_phase == BossHorseTypes.BossPhase.FINAL_WARNING_20:
 		request_phase(target_phase)
@@ -837,21 +843,37 @@ func _run_minor_switch(target_phase: BossHorseTypes.BossPhase) -> void:
 	_is_switching_minor = false
 
 	var hp_percent := _get_hp_percent()
+	if _main_stats != null and _main_stats.health <= 0:
+		return
 	var latest_target := _resolve_target_phase_by_hp(hp_percent)
 	if latest_target != target_phase and latest_target != BossHorseTypes.BossPhase.FINAL_WARNING_20:
 		_start_minor_switch(latest_target)
 
 
-func _resolve_target_phase_by_hp(hp_percent: float) -> BossHorseTypes.BossPhase:
-	if hp_percent <= 0.2:
+## 按当前共享血量应处的阶段（读档时用于与存档里的 current_phase 对齐）
+func get_phase_matching_current_shared_hp() -> BossHorseTypes.BossPhase:
+	if _main_stats != null and _main_stats.health <= 0:
 		return BossHorseTypes.BossPhase.FINAL_WARNING_20
-	if hp_percent <= 0.4:
+	return _resolve_target_phase_by_hp(0.0)
+
+
+func _resolve_target_phase_by_hp(hp_percent: float) -> BossHorseTypes.BossPhase:
+	if _main_stats == null or _main_stats.max_health <= 0:
+		return BossHorseTypes.BossPhase.GREY_SOLO
+	var h: int = _main_stats.health
+	var m: int = _main_stats.max_health
+	if h <= 0:
+		return BossHorseTypes.BossPhase.GREY_SOLO
+	# 用整数避免 float(20)/float(100) 略大于 0.2，判不进 FINAL_WARNING、卡在 RED
+	if h * 5 <= m:
+		return BossHorseTypes.BossPhase.FINAL_WARNING_20
+	if h * 5 <= m * 2:
 		_log_phase_once("40%阈值触发（红马阶段）")
 		return BossHorseTypes.BossPhase.RED_SOLO
-	if hp_percent <= 0.6:
+	if h * 5 <= m * 3:
 		_log_phase_once("60%阈值触发（黑马阶段）")
 		return BossHorseTypes.BossPhase.BLACK_SOLO
-	if hp_percent <= 0.8:
+	if h * 5 <= m * 4:
 		_log_phase_once("80%阈值触发（白马阶段）")
 		return BossHorseTypes.BossPhase.WHITE_SOLO
 	_log_phase_once("开场阶段（灰马阶段）")
