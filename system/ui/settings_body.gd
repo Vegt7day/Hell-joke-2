@@ -37,15 +37,15 @@ const WINDOW_PRESET_LABELS: PackedStringArray = [
 	"1600 × 1200 (4:3)",
 ]
 
-@onready var slider_master: HSlider = $Center/VBox/AudioSection/MasterRow/HSlider
-@onready var slider_bgm: HSlider = $Center/VBox/AudioSection/BgmRow/HSlider
-@onready var slider_sfx: HSlider = $Center/VBox/AudioSection/SfxRow/HSlider
-@onready var slider_ui: HSlider = $Center/VBox/AudioSection/UiRow/HSlider
+@onready var slider_master: HSlider = $Center/back/PageMargin/VBox/AudioSection/MasterRow/HSlider
+@onready var slider_bgm: HSlider = $Center/back/PageMargin/VBox/AudioSection/BgmRow/HSlider
+@onready var slider_sfx: HSlider = $Center/back/PageMargin/VBox/AudioSection/SfxRow/HSlider
+@onready var slider_ui: HSlider = $Center/back/PageMargin/VBox/AudioSection/UiRow/HSlider
 
-@onready var check_fullscreen: CheckBox = $Center/VBox/DisplaySection/CheckFullscreen
-@onready var option_resolution: OptionButton = $Center/VBox/DisplaySection/ResolutionRow/OptionResolution
+@onready var check_fullscreen: CheckBox = $Center/back/PageMargin/VBox/DisplaySection/ResolutionRow/CheckFullscreen
+@onready var option_resolution: OptionButton = $Center/back/PageMargin/VBox/DisplaySection/ResolutionRow/OptionResolution
 
-@onready var btn_back: Button = $Center/VBox/BtnBack
+@onready var btn_back: Button = $Center/back/PageMargin/VBox/BtnBack
 
 
 func _ready() -> void:
@@ -63,6 +63,7 @@ func _ready() -> void:
 		var pop := option_resolution.get_popup()
 		pop.add_theme_font_override(&"font", FONT_UI_16)
 		pop.add_theme_font_size_override(&"font_size", 16)
+		pop.theme = preload("res://system/ui/button_theme.tres")
 
 	_sync_settings_ui_group()
 	refresh_from_game()

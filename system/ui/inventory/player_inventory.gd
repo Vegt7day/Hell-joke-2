@@ -27,8 +27,8 @@ func _initialize_slots() -> void:
 	hotbar.clear()
 	for i in _DEFAULT_SLOT_COUNT:
 		slots.append(InventorySlot.new())
-		if i < _HOTBAR_SLOT_COUNT:
-			hotbar.append(slots[i])
+	for i in _HOTBAR_SLOT_COUNT:
+		hotbar.append(InventorySlot.new())
 
 
 func has_item_with_id(item_id: StringName) -> bool:
@@ -82,10 +82,59 @@ func remove_item(slot_index: int, quantity: int = 1) -> void:
 	if slot.item == null or slot.quantity < quantity:
 		return
 	slot.quantity -= quantity
+	# 数量为 0 时不删除物品，只标记为不可用
 	if slot.quantity <= 0:
-		slot.item = null
 		slot.quantity = 0
-	# 如果移除的是快捷栏中的物品且该格变空，快捷栏仍指向该空槽
+	inventory_changed.emit()
+
+## 交换两个格子的物品（仅交换 item 与 quantity，不改变引用）
+func swap_slots(index_a: int, index_b: int) -> void:
+	if index_a < 0 or index_a >= slots.size() or index_b < 0 or index_b >= slots.size():
+		return
+	if index_a == index_b:
+		return
+	var a := slots[index_a]
+	var b := slots[index_b]
+	var tmp_item := a.item
+	var tmp_qty := a.quantity
+	a.item = b.item
+	a.quantity = b.quantity
+	b.item = tmp_item
+	b.quantity = tmp_qty
+	inventory_changed.emit()
+
+
+## 交换快捷栏内部两个格子的物品（独立存储）
+func swap_hotbar_slots(index_a: int, index_b: int) -> void:
+	if index_a < 0 or index_a >= hotbar.size() or index_b < 0 or index_b >= hotbar.size():
+		return
+	if index_a == index_b:
+		return
+	var a := hotbar[index_a]
+	var b := hotbar[index_b]
+	var tmp_item := a.item
+	var tmp_qty := a.quantity
+	a.item = b.item
+	a.quantity = b.quantity
+	b.item = tmp_item
+	b.quantity = tmp_qty
+	inventory_changed.emit()
+
+
+## 交换背包格子和快捷栏格子的物品（独立存储）
+func swap_grid_hotbar(slot_index: int, bar_index: int) -> void:
+	if slot_index < 0 or slot_index >= slots.size():
+		return
+	if bar_index < 0 or bar_index >= hotbar.size():
+		return
+	var s := slots[slot_index]
+	var h := hotbar[bar_index]
+	var tmp_item := s.item
+	var tmp_qty := s.quantity
+	s.item = h.item
+	s.quantity = h.quantity
+	h.item = tmp_item
+	h.quantity = tmp_qty
 	inventory_changed.emit()
 
 
@@ -145,13 +194,16 @@ func use_item(slot_index: int) -> void:
 			pass # EQUIPMENT / QUEST 暂不处理
 
 
-## 将主背包某一格绑定到快捷栏第 bar_index 格（引用同一 InventorySlot）
+## 将主背包某一格复制到快捷栏第 bar_index 格（独立存储，不共享引用）
 func assign_slot_to_hotbar(slot_index: int, bar_index: int) -> void:
 	if slot_index < 0 or slot_index >= slots.size():
 		return
 	if bar_index < 0 or bar_index >= _HOTBAR_SLOT_COUNT:
 		return
-	hotbar[bar_index] = slots[slot_index]
+	var src := slots[slot_index]
+	var dst := hotbar[bar_index]
+	dst.item = src.item
+	dst.quantity = src.quantity
 	inventory_changed.emit()
 
 
@@ -163,28 +215,31 @@ func set_hotbar_selection(index: int) -> void:
 		hotbar_selection_changed.emit(hotbar_selection)
 
 
-## 使用当前快捷栏选中的物品
+## 使用当前快捷栏选中的物品（独立处理，不依赖 slots 引用）
 func use_hotbar_selection() -> void:
 	if hotbar_selection < 0 or hotbar_selection >= hotbar.size():
 		return
 	var slot := hotbar[hotbar_selection]
 	if slot.item == null or slot.quantity <= 0:
 		return
-	var idx := slots.find(slot)
-	if idx >= 0:
-		use_item(idx)
+	match slot.item.item_type:
+		InventoryItem.ItemType.CONSUMABLE:
+			var used: InventoryItem = slot.item
+			slot.quantity -= 1
+			if slot.quantity <= 0:
+				slot.quantity = 0
+			item_used.emit(used)
+			inventory_changed.emit()
+		InventoryItem.ItemType.SUMMON_BOOK:
+			equip_summon(slot.item)
+		_:
+			pass
 
 
 func _replace_slot(index: int, new_slot: InventorySlot) -> void:
 	if index < 0 or index >= slots.size():
 		return
 	slots[index] = new_slot
-	# 同步快捷栏引用
-	for i in hotbar.size():
-		if hotbar[i] == null or hotbar[i].item == null or (hotbar[i].item != null and hotbar[i].item.id == new_slot.item.id):
-			continue
-		if i < _HOTBAR_SLOT_COUNT and hotbar[i].item == null:
-			hotbar[i] = slots[i]
 
 
 ## ===== 存档序列化 =====
@@ -199,13 +254,18 @@ func to_dict() -> Dictionary:
 			})
 		else:
 			slots_data.append(null)
-	var hotbar_indices: Array[int] = []
-	for i in hotbar.size():
-		var idx := slots.find(hotbar[i])
-		hotbar_indices.append(idx if idx >= 0 else -1)
+	var hotbar_data: Array = []
+	for slot in hotbar:
+		if slot.item != null:
+			hotbar_data.append({
+				"item_id": slot.item.id,
+				"quantity": slot.quantity,
+			})
+		else:
+			hotbar_data.append(null)
 	return {
 		"slots": slots_data,
-		"hotbar_indices": hotbar_indices,
+		"hotbar_slots": hotbar_data,
 		"hotbar_selection": hotbar_selection,
 		"active_summon_id": active_summon_item.id if active_summon_item != null else "",
 	}
@@ -213,20 +273,20 @@ func to_dict() -> Dictionary:
 
 func from_dict(dict: Dictionary) -> void:
 	var slots_data: Array = dict.get("slots", [])
-	var hotbar_indices: Array = dict.get("hotbar_indices", [])
+	var hotbar_data: Array = dict.get("hotbar_slots", [])
 	hotbar_selection = clampi(int(dict.get("hotbar_selection", 0)), 0, _HOTBAR_SLOT_COUNT - 1)
 
 	# 清空现有数据
 	slots.clear()
 	hotbar.clear()
 
-	# 重建 slots
+	# 重建 slots 和 hotbar（独立）
 	for i in _DEFAULT_SLOT_COUNT:
 		slots.append(InventorySlot.new())
-		if i < _HOTBAR_SLOT_COUNT:
-			hotbar.append(slots[i])
+	for i in _HOTBAR_SLOT_COUNT:
+		hotbar.append(InventorySlot.new())
 
-	# 按存档恢复
+	# 按存档恢复 slots
 	for i in mini(slots_data.size(), _DEFAULT_SLOT_COUNT):
 		var entry = slots_data[i]
 		if entry == null:
@@ -240,11 +300,19 @@ func from_dict(dict: Dictionary) -> void:
 		slots[i].item = item
 		slots[i].quantity = clampi(int(entry.get("quantity", 1)), 0, item.max_stack if item.stackable else 1)
 
-	# 恢复快捷栏引用
-	for i in mini(hotbar_indices.size(), _HOTBAR_SLOT_COUNT):
-		var idx: int = hotbar_indices[i]
-		if idx >= 0 and idx < slots.size():
-			hotbar[i] = slots[idx]
+	# 恢复 hotbar
+	for i in mini(hotbar_data.size(), _HOTBAR_SLOT_COUNT):
+		var entry = hotbar_data[i]
+		if entry == null:
+			continue
+		var item_id: String = entry.get("item_id", "")
+		if item_id.is_empty():
+			continue
+		var item := _load_item_by_id(item_id)
+		if item == null:
+			continue
+		hotbar[i].item = item
+		hotbar[i].quantity = clampi(int(entry.get("quantity", 1)), 0, item.max_stack if item.stackable else 1)
 
 	# 恢复装备的召唤书
 	var summon_id: String = dict.get("active_summon_id", "")

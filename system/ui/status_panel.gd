@@ -1,6 +1,7 @@
 extends Node2D
 
 const FONT_HOTBAR := preload("res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf")
+const FONT_16 := preload("res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf")
 
 @export var stats:Stats
 
@@ -13,8 +14,6 @@ const FONT_HOTBAR := preload("res://assets/资源总库/11_字体/VonwaonBitmap-
 
 @onready var hearts_box: HBoxContainer = $Hearts
 @onready var inks_box: HBoxContainer = $Inks
-@onready var summon_skill: Control = $SummonSkill
-@onready var summon_bar: TextureProgressBar = $SummonSkill/CooldownBar
 @onready var heart_ink_stinger: AudioStreamPlayer = get_node_or_null("HeartInkStinger") as AudioStreamPlayer
 @onready var ink_recover_sfx: AudioStreamPlayer = get_node_or_null("InkRecoverSfx") as AudioStreamPlayer
 ## 快捷栏挂在玩家根下 ViewportHotbarHud（跟随视口）；可直接指向导出路径覆盖默认查找
@@ -25,6 +24,9 @@ var _inv_ref: PlayerInventory = null
 var _hotbar_frames: Array[PanelContainer] = []
 var _hotbar_icons: Array[TextureRect] = []
 var _hotbar_qtys: Array[Label] = []
+var _hotbar_qty_overlays: Array[Label] = []
+var _hotbar_static_masks: Array[ColorRect] = []
+var _hotbar_cd_bars: Array[ColorRect] = []
 var _hotbar_style_normal: StyleBoxFlat
 var _hotbar_style_selected: StyleBoxFlat
 
@@ -66,10 +68,18 @@ func _ready() -> void:
 	_hotbar_style_normal.bg_color = Color(0.1, 0.1, 0.12, 0.72)
 	_hotbar_style_normal.set_border_width_all(1)
 	_hotbar_style_normal.border_color = Color(0.38, 0.38, 0.42, 1.0)
+	_hotbar_style_normal.content_margin_left = 0
+	_hotbar_style_normal.content_margin_right = 0
+	_hotbar_style_normal.content_margin_top = 0
+	_hotbar_style_normal.content_margin_bottom = 0
 	_hotbar_style_selected = StyleBoxFlat.new()
 	_hotbar_style_selected.bg_color = Color(0.14, 0.16, 0.2, 0.85)
 	_hotbar_style_selected.set_border_width_all(2)
 	_hotbar_style_selected.border_color = Color(0.92, 0.82, 0.28, 1.0)
+	_hotbar_style_selected.content_margin_left = 0
+	_hotbar_style_selected.content_margin_right = 0
+	_hotbar_style_selected.content_margin_top = 0
+	_hotbar_style_selected.content_margin_bottom = 0
 	_build_hotbar_slots()
 	_bind_player_stats()
 	# 玩家 _ready（含 add_to_group / stats 统一）可能晚于 UI，这里下一帧再绑一次，确保连到真实玩家 stats
@@ -85,17 +95,6 @@ func _ready() -> void:
 	_target_ink_slots_full = _display_ink_slots_full
 	_sync_ink_slots_instant(_display_ink_slots_full)
 	_bind_inventory_ref()
-	_update_summon_skill_ui()
-	
-	# 占位：生成 1x1 白色纹理使 TextureProgressBar 可见；替换为真实贴图后删除此段
-	if summon_bar != null and summon_bar.texture_under == null:
-		var img := Image.create(1, 1, false, Image.FORMAT_RGBA8)
-		img.fill(Color.WHITE)
-		var tex := ImageTexture.create_from_image(img)
-		summon_bar.texture_under = tex
-		summon_bar.texture_progress = tex
-		summon_bar.tint_under = Color(0.12, 0.12, 0.12, 0.7)
-		summon_bar.tint_progress = Color(0.95, 0.9, 0.25, 1.0)
 
 
 func _rebind_stats_next_frame() -> void:
@@ -113,11 +112,10 @@ func _rebind_stats_next_frame() -> void:
 	_target_ink_slots_full = _display_ink_slots_full
 	_sync_ink_slots_instant(_display_ink_slots_full)
 	_bind_inventory_ref()
-	_update_summon_skill_ui()
 
 
 func _process(_delta: float) -> void:
-	_update_summon_skill_ui()
+	_update_hotbar_cd_bars()
 
 
 func _bind_player_stats() -> void:
@@ -159,25 +157,70 @@ func _build_hotbar_slots() -> void:
 		panel.custom_minimum_size = Vector2(30, 30)
 		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		panel.add_theme_stylebox_override(&"panel", _hotbar_style_normal)
-		var vb := VBoxContainer.new()
-		vb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		panel.add_child(vb)
+		var ctrl := Control.new()
+		ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ctrl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		ctrl.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		panel.add_child(ctrl)
 		var tr := TextureRect.new()
 		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		tr.custom_minimum_size = Vector2(22, 22)
 		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		vb.add_child(tr)
+		tr.position = Vector2(4, 4)
+		ctrl.add_child(tr)
 		var lb := Label.new()
 		lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		lb.add_theme_font_override(&"font", FONT_HOTBAR)
-		lb.add_theme_font_size_override(&"font_size", 10)
-		vb.add_child(lb)
+		lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lb.add_theme_font_override(&"font", FONT_16)
+		lb.add_theme_font_size_override(&"font_size", 22)
+		ctrl.add_child(lb)
+		var qty := Label.new()
+		qty.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		qty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		qty.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		qty.anchor_left = 0.0
+		qty.anchor_top = 0.0
+		qty.anchor_right = 1.0
+		qty.anchor_bottom = 1.0
+		qty.add_theme_font_override(&"font", FONT_HOTBAR)
+		qty.add_theme_font_size_override(&"font_size", 10)
+		ctrl.add_child(qty)
 		hotbar_row.add_child(panel)
 		_hotbar_frames.append(panel)
 		_hotbar_icons.append(tr)
 		_hotbar_qtys.append(lb)
+		_hotbar_qty_overlays.append(qty)
+		# 静态灰色掩膜：始终显示
+		var static_mask := ColorRect.new()
+		static_mask.color = Color(0.15, 0.15, 0.15, 0.35)
+		static_mask.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		static_mask.anchor_left = 0.0
+		static_mask.anchor_top = 0.0
+		static_mask.anchor_right = 1.0
+		static_mask.anchor_bottom = 1.0
+		static_mask.offset_left = 0
+		static_mask.offset_right = 0
+		static_mask.offset_top = 0
+		static_mask.offset_bottom = 0
+		ctrl.add_child(static_mask)
+		_hotbar_static_masks.append(static_mask)
+		# 动态 CD 条：灰色，从底部向上填充
+		var cd_bar := ColorRect.new()
+		cd_bar.color = Color(0.3, 0.3, 0.3, 0.65)
+		cd_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cd_bar.anchor_left = 0.0
+		cd_bar.anchor_top = 1.0
+		cd_bar.anchor_right = 1.0
+		cd_bar.anchor_bottom = 1.0
+		cd_bar.offset_left = 0
+		cd_bar.offset_right = 0
+		cd_bar.offset_top = 0
+		cd_bar.offset_bottom = 0
+		cd_bar.visible = false
+		ctrl.add_child(cd_bar)
+		_hotbar_cd_bars.append(cd_bar)
 
 
 func _bind_inventory_ref() -> void:
@@ -232,17 +275,58 @@ func _paint_hotbar_cell(idx: int, slot: Variant) -> void:
 		return
 	var tr := _hotbar_icons[idx]
 	var lb := _hotbar_qtys[idx]
+	var qty_lb := _hotbar_qty_overlays[idx]
 	if slot != null and slot.item != null:
 		tr.texture = slot.item.icon
 		tr.visible = slot.item.icon != null
-		if slot.item.stackable and slot.quantity > 1:
-			lb.text = str(slot.quantity)
+		if slot.item.icon == null:
+			lb.text = _slot_char(slot.item)
+			lb.visible = true
 		else:
 			lb.text = ""
+			lb.visible = false
+		qty_lb.text = str(slot.quantity)
 	else:
 		tr.texture = null
 		tr.visible = false
 		lb.text = ""
+		lb.visible = false
+		qty_lb.text = ""
+
+
+func _slot_char(item: InventoryItem) -> String:
+	match item.id:
+		&"summon_shangyang": return "商"
+		&"summon_zhong": return "重"
+		&"summon_hui": return "恢"
+		_: return item.name[-1]
+
+
+func _update_hotbar_cd_bars() -> void:
+	if _hotbar_cd_bars.is_empty():
+		return
+	var p := get_tree().get_first_node_in_group(&"player")
+	if p == null:
+		for bar in _hotbar_cd_bars:
+			bar.visible = false
+		return
+	var ratio := 0.0
+	var active_slot := -1
+	if p.has_method("get_consumable_cooldown_ratio"):
+		ratio = clampf(float(p.call("get_consumable_cooldown_ratio")), 0.0, 1.0)
+	if _inv_ref != null and ratio > 0.01:
+		active_slot = _inv_ref.hotbar_selection
+	for i in _hotbar_cd_bars.size():
+		var bar := _hotbar_cd_bars[i]
+		if i == active_slot:
+			bar.visible = true
+			var panel_h := _hotbar_frames[i].size.y
+			if panel_h > 0:
+				bar.offset_top = -int(panel_h * (1.0 - ratio))
+			else:
+				bar.offset_top = -int(30.0 * (1.0 - ratio))
+		else:
+			bar.visible = false
 
 
 func _on_health_changed() -> void:
@@ -541,31 +625,6 @@ func _try_start_recover_chain_on_leftmost_empty() -> void:
 	_recovering_slot = s
 	if _recovering_slot.has_method("start_recover"):
 		_recovering_slot.call("start_recover", {})
-
-
-func _update_summon_skill_ui() -> void:
-	if summon_skill == null:
-		return
-	var p := get_tree().get_first_node_in_group("player")
-	if p == null:
-		if summon_bar != null:
-			summon_bar.visible = false
-			summon_bar.value = 0.0
-		return
-	var show_summon_bar := false
-	var inv := p.get_node_or_null("PlayerInventory") as PlayerInventory
-	if inv != null and inv.active_summon_item != null \
-			and inv.active_summon_item.item_type == InventoryItem.ItemType.SUMMON_BOOK:
-		show_summon_bar = true
-
-	if summon_bar != null:
-		summon_bar.visible = show_summon_bar
-
-	var cooldown_ratio := 0.0
-	if p.has_method("get_summon_cooldown_ratio"):
-		cooldown_ratio = clampf(float(p.call("get_summon_cooldown_ratio")), 0.0, 1.0)
-	if summon_bar != null:
-		summon_bar.value = cooldown_ratio
 
 
 func _left_neighbor_slot(slot: Node) -> Node:

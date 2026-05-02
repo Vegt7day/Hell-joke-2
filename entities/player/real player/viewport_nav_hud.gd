@@ -1,8 +1,8 @@
 extends Control
 
-@onready var _btn_menu: Button = $BtnMenuNav
-@onready var _btn_pack: Button = $BtnPackNav
-@onready var _btn_map: Button = $BtnMapNav
+@onready var _btn_menu: TextureButton = $MenuBtnGroup/BtnGroup_Menu/BtnMenu
+@onready var _btn_pack: TextureButton = $MenuBtnGroup/BtnGroup_Pack/BtnPack
+@onready var _btn_map: TextureButton = $MenuBtnGroup/BtnGroup_Map/BtnMap
 
 
 func _ready() -> void:

@@ -1,0 +1,2576 @@
+[node name="Slot0" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot0"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot0/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot0/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot0/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot1" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot1"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot1/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot1/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot1/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot2" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot2"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot2/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot2/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot2/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot3" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot3"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot3/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot3/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot3/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot4" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot4"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot4/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot4/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot4/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot5" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot5"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot5/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot5/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot5/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot6" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot6"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot6/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot6/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot6/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot7" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot7"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot7/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot7/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot7/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot8" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot8"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot8/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot8/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot8/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot9" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot9"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot9/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot9/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot9/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot10" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot10"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot10/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot10/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot10/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot11" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot11"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot11/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot11/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot11/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot12" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot12"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot12/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot12/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot12/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot13" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot13"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot13/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot13/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot13/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot14" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot14"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot14/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot14/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot14/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot15" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot15"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot15/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot15/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot15/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot16" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot16"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot16/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot16/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot16/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot17" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot17"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot17/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot17/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot17/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot18" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot18"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot18/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot18/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot18/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot19" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot19"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot19/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot19/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot19/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot20" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot20"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot20/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot20/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot20/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot21" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot21"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot21/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot21/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot21/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot22" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot22"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot22/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot22/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot22/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot23" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot23"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot23/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot23/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot23/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot24" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot24"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot24/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot24/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot24/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot25" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot25"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot25/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot25/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot25/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot26" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot26"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot26/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot26/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot26/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot27" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot27"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot27/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot27/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot27/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot28" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot28"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot28/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot28/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot28/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot29" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot29"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot29/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot29/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot29/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot30" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot30"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot30/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot30/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot30/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot31" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot31"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot31/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot31/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot31/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot32" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot32"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot32/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot32/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot32/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot33" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot33"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot33/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot33/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot33/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot34" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot34"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot34/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot34/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot34/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot35" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot35"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot35/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot35/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot35/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot36" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot36"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot36/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot36/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot36/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot37" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot37"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot37/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot37/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot37/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot38" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot38"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot38/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot38/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot38/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot39" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot39"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot39/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot39/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot39/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot40" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot40"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot40/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot40/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot40/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot41" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot41"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot41/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot41/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot41/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot42" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot42"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot42/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot42/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot42/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot43" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot43"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot43/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot43/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot43/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot44" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot44"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot44/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot44/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot44/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot45" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot45"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot45/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot45/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot45/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot46" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot46"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot46/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot46/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot46/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot47" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot47"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot47/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 25.0
+offset_bottom = 25.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot47/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/SlotGrid/Slot47/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot100" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot100"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot100/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot100/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot100/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot101" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot101"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot101/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot101/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot101/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot102" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot102"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot102/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot102/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot102/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot103" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot103"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot103/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot103/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot103/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot104" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot104"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot104/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot104/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot104/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot105" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot105"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot105/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot105/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot105/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot106" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot106"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot106/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot106/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot106/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+
+[node name="Slot107" type="PanelContainer" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Ctrl" type="Control" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot107"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot107/Ctrl"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 26.0
+offset_bottom = 26.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Char" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot107/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Count" type="Label" parent="Root/back/Center/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/HotbarRow/Slot107/Ctrl"]
+layout_mode = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 9
+

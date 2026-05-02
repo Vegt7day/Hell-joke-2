@@ -1,0 +1,50 @@
+[gd_resource type="Theme" format=3 uid="uid://chtf1bqobban"]
+
+[ext_resource type="Texture2D" uid="uid://cr3owag2lwpt" path="res://assets/资源总库/03_图像_UI/按钮.png" id="1_anniu"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="1_iycyt"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0y86m"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hvr"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+texture = ExtResource("1_anniu")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(80, 20, 32, 24)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nrm"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+texture = ExtResource("1_anniu")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(16, 20, 32, 24)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_prs"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+texture = ExtResource("1_anniu")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(144, 20, 32, 24)
+
+[resource]
+Button/font_sizes/font_size = 12
+Button/fonts/font = ExtResource("1_iycyt")
+Button/styles/disabled = SubResource("StyleBoxTexture_0y86m")
+Button/styles/hover = SubResource("StyleBoxTexture_hvr")
+Button/styles/normal = SubResource("StyleBoxTexture_nrm")
+Button/styles/pressed = SubResource("StyleBoxTexture_prs")

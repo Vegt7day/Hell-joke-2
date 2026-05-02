@@ -1,184 +1,269 @@
 [gd_scene format=3 uid="uid://b5l7gmkve2ie"]
 
-[ext_resource type="Script" path="res://system/ui/inventory/inventory_ui.gd" id="1_inv"]
+[ext_resource type="Script" uid="uid://ds0rui83hnf3v" path="res://system/ui/inventory/inventory_ui.gd" id="1_inv"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="2_7xf2a"]
 [ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="5_theme"]
+[ext_resource type="Texture2D" uid="uid://c4g2y8j3l5k6p" path="res://assets/资源总库/03_图像_UI/格子.png" id="6_slot"]
+[ext_resource type="FontFile" uid="uid://curhgal5n7wab" path="res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf" id="7_f30no"]
 
-[node name="InventoryUi" type="CanvasLayer"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mvvx3"]
+texture = ExtResource("6_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(1, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_desc"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = ExtResource("6_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(1, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fqat4"]
+texture = ExtResource("6_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(1, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_slot_normal"]
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
+texture = ExtResource("6_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(1, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_slot_selected"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+texture = ExtResource("6_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+region_rect = Rect2(17, 1, 14, 14)
+
+[node name="InventoryUi" type="CanvasLayer" unique_id=1743018775]
 layer = 115
 script = ExtResource("1_inv")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1446407907]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+theme = ExtResource("5_theme")
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="back" type="NinePatchRect" parent="Root" unique_id=958294881]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 608.0
+offset_bottom = 328.0
+texture = ExtResource("2_7xf2a")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="Center" type="CenterContainer" parent="Root/back" unique_id=982253782]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
-color = Color(0.06, 0.06, 0.08, 0.82)
 
-[node name="Center" type="CenterContainer" parent="Root"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MainPanel" type="PanelContainer" parent="Root/Center"]
-custom_minimum_size = Vector2(608, 0)
+[node name="MainVBox" type="VBoxContainer" parent="Root/back/Center" unique_id=1172410664]
 layout_mode = 2
+theme_override_constants/separation = 4
 
-[node name="MainVBox" type="VBoxContainer" parent="Root/Center/MainPanel"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="TitleLabel" type="Label" parent="Root/Center/MainPanel/MainVBox"]
-layout_mode = 2
-text = "背包"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-horizontal_alignment = 1
-
-[node name="BodyHBox" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox"]
+[node name="DragArea" type="Control" parent="Root/back/Center/MainVBox" unique_id=1318982560]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+mouse_filter = 2
 
-[node name="LeftGrow" type="Control" parent="Root/Center/MainPanel/MainVBox/BodyHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="PanelGrid2" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=2078252821]
+layout_mode = 0
+offset_left = -256.0
+offset_top = -116.0
+offset_right = 40.0
+offset_bottom = -84.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_mvvx3")
 
-[node name="PageCenter" type="CenterContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LeftColumn" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="HotbarHint" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
-layout_mode = 2
-text = "快捷栏：1–8 切换选中格"
-theme_override_fonts/font = ExtResource("2_f12")
-theme_override_font_sizes/font_size = 11
-horizontal_alignment = 1
-
-[node name="HotbarRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+[node name="HotbarRow" type="HBoxContainer" parent="Root/back/Center/MainVBox/DragArea/PanelGrid2" unique_id=378900536]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="SlotGrid" type="GridContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+[node name="PanelGrid" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=413577379]
+layout_mode = 0
+offset_left = -256.0
+offset_top = -68.0
+offset_right = 40.0
+offset_bottom = 116.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_mvvx3")
+
+[node name="GridVBox" type="VBoxContainer" parent="Root/back/Center/MainVBox/DragArea/PanelGrid" unique_id=716684399]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SlotGrid" type="GridContainer" parent="Root/back/Center/MainVBox/DragArea/PanelGrid/GridVBox" unique_id=1529352841]
+custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_filter = 2
 theme_override_constants/h_separation = 3
 theme_override_constants/v_separation = 3
 columns = 8
 
-[node name="PageNavRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn"]
+[node name="PageNavRow" type="HBoxContainer" parent="Root/back/Center/MainVBox/DragArea/PanelGrid/GridVBox" unique_id=1322024917]
 layout_mode = 2
-alignment = 1
 theme_override_constants/separation = 10
+alignment = 1
 
-[node name="BtnPagePrev" type="Button" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+[node name="BtnPagePrev" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelGrid/GridVBox/PageNavRow" unique_id=1229068543]
 custom_minimum_size = Vector2(36, 26)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 14
 text = "<"
 
-[node name="PageLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+[node name="PageLabel" type="Label" parent="Root/back/Center/MainVBox/DragArea/PanelGrid/GridVBox/PageNavRow" unique_id=1457860047]
 custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
 theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
-horizontal_alignment = 1
 text = "第 1 / 3 页"
+horizontal_alignment = 1
 
-[node name="BtnPageNext" type="Button" parent="Root/Center/MainPanel/MainVBox/BodyHBox/LeftGrow/PageCenter/LeftColumn/PageNavRow"]
+[node name="BtnPageNext" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelGrid/GridVBox/PageNavRow" unique_id=923028470]
 custom_minimum_size = Vector2(36, 26)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 14
 text = ">"
 
-[node name="RightVBox" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox"]
-custom_minimum_size = Vector2(218, 0)
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="DetailPanel" type="PanelContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox"]
-layout_mode = 2
+[node name="DescPanel" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1387438086]
+layout_mode = 0
+offset_left = 56.0
+offset_top = -116.0
+offset_right = 256.0
+offset_bottom = 116.0
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_desc")
 
-[node name="DetailVBox" type="VBoxContainer" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel"]
+[node name="DetailVBox" type="VBoxContainer" parent="Root/back/Center/MainVBox/DragArea/DescPanel" unique_id=294687123]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ItemIconLarge" type="TextureRect" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
-custom_minimum_size = Vector2(96, 96)
+[node name="DetailTitle" type="Label" parent="Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox" unique_id=453703120]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 15
+text = "详情"
+horizontal_alignment = 1
+
+[node name="ItemIconLarge" type="TextureRect" parent="Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox" unique_id=694549154]
+custom_minimum_size = Vector2(62, 64)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ItemNameLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
+[node name="ItemNameLabel" type="Label" parent="Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox" unique_id=328263069]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "——"
 horizontal_alignment = 1
 autowrap_mode = 3
-text = "——"
 
-[node name="ItemDescLabel" type="Label" parent="Root/Center/MainPanel/MainVBox/BodyHBox/RightVBox/DetailPanel/DetailVBox"]
-custom_minimum_size = Vector2(190, 108)
+[node name="ItemDescLabel" type="Label" parent="Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox" unique_id=2003254765]
+custom_minimum_size = Vector2(190, 100)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 11
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 autowrap_mode = 3
-text = ""
 
-[node name="BtnRow" type="HBoxContainer" parent="Root/Center/MainPanel/MainVBox"]
+[node name="PanelActions" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1963918619]
+layout_mode = 0
+offset_left = -128.0
+offset_top = 156.0
+offset_right = 168.0
+offset_bottom = 196.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_fqat4")
+
+[node name="BtnRow" type="HBoxContainer" parent="Root/back/Center/MainVBox/DragArea/PanelActions" unique_id=208460843]
 layout_mode = 2
+theme_override_constants/separation = 38
 alignment = 1
-theme_override_constants/separation = 10
 
-[node name="BtnUse" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
-custom_minimum_size = Vector2(78, 28)
+[node name="BtnUse" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=1842281673]
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 13
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("7_f30no")
+theme_override_font_sizes/font_size = 12
 text = "使用"
 
-[node name="BtnDrop" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
-custom_minimum_size = Vector2(78, 28)
+[node name="BtnDrop" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=1037555477]
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 13
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("7_f30no")
+theme_override_font_sizes/font_size = 12
 text = "丢弃"
 
-[node name="BtnUnequipSummon" type="Button" parent="Root/Center/MainPanel/MainVBox/BtnRow"]
-custom_minimum_size = Vector2(92, 28)
+[node name="BtnUnequipSummon" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=520174686]
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 13
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("7_f30no")
+theme_override_font_sizes/font_size = 12
 text = "卸下召唤"
+
+[node name="SlotStyleNormal" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1939376326]
+layout_mode = 0
+offset_left = -336.0
+offset_top = -52.0
+offset_right = -312.0
+offset_bottom = -28.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_slot_normal")
+
+[node name="SlotStyleSelected" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1083292999]
+layout_mode = 0
+offset_left = -320.0
+offset_top = 4.0
+offset_right = -296.0
+offset_bottom = 28.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_slot_selected")

@@ -1,13 +1,13 @@
 class_name PauseMenu
 extends CanvasLayer
 
-@onready var page_main: VBoxContainer = $Root/Center/PageMain
+@onready var page_main: VBoxContainer = $Root/Center/back/PageMargin/PageMain
 @onready var page_settings: Control = $Root/Center/PageSettings
-@onready var btn_resume: Button = $Root/Center/PageMain/BtnResume
-@onready var btn_settings: Button = $Root/Center/PageMain/BtnSettings
-@onready var btn_load: Button = $Root/Center/PageMain/BtnLoad
-@onready var btn_title: Button = $Root/Center/PageMain/BtnTitle
-@onready var btn_quit: Button = $Root/Center/PageMain/BtnQuit
+@onready var btn_resume: Button = $Root/Center/back/PageMargin/PageMain/BtnResume
+@onready var btn_settings: Button = $Root/Center/back/PageMargin/PageMain/BtnSettings
+@onready var btn_load: Button = $Root/Center/back/PageMargin/PageMain/BtnLoad
+@onready var btn_title: Button = $Root/Center/back/PageMargin/PageMain/BtnTitle
+@onready var btn_quit: Button = $Root/Center/back/PageMargin/PageMain/BtnQuit
 
 var _in_settings: bool = false
 
@@ -67,7 +67,7 @@ func _on_settings() -> void:
 	page_settings.visible = true
 	if page_settings.has_method(&"refresh_from_game"):
 		page_settings.call(&"refresh_from_game")
-	var back_btn_path := NodePath("Center/VBox/BtnBack")
+	var back_btn_path := NodePath("Center/back/PageMargin/VBox/BtnBack")
 	if page_settings.has_node(back_btn_path):
 		(page_settings.get_node(back_btn_path) as Button).grab_focus()
 

@@ -16,6 +16,8 @@
 [ext_resource type="PackedScene" uid="uid://dq2qesyce1l7i" path="res://system/camera/camera_cue_pan_to_marker.tscn" id="15_n3x6w"]
 [ext_resource type="Texture2D" uid="uid://bq7dj4g5ypx4c" path="res://assets/资源总库/03_图像_UI/清醒特效.png" id="15_ora6b"]
 [ext_resource type="PackedScene" uid="uid://dxuk4e0g6cme1" path="res://system/可交互物/洞.tscn" id="16_ora6b"]
+[ext_resource type="PackedScene" uid="uid://dcph1otarn6qv" path="res://system/levels/world3/props/item_summon_hui_pickup.tscn" id="17_25h3u"]
+[ext_resource type="PackedScene" uid="uid://djl3e613gt64v" path="res://system/levels/world3/props/item_summon_zhong_pickup.tscn" id="18_jgrmb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8yweu"]
 texture = ExtResource("2_o4usy")
@@ -405,3 +407,9 @@ position = Vector2(160, 640)
 
 [node name="洞31" parent="Node" unique_id=1842871235 instance=ExtResource("16_ora6b")]
 position = Vector2(192, 640)
+
+[node name="ItemSummonHuiPickup" parent="." unique_id=167383006 instance=ExtResource("17_25h3u")]
+position = Vector2(-672, 608)
+
+[node name="ItemSummonZhongPickup" parent="." unique_id=56173775 instance=ExtResource("18_jgrmb")]
+position = Vector2(-736, 608)

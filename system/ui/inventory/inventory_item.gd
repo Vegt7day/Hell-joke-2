@@ -20,3 +20,6 @@ enum ItemType {
 @export var max_stack: int = 1            ## 最大堆叠数（可堆叠时）
 @export var item_type: ItemType           ## 物品类型
 @export var use_animation: String = ""    ## 使用时的玩家动画名称（可选）
+@export var effect_id: StringName = &""  ## 效果标识，如 "zhong"、"hui"
+@export var effect_duration: float = 0.0 ## 效果持续时间（秒），0 表示瞬时
+@export var effect_value: float = 0.0    ## 效果数值（如回复量）

@@ -147,6 +147,15 @@ var summon_cooldown_timer: float = 0.0
 var can_summon: bool = true
 var animation_complete_connected: bool = false  # 动画完成信号连接标志
 
+## 消耗品使用后等待 draw 动画结束再执行效果
+var _pending_item_effect: InventoryItem = null
+## "重"效果：生效期间无视 world3 马撞击
+var _zhong_active: bool = false
+var _zhong_timer: float = 0.0
+## 消耗品公共 CD
+var consumable_cooldown_timer: float = 0.0
+var consumable_cooldown_duration: float = 1.5
+
 # 输入控制相关变量
 @export var enable_input_control: bool = true
 var disabled_actions: Dictionary = {}
@@ -223,25 +232,56 @@ func _ensure_inventory_after_ready() -> void:
 		return
 	if not inv.item_used.is_connected(_on_inventory_item_used):
 		inv.item_used.connect(_on_inventory_item_used)
-	if shangyang_summon_unlocked and inv.active_summon_item == null:
-		for slot in inv.slots:
-			if slot.item != null and slot.item.id == SUMMON_SHANGYANG_ID:
-				inv.equip_summon(slot.item)
-				break
 
 
 func _on_inventory_item_used(item: InventoryItem) -> void:
 	if item == null:
 		return
+	# 需要 draw 动画的物品：先进入 SUMMON_START，动画结束后再执行效果
+	if not item.use_animation.is_empty():
+		_pending_item_effect = item
+		change_state(PlayerState.SUMMON_START)
+		return
+	_execute_item_effect(item)
+
+
+func _execute_item_effect(item: InventoryItem) -> void:
 	match item.id:
 		&"potion_health":
 			if stats != null:
 				stats.health += 1
 		&"potion_speed":
 			push_warning("加速药效果占位（Phase 2）")
+		&"summon_zhong":
+			_zhong_active = true
+			_zhong_timer = item.effect_duration if item.effect_duration > 0 else 8.0
+			_spawn_pixel_text_at_front("重")
+		&"summon_hui":
+			if stats != null:
+				var heal := int(item.effect_value) if item.effect_value > 0 else 4
+				stats.health += heal
+			_spawn_pixel_text_at_front("恢")
+		&"summon_shangyang":
+			if not shangyang_summon_unlocked:
+				return
+			if has_active_summoned_shangyang():
+				return
+			var pre_summon := shangyang_summon_scene.instantiate() as ShangYang
+			if pre_summon == null:
+				return
+			var sum_pos := calculate_summon_position()
+			var boss_fatal := _boss_fatal_summon_warning_active()
+			get_parent().add_child(pre_summon)
+			pre_summon.global_position = sum_pos
+			if boss_fatal and pre_summon.has_method("setup_summoned_for_boss_fatal_warning"):
+				pre_summon.setup_summoned_for_boss_fatal_warning()
+				_notify_boss_warning_summon_ready(pre_summon)
+			else:
+				pre_summon.switch_to_summoned_mode()
+			_spawn_pixel_text_at_front("商")
 		_:
 			pass
-
+	consumable_cooldown_timer = consumable_cooldown_duration
 
 func _resolve_and_bind_stats_source() -> void:
 	# 统一血量数据源：优先使用玩家场景下的 Stats（便于在角色预制上直接调参），并同步给 Game 全局引用
@@ -363,11 +403,16 @@ func enter_state(state: PlayerState):
 				# 播放召唤音效
 				if summon_sound:
 					summon_sound.play()
-				# 在动画中延迟召唤
-				summon_delay_timer.start()
+				# 仅召唤商鞅时启动延迟计时器；消耗品使用走 _pending_item_effect 流程
+				if _pending_item_effect == null:
+					summon_delay_timer.start()
 			else:
-				# 如果没有draw动画，直接召唤
-				execute_summon()
+				# 如果没有draw动画，直接执行
+				if _pending_item_effect != null:
+					_execute_item_effect(_pending_item_effect)
+					_pending_item_effect = null
+				else:
+					execute_summon()
 				change_state(PlayerState.SUMMON_END)
 			
 		PlayerState.SUMMON_END:
@@ -437,6 +482,16 @@ func handle_common_updates(delta: float):
 		summon_cooldown_timer -= delta
 		if summon_cooldown_timer <= 0:
 			can_summon = true
+	
+	# 处理"重"效果计时
+	if _zhong_active:
+		_zhong_timer -= delta
+		if _zhong_timer <= 0.0:
+			_zhong_active = false
+	
+	# 消耗品公共 CD
+	if consumable_cooldown_timer > 0:
+		consumable_cooldown_timer -= delta
 
 # ========== 状态更新函数 ==========
 func update_idle(delta: float):
@@ -737,15 +792,12 @@ func calculate_summon_position() -> Vector2:
 
 
 func _try_use_action() -> void:
-	# F（InputMap: summon）：仅召唤 + 快捷栏消耗；世界交互只用 E（interact）
+	# F（InputMap: summon）：使用当前快捷栏物品；世界交互只用 E（interact）
 	if not enable_input_control:
 		return
 	if not Input.is_action_just_pressed("summon"):
 		return
 	if current_state == PlayerState.SUMMON_START or current_state == PlayerState.STUNNED:
-		return
-	if can_summon_shangyang_now():
-		try_summon_shangyang()
 		return
 	if is_instance_valid(Game) and Game.has_method("inventory_ui_is_open") and not Game.inventory_ui_is_open():
 		var inv_u := get_node_or_null("PlayerInventory") as PlayerInventory
@@ -945,8 +997,11 @@ func _on_animation_finished(anim_name: String):
 	"""动画播放完成时的回调"""
 	match current_state:
 		PlayerState.SUMMON_START:
-			# draw动画播放完成，进入SUMMON_END状态
 			if anim_name == "draw":
+				# 消耗品使用：draw 结束后执行效果
+				if _pending_item_effect != null:
+					_execute_item_effect(_pending_item_effect)
+					_pending_item_effect = null
 				change_state(PlayerState.SUMMON_END)
 		
 		# 其他状态的处理保持不变
@@ -994,6 +1049,8 @@ func calculate_shoot_position() -> Vector2:
 
 ## 被 World3 马身撞击区调用：按撞击冲量设定速度（不计入撞击前速度），带全局限流。
 func apply_bump_from_horse(impulse: Vector2) -> bool:
+	if _zhong_active:          # 重生效期间免疫马撞击
+		return false
 	if impulse.length_squared() < 1.0:
 		return false
 	if current_state == PlayerState.ATTACK_START or current_state == PlayerState.ATTACK_SHOOT or current_state == PlayerState.ATTACK_END:
@@ -1038,6 +1095,31 @@ func recover_full_health_once(interaction_id: String) -> bool:
 	if heal_sound != null and heal_sound.stream != null:
 		heal_sound.play()
 	return true
+
+
+func get_consumable_cooldown_ratio() -> float:
+	if consumable_cooldown_duration <= 0.001:
+		return 0.0
+	return clampf((consumable_cooldown_duration - consumable_cooldown_timer) / consumable_cooldown_duration, 0.0, 1.0)
+
+
+func _spawn_pixel_text_at_front(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_override(&"font", preload("res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf"))
+	label.add_theme_font_size_override(&"font_size", 32)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.pivot_offset = Vector2(8, 16)
+	var spawn_x := global_position.x + (40.0 if direction == 1 else -40.0)
+	label.global_position = Vector2(spawn_x, global_position.y - 20.0)
+	get_parent().add_child(label)
+	label.modulate.a = 0.0
+	var tw := label.create_tween()
+	tw.tween_property(label, "modulate:a", 1.0, 0.15)
+	tw.tween_interval(0.45)
+	tw.tween_property(label, "modulate:a", 0.0, 0.3)
+	tw.tween_callback(label.queue_free)
 
 
 func _hurt_flash_modulate_toward_white(base: Color, blend: float) -> Color:
@@ -1151,6 +1233,43 @@ func _input(event):
 			Input.action_press("summon")
 		elif not event.pressed and event.keycode == KEY_F:
 			Input.action_release("summon")
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not enable_input_control:
+		return
+	# 左键攻击
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if can_attack_now():
+			start_attack()
+			get_viewport().set_input_as_handled()
+		return
+	# 右键使用当前快捷栏物品
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		var inv := get_node_or_null("PlayerInventory") as PlayerInventory
+		if inv != null and inv.hotbar_selection >= 0 and inv.hotbar_selection < inv.hotbar.size():
+			inv.use_hotbar_selection()
+		get_viewport().set_input_as_handled()
+		return
+	# 滚轮切换快捷栏选中
+	if event is InputEventMouseButton and event.pressed:
+		var inv := get_node_or_null("PlayerInventory") as PlayerInventory
+		if inv == null:
+			return
+		var dir := 0
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			dir = -1
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			dir = 1
+		if dir != 0:
+			var sz := inv.hotbar.size()
+			if sz > 0:
+				var new_idx := (inv.hotbar_selection + dir) % sz
+				if new_idx < 0:
+					new_idx += sz
+				inv.set_hotbar_selection(new_idx)
+			get_viewport().set_input_as_handled()
+
 
 func _init_input_control():
 	var actions_to_monitor = ["move_left", "move_right", "jump", "attack", "summon"]

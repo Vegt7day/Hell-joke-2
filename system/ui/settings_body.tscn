@@ -1,20 +1,35 @@
 [gd_scene format=3 uid="uid://ksq30htx5qmm"]
 
-[ext_resource type="Script" path="res://system/ui/settings_body.gd" id="1_sb"]
+[ext_resource type="Script" uid="uid://4j4tk8vg1b5i" path="res://system/ui/settings_body.gd" id="1_sb"]
 [ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="4_theme"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="5_bg"]
+[ext_resource type="FontFile" uid="uid://ba7c2komi8rsr" path="res://addons/dialogic/样式/字体/VonwaonBitmap-16px.ttf" id="5_pxxqt"]
 
-[node name="SettingsBody" type="Control"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("5_bg")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 143, 108)
+
+[node name="SettingsBody" type="Control" unique_id=1031326916]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+theme = ExtResource("4_theme")
 script = ExtResource("1_sb")
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="CenterContainer" parent="." unique_id=203683971]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,41 +37,53 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Center"]
+[node name="back" type="PanelContainer" parent="Center" unique_id=762640824]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_back")
+
+[node name="PageMargin" type="MarginContainer" parent="Center/back" unique_id=300204146]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Center/back/PageMargin" unique_id=1705820439]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TitleLabel" type="Label" parent="Center/VBox"]
+[node name="TitleLabel" type="Label" parent="Center/back/PageMargin/VBox" unique_id=787675792]
 layout_mode = 2
-text = "设置"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 24
+text = "设 置"
 horizontal_alignment = 1
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 32
-theme_override_colors/font_color = Color(1, 1, 1, 1)
 
-[node name="AudioSection" type="VBoxContainer" parent="Center/VBox"]
+[node name="AudioSection" type="VBoxContainer" parent="Center/back/PageMargin/VBox" unique_id=185400458]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AudioHint" type="Label" parent="Center/VBox/AudioSection"]
+[node name="AudioHint" type="Label" parent="Center/back/PageMargin/VBox/AudioSection" unique_id=1251274158]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_pxxqt")
+theme_override_font_sizes/font_size = 16
 text = "音量"
-theme_override_fonts/font = ExtResource("2_f12")
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 
-[node name="MasterRow" type="HBoxContainer" parent="Center/VBox/AudioSection"]
+[node name="MasterRow" type="HBoxContainer" parent="Center/back/PageMargin/VBox/AudioSection" unique_id=631261230]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="LblMaster" type="Label" parent="Center/VBox/AudioSection/MasterRow"]
+[node name="LblMaster" type="Label" parent="Center/back/PageMargin/VBox/AudioSection/MasterRow" unique_id=631135129]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
 text = "主音量"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="HSlider" type="HSlider" parent="Center/VBox/AudioSection/MasterRow"]
+[node name="HSlider" type="HSlider" parent="Center/back/PageMargin/VBox/AudioSection/MasterRow" unique_id=350132065]
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -64,102 +91,107 @@ max_value = 1.0
 step = 0.01
 value = 1.0
 
-[node name="BgmRow" type="HBoxContainer" parent="Center/VBox/AudioSection"]
+[node name="BgmRow" type="HBoxContainer" parent="Center/back/PageMargin/VBox/AudioSection" unique_id=1883319169]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="LblBgm" type="Label" parent="Center/VBox/AudioSection/BgmRow"]
+[node name="LblBgm" type="Label" parent="Center/back/PageMargin/VBox/AudioSection/BgmRow" unique_id=2025656562]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
-text = "BGM"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
-
-[node name="HSlider" type="HSlider" parent="Center/VBox/AudioSection/BgmRow"]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="SfxRow" type="HBoxContainer" parent="Center/VBox/AudioSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="LblSfx" type="Label" parent="Center/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(72, 0)
-layout_mode = 2
-text = "音效"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
-
-[node name="HSlider" type="HSlider" parent="Center/VBox/AudioSection/SfxRow"]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="UiRow" type="HBoxContainer" parent="Center/VBox/AudioSection"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="LblUi" type="Label" parent="Center/VBox/AudioSection/UiRow"]
-custom_minimum_size = Vector2(72, 0)
-layout_mode = 2
-text = "界面"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
-
-[node name="HSlider" type="HSlider" parent="Center/VBox/AudioSection/UiRow"]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="DisplaySection" type="VBoxContainer" parent="Center/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="DisplayHint" type="Label" parent="Center/VBox/DisplaySection"]
-layout_mode = 2
-text = "显示"
 theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+text = "BGM"
 
-[node name="CheckFullscreen" type="CheckBox" parent="Center/VBox/DisplaySection"]
+[node name="HSlider" type="HSlider" parent="Center/back/PageMargin/VBox/AudioSection/BgmRow" unique_id=385765359]
+custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
-text = "全屏"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
 
-[node name="ResolutionRow" type="HBoxContainer" parent="Center/VBox/DisplaySection"]
+[node name="SfxRow" type="HBoxContainer" parent="Center/back/PageMargin/VBox/AudioSection" unique_id=683207748]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="LblRes" type="Label" parent="Center/VBox/DisplaySection/ResolutionRow"]
+[node name="LblSfx" type="Label" parent="Center/back/PageMargin/VBox/AudioSection/SfxRow" unique_id=2067059312]
+custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
+text = "音效"
+
+[node name="HSlider" type="HSlider" parent="Center/back/PageMargin/VBox/AudioSection/SfxRow" unique_id=1259684018]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="UiRow" type="HBoxContainer" parent="Center/back/PageMargin/VBox/AudioSection" unique_id=948491803]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LblUi" type="Label" parent="Center/back/PageMargin/VBox/AudioSection/UiRow" unique_id=1215667546]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
+text = "界面"
+
+[node name="HSlider" type="HSlider" parent="Center/back/PageMargin/VBox/AudioSection/UiRow" unique_id=794071010]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="DisplaySection" type="VBoxContainer" parent="Center/back/PageMargin/VBox" unique_id=1881126422]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DisplayHint" type="Label" parent="Center/back/PageMargin/VBox/DisplaySection" unique_id=1913196527]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_pxxqt")
+theme_override_font_sizes/font_size = 16
+text = "显示"
+
+[node name="ResolutionRow" type="HBoxContainer" parent="Center/back/PageMargin/VBox/DisplaySection" unique_id=1260498997]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LblRes" type="Label" parent="Center/back/PageMargin/VBox/DisplaySection/ResolutionRow" unique_id=107387790]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
 text = "窗口分辨率"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="OptionResolution" type="OptionButton" parent="Center/VBox/DisplaySection/ResolutionRow"]
-custom_minimum_size = Vector2(200, 0)
+[node name="OptionResolution" type="OptionButton" parent="Center/back/PageMargin/VBox/DisplaySection/ResolutionRow" unique_id=1386247663]
+custom_minimum_size = Vector2(156, 24)
 layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme = ExtResource("4_theme")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
 
-[node name="BtnBack" type="Button" parent="Center/VBox"]
-custom_minimum_size = Vector2(240, 40)
+[node name="CheckFullscreen" type="CheckBox" parent="Center/back/PageMargin/VBox/DisplaySection/ResolutionRow" unique_id=210370273]
 layout_mode = 2
-text = "返回"
+size_flags_horizontal = 10
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
+text = "全屏"
+
+[node name="BtnBack" type="Button" parent="Center/back/PageMargin/VBox" unique_id=26670120]
+layout_mode = 2
+size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 16
+text = "返回"

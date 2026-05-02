@@ -2,6 +2,7 @@ extends Node2D
 
 const MAIN_ARENA_HEART_NAME := &"MainArenaHeartInteractable"
 const DEFAULT_MAIN_ARENA_HEART_SCENE := preload("res://system/levels/world3/props/boss_damage_interactable.tscn")
+const SUMMON_HUI_PICKUP_SCENE := preload("res://system/levels/world3/props/item_summon_hui_pickup.tscn")
 
 const _STREAM_ARENA_NORMAL := preload("res://assets/资源总库/10_音频/场景背景音乐.mp3")
 const _STREAM_ARENA_BOSS := preload("res://assets/资源总库/10_音频/boss马伴奏音乐.mp3")
@@ -48,6 +49,7 @@ func _ready() -> void:
 		_death_ground_y = player.global_position.y
 	_fall_death_triggered = false
 	call_deferred("_ensure_main_arena_heart_at_attack_marker")
+	call_deferred("_ensure_summon_hui_pickup")
 	_setup_boss_audio()
 
 
@@ -185,6 +187,24 @@ func _ensure_main_arena_heart_at_attack_marker() -> void:
 	heart.name = String(MAIN_ARENA_HEART_NAME)
 	props.add_child(heart)
 	heart.global_position = attack_m.global_position
+
+
+func _ensure_summon_hui_pickup() -> void:
+	## 在世界三场景中生成召唤书·恢拾取物
+	var props := bosses_root.get_node_or_null("PropsSpawn") as Node2D
+	if props == null:
+		return
+	# 如果已存在则跳过（防止重复生成）
+	if props.get_node_or_null("ItemSummonHuiPickup") != null:
+		return
+	if SUMMON_HUI_PICKUP_SCENE == null:
+		return
+	var pickup := SUMMON_HUI_PICKUP_SCENE.instantiate() as Node2D
+	if pickup == null:
+		return
+	props.add_child(pickup)
+	# 放置在 PropsSpawn 中心区域附近（玩家进入竞技场后可达的位置）
+	pickup.global_position = props.global_position + Vector2(140, -40)
 
 
 func _physics_process(_delta: float) -> void:

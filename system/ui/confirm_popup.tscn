@@ -1,28 +1,37 @@
-[gd_scene load_steps=4 format=3 uid="uid://dvydidmndx64c"]
+[gd_scene format=3 uid="uid://dvydidmndx64c"]
 
-[ext_resource type="Script" path="res://system/ui/confirm_popup.gd" id="1_pop"]
+[ext_resource type="Script" uid="uid://dobsyntgp0kbl" path="res://system/ui/confirm_popup.gd" id="1_pop"]
 [ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="4_theme"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="5_bg"]
 
-[node name="ConfirmPopup" type="CanvasLayer" node_paths=PackedStringArray("dim_bg","title_label","message_label","btn_confirm","btn_cancel")]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("5_bg")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 143, 108)
+
+[node name="ConfirmPopup" type="CanvasLayer" unique_id=130337767]
 layer = 130
 script = ExtResource("1_pop")
-dim_bg = NodePath("Root/DimBG")
-title_label = NodePath("Root/Panel/TitleLabel")
-message_label = NodePath("Root/Panel/MessageLabel")
-btn_confirm = NodePath("Root/Panel/BtnConfirm")
-btn_cancel = NodePath("Root/Panel/BtnCancel")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=770893907]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+theme = ExtResource("4_theme")
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=1775448195]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,76 +40,58 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.102, 0.102, 0.8)
 
-[node name="Panel" type="Panel" parent="Root"]
+[node name="Center" type="CenterContainer" parent="Root" unique_id=1946006368]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -80.0
-offset_right = 160.0
-offset_bottom = 80.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleLabel" type="Label" parent="Root/Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -120.0
-offset_top = 10.0
-offset_right = 120.0
-offset_bottom = 34.0
-grow_horizontal = 2
-text = "确认"
+[node name="back" type="PanelContainer" parent="Root/Center" unique_id=109461309]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_back")
+
+[node name="PageMargin" type="MarginContainer" parent="Root/Center/back" unique_id=1326871650]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Root/Center/back/PageMargin" unique_id=984003300]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Root/Center/back/PageMargin/VBox" unique_id=843640083]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "确认"
 horizontal_alignment = 1
 
-[node name="MessageLabel" type="Label" parent="Root/Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -130.0
-offset_top = 40.0
-offset_right = 130.0
-offset_bottom = 64.0
-grow_horizontal = 2
-text = "消息内容"
+[node name="MessageLabel" type="Label" parent="Root/Center/back/PageMargin/VBox" unique_id=1323544686]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+text = "消息内容"
 horizontal_alignment = 1
 
-[node name="BtnConfirm" type="Button" parent="Root/Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -130.0
-offset_top = 72.0
-offset_right = -20.0
-offset_bottom = 100.0
-grow_horizontal = 2
-text = "确定"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
+[node name="HBox" type="HBoxContainer" parent="Root/Center/back/PageMargin/VBox" unique_id=1719666673]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
 
-[node name="BtnCancel" type="Button" parent="Root/Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = 20.0
-offset_top = 72.0
-offset_right = 130.0
-offset_bottom = 100.0
-grow_horizontal = 2
+[node name="BtnConfirm" type="Button" parent="Root/Center/back/PageMargin/VBox/HBox" unique_id=747354108]
+layout_mode = 2
+theme = ExtResource("4_theme")
+text = "确定"
+
+[node name="BtnCancel" type="Button" parent="Root/Center/back/PageMargin/VBox/HBox" unique_id=1497934596]
+layout_mode = 2
+theme = ExtResource("4_theme")
 text = "取消"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16

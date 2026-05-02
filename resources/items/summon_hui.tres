@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="InventoryItem" load_steps=2 format=3 uid="uid://djrk45xmtpcm"]
+[gd_resource type="Resource" script_class="InventoryItem" load_steps=2 format=3]
 
 [ext_resource type="Script" uid="uid://dv2fbkhc1x6dt" path="res://system/ui/inventory/inventory_item.gd" id="1_ivr"]
 
 [resource]
 script = ExtResource("1_ivr")
-id = "summon_shangyang"
-name = "商鞅召唤书"
-description = "使用后播放draw动画，召唤商鞅"
+id = "summon_hui"
+name = "召唤书·恢"
+description = "使用后播放draw动画，恢复4点生命值"
 stackable = true
 max_stack = 5
 item_type = 0
 use_animation = "draw"
+effect_id = "hui"
+effect_value = 4.0

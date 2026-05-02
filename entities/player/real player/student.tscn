@@ -15,11 +15,24 @@
 [ext_resource type="AudioStream" uid="uid://25oc835mles5" path="res://assets/资源总库/10_音频/draw.mp3" id="9_cdn5u"]
 [ext_resource type="AudioStream" uid="uid://bk46o0wcm3mu2" path="res://assets/资源总库/10_音频/水滴.mp3" id="10_heal"]
 [ext_resource type="Script" uid="uid://f3smtc2higsx" path="res://entities/player/real player/viewport_nav_hud.gd" id="11_nav"]
-[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="12_v16"]
+[ext_resource type="Texture2D" uid="uid://c57mkejbtydgt" path="res://assets/资源总库/03_图像_UI/背包菜单地图.png" id="13_0nbk3"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="15_f12"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dnbur"]
 radius = 6.000001
 height = 30.000004
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oih4h"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(82, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hsurb"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(18, 16, 28, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7o7fj"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(147, 19, 26, 26)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2xjcy"]
 atlas = ExtResource("6_avp68")
@@ -418,63 +431,84 @@ max_ink = 6.0
 stats = NodePath("../../Stats")
 
 [node name="ViewportHotbarHud" type="CanvasLayer" parent="." unique_id=1753854152]
-layer = 115
+layer = 110
 
 [node name="HotbarRoot" type="Control" parent="ViewportHotbarHud" unique_id=591325326]
 layout_mode = 3
-anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 1.0
-offset_bottom = 1.0
+anchor_bottom = 0.9110001
+offset_bottom = 32.039978
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("11_nav")
 
-[node name="BtnMenuNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325329]
+[node name="MenuBtnGroup" type="HBoxContainer" parent="ViewportHotbarHud/HotbarRoot" unique_id=2064227108]
 layout_mode = 1
-offset_left = 10.0
-offset_top = 8.0
-offset_right = 150.0
-offset_bottom = 40.0
-grow_horizontal = 2
-theme_override_fonts/font = ExtResource("12_v16")
-theme_override_font_sizes/font_size = 16
-text = "菜单 [Esc]"
-
-[node name="BtnPackNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325327]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 10.0
-offset_top = -24.0
-offset_right = 130.0
-offset_bottom = 24.0
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("12_v16")
-theme_override_font_sizes/font_size = 16
-text = "背包 [B]"
-
-[node name="BtnMapNav" type="Button" parent="ViewportHotbarHud/HotbarRoot" unique_id=591325328]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -124.0
-offset_top = -52.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 0
+offset_left = -296.0
+offset_top = -110.0
+offset_right = -176.0
+offset_bottom = -46.0
+grow_horizontal = 2
 grow_vertical = 0
-theme_override_fonts/font = ExtResource("12_v16")
-theme_override_font_sizes/font_size = 16
-text = "地图 [M]"
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BtnGroup_Menu" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=942895847]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BtnMenu" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Menu" unique_id=2073003919]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_oih4h")
+stretch_mode = 5
+
+[node name="LblMenu" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Menu" unique_id=320270210]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("15_f12")
+theme_override_font_sizes/font_size = 12
+text = "菜单"
+horizontal_alignment = 1
+
+[node name="BtnGroup_Pack" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=871960179]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BtnPack" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Pack" unique_id=1455676299]
+custom_minimum_size = Vector2(28, 32)
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_hsurb")
+stretch_mode = 5
+
+[node name="LblPack" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Pack" unique_id=1294921746]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("15_f12")
+theme_override_font_sizes/font_size = 12
+text = "背包"
+horizontal_alignment = 1
+
+[node name="BtnGroup_Map" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=217011221]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BtnMap" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Map" unique_id=319365982]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_7o7fj")
+stretch_mode = 5
+
+[node name="LblMap" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Map" unique_id=411810403]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("15_f12")
+theme_override_font_sizes/font_size = 12
+text = "地图"
+horizontal_alignment = 1
 
 [node name="HotbarRow" type="HBoxContainer" parent="ViewportHotbarHud/HotbarRoot" unique_id=1354368424]
 layout_mode = 1
@@ -483,10 +517,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -288.0
-offset_top = -74.0
-offset_right = 104.0
-offset_bottom = -34.0
+offset_left = -287.0
+offset_top = -65.0
+offset_right = 105.0
+offset_bottom = -33.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 3

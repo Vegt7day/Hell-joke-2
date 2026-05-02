@@ -6,11 +6,11 @@ var _mode: Game.SaveSlotsSheetMode = Game.SaveSlotsSheetMode.LOAD
 var _pause_menu: Node = null
 var _save_point_after_save: SavePointInteractable = null
 
-@onready var title_label: Label = $Root/Center/Panel/VBox/TitleLabel
-@onready var btn_slot1: Button = $Root/Center/Panel/VBox/BtnSlot1
-@onready var btn_slot2: Button = $Root/Center/Panel/VBox/BtnSlot2
-@onready var btn_slot3: Button = $Root/Center/Panel/VBox/BtnSlot3
-@onready var btn_cancel: Button = $Root/Center/Panel/VBox/BtnCancel
+@onready var title_label: Label = $Root/Center/Panel/PageMargin/VBox/TitleLabel
+@onready var btn_slot1: Button = $Root/Center/Panel/PageMargin/VBox/BtnSlot1
+@onready var btn_slot2: Button = $Root/Center/Panel/PageMargin/VBox/BtnSlot2
+@onready var btn_slot3: Button = $Root/Center/Panel/PageMargin/VBox/BtnSlot3
+@onready var btn_cancel: Button = $Root/Center/Panel/PageMargin/VBox/BtnCancel
 
 
 func setup(mode: Game.SaveSlotsSheetMode, pause_menu: Node = null, save_point_after_save: SavePointInteractable = null) -> void:

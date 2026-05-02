@@ -1,23 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://b2yae8oxrhx6f"]
+[gd_scene format=3 uid="uid://b2yae8oxrhx6f"]
 
-[ext_resource type="Script" path="res://system/ui/pause_menu.gd" id="1_pm"]
-[ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
-[ext_resource type="PackedScene" uid="uid://bwsettingsbody01" path="res://system/ui/settings_body.tscn" id="4_sb"]
+[ext_resource type="Script" uid="uid://bjyj2lciuy0ig" path="res://system/ui/pause_menu.gd" id="1_pm"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="2_oqn0h"]
+[ext_resource type="Texture2D" uid="uid://cr3owag2lwpt" path="res://assets/资源总库/03_图像_UI/按钮.png" id="3_t0fsa"]
+[ext_resource type="PackedScene" uid="uid://ksq30htx5qmm" path="res://system/ui/settings_body.tscn" id="4_sb"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="4_vr841"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="5_theme"]
 
-[node name="PauseMenu" type="CanvasLayer"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("2_oqn0h")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.010555
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 143, 108)
+
+[sub_resource type="MeshTexture" id="MeshTexture_oqn0h"]
+base_texture = ExtResource("3_t0fsa")
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1185750445]
 layer = 120
 script = ExtResource("1_pm")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1911608722]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+theme = ExtResource("5_theme")
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=1224608052]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,7 +44,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.102, 0.102, 0.8)
 
-[node name="Center" type="CenterContainer" parent="Root"]
+[node name="Center" type="CenterContainer" parent="Root" unique_id=548350877]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,53 +52,61 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PageMain" type="VBoxContainer" parent="Root/Center"]
+[node name="back" type="PanelContainer" parent="Root/Center" unique_id=1061279421]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_back")
+
+[node name="PageMargin" type="MarginContainer" parent="Root/Center/back" unique_id=666149193]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PageMain" type="VBoxContainer" parent="Root/Center/back/PageMargin" unique_id=2059519364]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="Root/Center/PageMain"]
+[node name="TitleLabel" type="Label" parent="Root/Center/back/PageMargin/PageMain" unique_id=208120892]
 layout_mode = 2
-text = "暂停"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 32
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_vr841")
+theme_override_font_sizes/font_size = 24
+text = "暂停"
 horizontal_alignment = 1
 
-[node name="BtnResume" type="Button" parent="Root/Center/PageMain"]
-custom_minimum_size = Vector2(240, 40)
+[node name="BtnResume" type="Button" parent="Root/Center/back/PageMargin/PageMain" unique_id=2027607806]
+custom_minimum_size = Vector2(59.895, 11.65)
 layout_mode = 2
+theme = ExtResource("5_theme")
 text = "继续游戏"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
+icon = SubResource("MeshTexture_oqn0h")
 
-[node name="BtnSettings" type="Button" parent="Root/Center/PageMain"]
-custom_minimum_size = Vector2(240, 40)
+[node name="BtnSettings" type="Button" parent="Root/Center/back/PageMargin/PageMain" unique_id=559078787]
+custom_minimum_size = Vector2(59.895, 11.65)
 layout_mode = 2
+theme = ExtResource("5_theme")
 text = "设置"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="BtnLoad" type="Button" parent="Root/Center/PageMain"]
-custom_minimum_size = Vector2(240, 40)
+[node name="BtnLoad" type="Button" parent="Root/Center/back/PageMargin/PageMain" unique_id=713162750]
+custom_minimum_size = Vector2(59.895, 11.65)
 layout_mode = 2
+theme = ExtResource("5_theme")
 text = "读取存档"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="BtnTitle" type="Button" parent="Root/Center/PageMain"]
-custom_minimum_size = Vector2(240, 40)
+[node name="BtnTitle" type="Button" parent="Root/Center/back/PageMargin/PageMain" unique_id=369498552]
+custom_minimum_size = Vector2(59.895, 11.65)
 layout_mode = 2
+theme = ExtResource("5_theme")
 text = "返回标题画面"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="BtnQuit" type="Button" parent="Root/Center/PageMain"]
-custom_minimum_size = Vector2(240, 40)
+[node name="BtnQuit" type="Button" parent="Root/Center/back/PageMargin/PageMain" unique_id=1160558680]
+custom_minimum_size = Vector2(59.895, 11.65)
 layout_mode = 2
+theme = ExtResource("5_theme")
 text = "离开游戏"
-theme_override_fonts/font = ExtResource("3_f16")
-theme_override_font_sizes/font_size = 16
 
-[node name="PageSettings" parent="Root/Center" instance=ExtResource("4_sb")]
+[node name="PageSettings" parent="Root/Center" unique_id=445876795 instance=ExtResource("4_sb")]
 visible = false
 layout_mode = 2

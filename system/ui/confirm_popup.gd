@@ -5,10 +5,10 @@ signal confirmed
 signal cancelled
 
 @onready var dim_bg: ColorRect = $Root/DimBG
-@onready var title_label: Label = $Root/Panel/TitleLabel
-@onready var message_label: Label = $Root/Panel/MessageLabel
-@onready var btn_confirm: Button = $Root/Panel/BtnConfirm
-@onready var btn_cancel: Button = $Root/Panel/BtnCancel
+@onready var title_label: Label = $Root/Center/back/PageMargin/VBox/TitleLabel
+@onready var message_label: Label = $Root/Center/back/PageMargin/VBox/MessageLabel
+@onready var btn_confirm: Button = $Root/Center/back/PageMargin/VBox/HBox/BtnConfirm
+@onready var btn_cancel: Button = $Root/Center/back/PageMargin/VBox/HBox/BtnCancel
 
 var _on_confirm: Callable = Callable()
 var _on_cancel: Callable = Callable()

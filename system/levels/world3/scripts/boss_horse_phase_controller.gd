@@ -363,6 +363,7 @@ func _on_main_health_changed() -> void:
 	if _main_stats.health <= 0:
 		_cleanup_all_summoned_clones_on_boss_death()
 		shared_health_depleted.emit()
+		_grant_summon_zhong_to_player()
 		print("[BossPhase] 共享 Boss 血量归零。")
 		if _intro_done and not _relimb_timeline_started:
 			_relimb_timeline_started = true
@@ -2195,6 +2196,23 @@ func restore_combat_state_from_save(saved_phase: int, should_restore_direct_mino
 		"main_process_mode": main.process_mode if main != null else -1
 	})
 	#endregion
+
+
+func _grant_summon_zhong_to_player() -> void:
+	## Boss 击败后奖励 2 本召唤书·重
+	var inv := _resolve_player_inventory()
+	if inv == null:
+		return
+	var item := InventoryDb.load_item_by_id("summon_zhong")
+	if item != null:
+		inv.add_item(item, 2)
+
+
+func _resolve_player_inventory() -> PlayerInventory:
+	var p := get_tree().get_first_node_in_group("player")
+	if p == null:
+		return null
+	return p.get_node_or_null("PlayerInventory") as PlayerInventory
 
 
 func _debug_log(run_id: String, hypothesis_id: String, location: String, message: String, data: Dictionary = {}) -> void:

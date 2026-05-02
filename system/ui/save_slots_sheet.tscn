@@ -1,22 +1,36 @@
 [gd_scene format=3 uid="uid://cw5p6dpbfpffs"]
 
-[ext_resource type="Script" path="res://system/ui/save_slots_sheet.gd" id="1_ss"]
+[ext_resource type="Script" uid="uid://breygjech1pxg" path="res://system/ui/save_slots_sheet.gd" id="1_ss"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="2_f16"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="3_theme"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="4_bg"]
 
-[node name="SaveSlotsSheet" type="CanvasLayer"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_back"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("4_bg")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 143, 108)
+
+[node name="SaveSlotsSheet" type="CanvasLayer" unique_id=1759207978]
 layer = 125
 script = ExtResource("1_ss")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=691564197]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+theme = ExtResource("3_theme")
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=175299934]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,57 +39,74 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.102, 0.102, 0.75)
 
-[node name="Center" type="CenterContainer" parent="Root"]
+[node name="Center" type="CenterContainer" parent="Root" unique_id=90372011]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -108.0
+offset_right = 200.0
+offset_bottom = 108.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="Root/Center"]
-custom_minimum_size = Vector2(400, 0)
+[node name="Panel" type="PanelContainer" parent="Root/Center" unique_id=1094953975]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_back")
 
-[node name="VBox" type="VBoxContainer" parent="Root/Center/Panel"]
+[node name="PageMargin" type="MarginContainer" parent="Root/Center/Panel" unique_id=1866860471]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Root/Center/Panel/PageMargin" unique_id=485314976]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="Root/Center/Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="Root/Center/Panel/PageMargin/VBox" unique_id=968007536]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f16")
+theme_override_font_sizes/font_size = 16
 text = "选择存档槽位"
 horizontal_alignment = 1
+
+[node name="BtnSlot1" type="Button" parent="Root/Center/Panel/PageMargin/VBox" unique_id=1029918581]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_f16")
 theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "world_2
+2026-05-03 01:18"
 
-[node name="BtnSlot1" type="Button" parent="Root/Center/Panel/VBox"]
-custom_minimum_size = Vector2(372, 52)
+[node name="BtnSlot2" type="Button" parent="Root/Center/Panel/PageMargin/VBox" unique_id=1755411171]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_f16")
 theme_override_font_sizes/font_size = 16
-alignment = 1
-text = "空"
+text = "world_2
+2026-05-03 01:18"
 
-[node name="BtnSlot2" type="Button" parent="Root/Center/Panel/VBox"]
-custom_minimum_size = Vector2(372, 52)
+[node name="BtnSlot3" type="Button" parent="Root/Center/Panel/PageMargin/VBox" unique_id=383321599]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_f16")
 theme_override_font_sizes/font_size = 16
-alignment = 1
-text = "空"
+text = "world_2
+2026-05-03 01:18"
 
-[node name="BtnSlot3" type="Button" parent="Root/Center/Panel/VBox"]
-custom_minimum_size = Vector2(372, 52)
+[node name="BtnCancel" type="Button" parent="Root/Center/Panel/PageMargin/VBox" unique_id=1718197978]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("2_f16")
-theme_override_font_sizes/font_size = 16
-alignment = 1
-text = "空"
-
-[node name="BtnCancel" type="Button" parent="Root/Center/Panel/VBox"]
-custom_minimum_size = Vector2(372, 36)
-layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("2_f16")
 theme_override_font_sizes/font_size = 16
 text = "取消"
