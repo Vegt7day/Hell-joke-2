@@ -161,7 +161,6 @@ func _on_item_slot_gui(hotbar_idx: int, ev: InputEvent) -> void:
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
 			_selected_slot = hotbar_idx
 			_selected_is_hotbar = true
-			_inv.set_hotbar_selection(hotbar_idx)
 			_sync_page_to_selection()
 			_refresh_selection_and_detail()
 			if _inv.hotbar[hotbar_idx].item != null:
