@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://4ygfqsqsrgev"]
+
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="1_theme"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="2_bg"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_bg"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+texture = ExtResource("2_bg")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[node name="ContextMenu" type="PanelContainer" unique_id=857584570]
+offset_top = 8.0
+offset_right = 72.0
+offset_bottom = 84.0
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBox_bg")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=32450605]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="BtnUse" type="Button" parent="VBox" unique_id=1524378263]
+layout_mode = 2
+theme = ExtResource("1_theme")
+text = "使用"
+
+[node name="BtnDrop" type="Button" parent="VBox" unique_id=2143958175]
+layout_mode = 2
+theme = ExtResource("1_theme")
+text = "丢弃"
+
+[node name="BtnUnequip" type="Button" parent="VBox" unique_id=678220552]
+visible = false
+layout_mode = 2
+theme = ExtResource("1_theme")
+text = "卸下召唤"

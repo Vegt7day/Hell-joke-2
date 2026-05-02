@@ -3,6 +3,9 @@ extends CanvasLayer
 const FONT_12: FontFile = preload("res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf")
 const FONT_16: FontFile = preload("res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf")
 const CONFIRM_POPUP_SCENE: PackedScene = preload("res://system/ui/confirm_popup.tscn")
+const BUTTON_THEME: Theme = preload("res://system/ui/button_theme.tres")
+const MENU_BG: Texture2D = preload("res://assets/资源总库/03_图像_UI/菜单背景.png")
+const CONTEXT_MENU_SCENE: PackedScene = preload("res://system/ui/context_menu_popup.tscn")
 
 const INV_GRID_COLS := 8
 const INV_GRID_ROWS := 5
@@ -21,9 +24,7 @@ const SLOT_ICON_SZ := Vector2(22, 22)
 @onready var _item_icon_large: TextureRect = $Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox/ItemIconLarge
 @onready var _item_name: Label = $Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox/ItemNameLabel
 @onready var _item_desc: Label = $Root/back/Center/MainVBox/DragArea/DescPanel/DetailVBox/ItemDescLabel
-@onready var _btn_use: Button = $Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow/BtnUse
-@onready var _btn_drop: Button = $Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow/BtnDrop
-@onready var _btn_unequip: Button = $Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow/BtnUnequipSummon
+
 
 var _inv: PlayerInventory
 var _selected_slot: int = 0
@@ -36,6 +37,11 @@ var _drag_source_slot: int = -1
 var _drag_source_is_hotbar: bool = false
 var _selected_is_hotbar: bool = false
 var _drag_preview: PanelContainer = null
+var _may_drag: bool = false
+var _last_click_slot: int = -1
+var _last_click_is_hotbar: bool = false
+var _last_click_time: int = 0
+var _context_menu: PanelContainer = null
 
 # 面板拖拽
 var _dragging_panel: PanelContainer = null
@@ -44,7 +50,7 @@ var _drag_mouse_offset: Vector2 = Vector2.ZERO
 # 3 个可拖拽面板
 @onready var _panel_grid: PanelContainer = $Root/back/Center/MainVBox/DragArea/PanelGrid
 @onready var _panel_detail: PanelContainer = $Root/back/Center/MainVBox/DragArea/DescPanel
-@onready var _panel_actions: PanelContainer = $Root/back/Center/MainVBox/DragArea/PanelActions
+
 
 
 func _ready() -> void:
@@ -61,14 +67,12 @@ func _ready() -> void:
 
 	_build_hotbar_cells()
 	_build_grid_cells()
-	_btn_use.pressed.connect(_on_use_pressed)
-	_btn_drop.pressed.connect(_on_drop_pressed)
-	_btn_unequip.pressed.connect(_on_unequip_pressed)
+
 	_btn_page_prev.pressed.connect(_on_page_prev_pressed)
 	_btn_page_next.pressed.connect(_on_page_next_pressed)
 
 	# 标题栏拖拽
-	for panel in [_panel_grid, _panel_detail, _panel_actions]:
+	for panel in [_panel_grid, _panel_detail]:
 		var title := panel.get_child(0).get_child(0) as Label
 		if title != null:
 			title.gui_input.connect(func(ev: InputEvent): _on_title_gui(panel, ev))
@@ -155,16 +159,28 @@ func _on_item_slot_gui(hotbar_idx: int, ev: InputEvent) -> void:
 	if ev is InputEventMouseButton:
 		var mb := ev as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			_inv.set_hotbar_selection(hotbar_idx)
 			_selected_slot = hotbar_idx
 			_selected_is_hotbar = true
+			_inv.set_hotbar_selection(hotbar_idx)
 			_sync_page_to_selection()
 			_refresh_selection_and_detail()
 			if _inv.hotbar[hotbar_idx].item != null:
 				_drag_source_slot = hotbar_idx
 				_drag_source_is_hotbar = true
-				_create_drag_preview(_inv.hotbar[hotbar_idx])
-				_refresh_all()
+				_may_drag = true
+			var now := Time.get_ticks_msec()
+			if hotbar_idx == _last_click_slot and _last_click_is_hotbar and now - _last_click_time < 300 and _inv.hotbar[hotbar_idx].item != null:
+				_apply_use()
+			_last_click_slot = hotbar_idx
+			_last_click_is_hotbar = true
+			_last_click_time = now
+		if mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
+			if _inv.hotbar[hotbar_idx].item != null:
+				_selected_slot = hotbar_idx
+				_selected_is_hotbar = true
+				_sync_page_to_selection()
+				_refresh_selection_and_detail()
+				_show_context_menu(get_viewport().get_mouse_position())
 
 
 func _close() -> void:
@@ -217,6 +233,11 @@ func _input(event: InputEvent) -> void:
 		_dragging_panel = null
 		return
 
+	if event is InputEventMouseButton and event.pressed and _context_menu != null:
+		var menu_rect := _context_menu.get_global_rect()
+		if not menu_rect.has_point(event.global_position):
+			_close_context_menu()
+
 	if event.is_action_pressed(&"ui_inventory"):
 		get_viewport().set_input_as_handled()
 		_close()
@@ -231,11 +252,7 @@ func _input(event: InputEvent) -> void:
 		if not ke.pressed or ke.echo:
 			return
 		var pk := ke.physical_keycode
-		if pk >= KEY_1 and pk <= KEY_8:
-			if _inv != null:
-				_inv.set_hotbar_selection(int(pk - KEY_1))
-			get_viewport().set_input_as_handled()
-			return
+
 		if pk == KEY_Q:
 			if _inv != null and _selected_slot >= 0 and _selected_slot < _inv.slots.size():
 				_inv.assign_slot_to_hotbar(_selected_slot, _inv.hotbar_selection)
@@ -251,28 +268,23 @@ func _input(event: InputEvent) -> void:
 	if _handle_grid_navigation(event):
 		get_viewport().set_input_as_handled()
 
-	# 物品拖拽预览跟随
-	if event is InputEventMouseMotion and _drag_preview != null:
-		_drag_preview.global_position = event.global_position + Vector2(8, 8)
+	# 物品拖拽启动与跟随
+	if event is InputEventMouseMotion:
+		if _may_drag and event.button_mask & MOUSE_BUTTON_MASK_LEFT and _drag_source_slot >= 0 and _inv != null:
+			_may_drag = false
+			var slot: InventorySlot = _inv.hotbar[_drag_source_slot] if _drag_source_is_hotbar else _inv.slots[_drag_source_slot]
+			if slot.item != null:
+				_create_drag_preview(slot)
+				_refresh_all()
+		if _drag_preview != null:
+			_drag_preview.global_position = event.global_position - SLOT_PANEL_SZ * 0.4
 
 	# 物品拖拽结束
 	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_finish_grid_drag()
 		return
 
-	# 滚轮切换快捷栏
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			if _inv != null:
-				var dir := -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1
-				var sz := _inv.hotbar.size()
-				if sz > 0:
-					var new_idx := (_inv.hotbar_selection + dir) % sz
-					if new_idx < 0: new_idx += sz
-					_inv.set_hotbar_selection(new_idx)
-					_refresh_hotbar_cells_only()
-			get_viewport().set_input_as_handled()
-			return
+
 
 
 func _handle_grid_navigation(event: InputEvent) -> bool:
@@ -315,11 +327,24 @@ func _on_grid_panel_gui(local_on_page: int, ev: InputEvent) -> void:
 			if _inv != null and gi < _inv.slots.size() and _inv.slots[gi].item != null:
 				_drag_source_slot = gi
 				_drag_source_is_hotbar = false
-				_create_drag_preview(_inv.slots[gi])
-				_refresh_all()
+				_may_drag = true
+			var now := Time.get_ticks_msec()
+			if _inv != null and gi < _inv.slots.size() and gi == _last_click_slot and not _last_click_is_hotbar and now - _last_click_time < 300 and _inv.slots[gi].item != null:
+				_apply_use()
+			_last_click_slot = gi
+			_last_click_is_hotbar = false
+			_last_click_time = now
+		if mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
+			var gi := _global_index_local(local_on_page)
+			if _inv != null and gi < _inv.slots.size() and _inv.slots[gi].item != null:
+				_selected_slot = gi
+				_selected_is_hotbar = false
+				_refresh_selection_and_detail()
+				_show_context_menu(get_viewport().get_mouse_position())
 
 
 func _finish_grid_drag() -> void:
+	_may_drag = false
 	if _drag_source_slot < 0 or _inv == null:
 		return
 	var mouse_pos := get_viewport().get_mouse_position()
@@ -356,6 +381,9 @@ func _finish_grid_drag() -> void:
 	_clear_drag_preview()
 	_drag_source_slot = -1
 	_drag_source_is_hotbar = false
+	if target_gi >= 0:
+		_selected_slot = target_gi
+		_selected_is_hotbar = target_is_hotbar
 	_refresh_all()
 
 
@@ -420,7 +448,7 @@ func _refresh_hotbar_cells_only() -> void:
 		var tr: TextureRect = parts[0]
 		var lb: Label = parts[1]
 		_paint_slot(tr, lb, slot)
-		var sel := _inv.hotbar_selection == i
+		var sel := _selected_is_hotbar and i == _selected_slot
 		_hotbar_panels[i].add_theme_stylebox_override(&"panel", _style_selected if sel else _style_normal)
 		if _drag_source_is_hotbar and i == _drag_source_slot:
 			_paint_slot(tr, lb, slot, true)
@@ -441,7 +469,7 @@ func _refresh_grid_cells_only() -> void:
 			continue
 		var slot: InventorySlot = _inv.slots[gi]
 		_paint_slot(tr, lb, slot, gi == _drag_source_slot)
-		var sel := gi == _selected_slot
+		var sel := not _selected_is_hotbar and gi == _selected_slot
 		_slot_panels[local_i].add_theme_stylebox_override(&"panel", _style_selected if sel else _style_normal)
 
 
@@ -482,6 +510,7 @@ func _create_drag_preview(slot: InventorySlot) -> void:
 	panel.custom_minimum_size = SLOT_PANEL_SZ
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override(&"panel", _style_selected)
+	panel.scale = Vector2(0.8, 0.8)
 	var lb := Label.new()
 	lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lb.custom_minimum_size = SLOT_PANEL_SZ
@@ -494,18 +523,83 @@ func _create_drag_preview(slot: InventorySlot) -> void:
 		lb.add_theme_font_override(&"font", FONT_16)
 		lb.add_theme_font_size_override(&"font_size", 19)
 	panel.add_child(lb)
-	panel.global_position = get_viewport().get_mouse_position() + Vector2(8, 8)
+	panel.global_position = get_viewport().get_mouse_position() - SLOT_PANEL_SZ * 0.4
 	add_child(panel)
 	_drag_preview = panel
 
 
 func _clear_drag_preview() -> void:
+	_may_drag = false
 	if _drag_preview != null and is_instance_valid(_drag_preview):
 		_drag_preview.queue_free()
 	_drag_preview = null
 
 
+func _show_context_menu(screen_pos: Vector2) -> void:
+	_close_context_menu()
+	if _inv == null:
+		return
+	var slot: InventorySlot
+	if _selected_is_hotbar:
+		slot = _inv.hotbar[_selected_slot]
+	else:
+		slot = _inv.slots[_selected_slot]
+	if slot == null or slot.item == null:
+		return
+	
+	var panel := CONTEXT_MENU_SCENE.instantiate() as PanelContainer
+	var vb := panel.get_child(0) as VBoxContainer
+	var btn_use := vb.get_child(0) as Button
+	var btn_drop := vb.get_child(1) as Button
+	var btn_unequip := vb.get_child(2) as Button
+	
+	match slot.item.item_type:
+		InventoryItem.ItemType.CONSUMABLE, InventoryItem.ItemType.SUMMON_BOOK:
+			btn_use.disabled = false
+		_:
+			btn_use.disabled = true
+	btn_use.pressed.connect(func():
+		_close_context_menu()
+		_apply_use()
+	)
+	
+	btn_drop.disabled = slot.item.item_type == InventoryItem.ItemType.QUEST
+	btn_drop.pressed.connect(func():
+		_close_context_menu()
+		_on_drop_pressed()
+	)
+	
+	btn_unequip.visible = _inv.active_summon_item != null
+	btn_unequip.pressed.connect(func():
+		_close_context_menu()
+		_on_unequip_pressed()
+	)
+	
+	panel.global_position = screen_pos
+	panel.mouse_exited.connect(_on_context_menu_mouse_exited)
+	add_child(panel)
+	_context_menu = panel
+
+
+func _on_context_menu_mouse_exited() -> void:
+	if _context_menu == null:
+		return
+	# 等一帧让子控件的 mouse_entered 先触发
+	await get_tree().process_frame
+	if _context_menu != null and is_instance_valid(_context_menu):
+		var rect := _context_menu.get_global_rect()
+		if not rect.has_point(get_viewport().get_mouse_position()):
+			_close_context_menu()
+
+
+func _close_context_menu() -> void:
+	if _context_menu != null and is_instance_valid(_context_menu):
+		_context_menu.queue_free()
+	_context_menu = null
+
+
 func _refresh_selection_and_detail() -> void:
+	_refresh_hotbar_cells_only()
 	_update_page_nav()
 	_refresh_grid_cells_only()
 	if _inv == null:
@@ -532,8 +626,6 @@ func _hotbar_detail(slot: InventorySlot) -> void:
 		_item_icon_large.visible = false
 		_item_name.text = "空格子"
 		_item_desc.text = ""
-		_btn_use.disabled = true
-		_btn_drop.disabled = true
 	else:
 		var icon_tex: Texture2D = slot.item.icon
 		_item_icon_large.texture = icon_tex
@@ -549,11 +641,3 @@ func _hotbar_detail(slot: InventorySlot) -> void:
 				desc_joined += "\n\n"
 			desc_joined += desc_parts[i]
 		_item_desc.text = desc_joined
-		_btn_drop.disabled = slot.item.item_type == InventoryItem.ItemType.QUEST
-		match slot.item.item_type:
-			InventoryItem.ItemType.CONSUMABLE, InventoryItem.ItemType.SUMMON_BOOK:
-				_btn_use.disabled = false
-			_:
-				_btn_use.disabled = true
-	_btn_unequip.visible = _inv.active_summon_item != null
-	_btn_unequip.disabled = _inv.active_summon_item == null

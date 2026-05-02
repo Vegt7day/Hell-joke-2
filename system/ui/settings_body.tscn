@@ -19,6 +19,8 @@ texture_margin_right = 16.0
 texture_margin_bottom = 16.0
 region_rect = Rect2(0, 0, 143, 108)
 
+[sub_resource type="Theme" id="Theme_pxxqt"]
+
 [node name="SettingsBody" type="Control" unique_id=1031326916]
 layout_mode = 3
 anchors_preset = 15
@@ -144,6 +146,7 @@ text = "界面"
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("4_theme")
 max_value = 1.0
 step = 0.01
 value = 1.0
@@ -185,6 +188,7 @@ theme_override_font_sizes/font_size = 12
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_vertical = 4
+theme = SubResource("Theme_pxxqt")
 theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 12
 text = "全屏"

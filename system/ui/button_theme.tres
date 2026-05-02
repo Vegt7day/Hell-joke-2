@@ -2,8 +2,17 @@
 
 [ext_resource type="Texture2D" uid="uid://cr3owag2lwpt" path="res://assets/资源总库/03_图像_UI/按钮.png" id="1_anniu"]
 [ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="1_iycyt"]
+[ext_resource type="Texture2D" uid="uid://bsx1xr3ixffmx" path="res://assets/资源总库/03_图像_UI/拖杆.png" id="3_jlw4a"]
+[ext_resource type="Texture2D" uid="uid://cv8kvys6bqy0q" path="res://assets/资源总库/03_图像_UI/菜单圆球.png" id="4_wr1uu"]
+[ext_resource type="Texture2D" uid="uid://c4g2y8j3l5k6p" path="res://assets/资源总库/03_图像_UI/格子.png" id="5_y64l8"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0y86m"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kndtw"]
+texture = ExtResource("1_anniu")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(208, 20, 32, 24)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hvr"]
 content_margin_left = 8.0
@@ -41,10 +50,80 @@ texture_margin_right = 7.0
 texture_margin_bottom = 7.0
 region_rect = Rect2(144, 20, 32, 24)
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_y64l8"]
+texture = ExtResource("1_anniu")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(80, 20, 32, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wr1uu"]
+atlas = ExtResource("4_wr1uu")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y64l8"]
+atlas = ExtResource("4_wr1uu")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jlw4a"]
+texture = ExtResource("3_jlw4a")
+texture_margin_left = 4.0
+texture_margin_top = 3.0
+texture_margin_right = 4.0
+texture_margin_bottom = 3.0
+region_rect = Rect2(70, 21, 58, 8)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wr1uu"]
+content_margin_top = 10.0
+texture = ExtResource("3_jlw4a")
+texture_margin_left = 4.0
+texture_margin_top = 3.0
+texture_margin_right = 4.0
+texture_margin_bottom = 3.0
+region_rect = Rect2(70, 8, 58, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kndtw"]
+atlas = ExtResource("4_wr1uu")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qvjw5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ktxsq"]
+atlas = ExtResource("4_wr1uu")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_e6sfe"]
+texture = ExtResource("5_y64l8")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+region_rect = Rect2(17, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6f2og"]
+texture = ExtResource("5_y64l8")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+region_rect = Rect2(1, 1, 14, 14)
+
 [resource]
 Button/font_sizes/font_size = 12
 Button/fonts/font = ExtResource("1_iycyt")
-Button/styles/disabled = SubResource("StyleBoxTexture_0y86m")
+Button/styles/disabled = SubResource("StyleBoxTexture_kndtw")
 Button/styles/hover = SubResource("StyleBoxTexture_hvr")
 Button/styles/normal = SubResource("StyleBoxTexture_nrm")
 Button/styles/pressed = SubResource("StyleBoxTexture_prs")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxTexture_y64l8")
+HSlider/icons/grabber = SubResource("AtlasTexture_wr1uu")
+HSlider/icons/grabber_highlight = SubResource("AtlasTexture_y64l8")
+HSlider/styles/grabber_area = SubResource("StyleBoxTexture_jlw4a")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_wr1uu")
+HSlider/styles/slider = SubResource("StyleBoxTexture_wr1uu")
+PopupMenu/icons/radio_checked = SubResource("AtlasTexture_kndtw")
+PopupMenu/icons/radio_checked_disabled = SubResource("AtlasTexture_qvjw5")
+PopupMenu/icons/radio_unchecked = SubResource("AtlasTexture_ktxsq")
+PopupMenu/styles/hover = SubResource("StyleBoxTexture_e6sfe")
+PopupMenu/styles/panel = SubResource("StyleBoxTexture_6f2og")

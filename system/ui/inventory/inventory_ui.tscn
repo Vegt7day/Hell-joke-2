@@ -6,7 +6,7 @@
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
 [ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="5_theme"]
 [ext_resource type="Texture2D" uid="uid://c4g2y8j3l5k6p" path="res://assets/资源总库/03_图像_UI/格子.png" id="6_slot"]
-[ext_resource type="FontFile" uid="uid://curhgal5n7wab" path="res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf" id="7_f30no"]
+[ext_resource type="Texture2D" uid="uid://br1m4rgcn5xy8" path="res://assets/资源总库/03_图像_UI/关闭.png" id="7_f30no"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mvvx3"]
 texture = ExtResource("6_slot")
@@ -21,14 +21,6 @@ content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
-texture = ExtResource("6_slot")
-texture_margin_left = 2.0
-texture_margin_top = 2.0
-texture_margin_right = 2.0
-texture_margin_bottom = 2.0
-region_rect = Rect2(1, 1, 14, 14)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fqat4"]
 texture = ExtResource("6_slot")
 texture_margin_left = 2.0
 texture_margin_top = 2.0
@@ -59,6 +51,18 @@ texture_margin_top = 2.0
 texture_margin_right = 2.0
 texture_margin_bottom = 2.0
 region_rect = Rect2(17, 1, 14, 14)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fqat4"]
+texture = ExtResource("7_f30no")
+region_rect = Rect2(0, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wycit"]
+texture = ExtResource("7_f30no")
+region_rect = Rect2(32, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wi74h"]
+texture = ExtResource("7_f30no")
+region_rect = Rect2(16, 0, 16, 16)
 
 [node name="InventoryUi" type="CanvasLayer" unique_id=1743018775]
 layer = 115
@@ -209,48 +213,8 @@ theme_override_fonts/font = ExtResource("2_f12")
 theme_override_font_sizes/font_size = 11
 autowrap_mode = 3
 
-[node name="PanelActions" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1963918619]
-layout_mode = 0
-offset_left = -128.0
-offset_top = 156.0
-offset_right = 168.0
-offset_bottom = 196.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_fqat4")
-
-[node name="BtnRow" type="HBoxContainer" parent="Root/back/Center/MainVBox/DragArea/PanelActions" unique_id=208460843]
-layout_mode = 2
-theme_override_constants/separation = 38
-alignment = 1
-
-[node name="BtnUse" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=1842281673]
-custom_minimum_size = Vector2(64, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_fonts/font = ExtResource("7_f30no")
-theme_override_font_sizes/font_size = 12
-text = "使用"
-
-[node name="BtnDrop" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=1037555477]
-custom_minimum_size = Vector2(64, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_fonts/font = ExtResource("7_f30no")
-theme_override_font_sizes/font_size = 12
-text = "丢弃"
-
-[node name="BtnUnequipSummon" type="Button" parent="Root/back/Center/MainVBox/DragArea/PanelActions/BtnRow" unique_id=520174686]
-custom_minimum_size = Vector2(64, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_fonts/font = ExtResource("7_f30no")
-theme_override_font_sizes/font_size = 12
-text = "卸下召唤"
-
 [node name="SlotStyleNormal" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1939376326]
+visible = false
 layout_mode = 0
 offset_left = -336.0
 offset_top = -52.0
@@ -260,10 +224,34 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBox_slot_normal")
 
 [node name="SlotStyleSelected" type="PanelContainer" parent="Root/back/Center/MainVBox/DragArea" unique_id=1083292999]
+visible = false
 layout_mode = 0
-offset_left = -320.0
-offset_top = 4.0
-offset_right = -296.0
-offset_bottom = 28.0
+offset_left = -336.0
+offset_top = -28.0
+offset_right = -312.0
+offset_bottom = -4.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBox_slot_selected")
+
+[node name="CloseButton" type="Button" parent="Root/back/Center/MainVBox/DragArea" unique_id=1246825543]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 256.0
+offset_top = -132.0
+offset_right = 272.0
+offset_bottom = -116.0
+grow_horizontal = 0
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.82, 0.82, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 0.82, 0.82, 1)
+theme_override_fonts/font = ExtResource("3_f16")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_fqat4")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_wycit")
+theme_override_styles/hover = SubResource("StyleBoxTexture_wi74h")
+
+[connection signal="pressed" from="Root/back/Center/MainVBox/DragArea/CloseButton" to="." method="_close"]

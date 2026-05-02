@@ -53,6 +53,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="back" type="PanelContainer" parent="Root/Center" unique_id=1061279421]
+custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_back")

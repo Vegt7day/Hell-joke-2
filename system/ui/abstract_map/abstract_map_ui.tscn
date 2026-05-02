@@ -1,23 +1,35 @@
-[gd_scene load_steps=4 format=3 uid="uid://cqbm8abstractmapui"]
+[gd_scene format=3 uid="uid://70lr7ux3xxke"]
 
-[ext_resource type="Script" path="res://system/ui/abstract_map/abstract_map_ui.gd" id="1_ui"]
-[ext_resource type="Script" path="res://system/ui/abstract_map/abstract_map_draw.gd" id="2_draw"]
+[ext_resource type="Script" uid="uid://dabmmapui01" path="res://system/ui/abstract_map/abstract_map_ui.gd" id="1_ui"]
+[ext_resource type="Script" uid="uid://dabmmapdraw01" path="res://system/ui/abstract_map/abstract_map_draw.gd" id="2_draw"]
 [ext_resource type="FontFile" uid="uid://bpad4gxww4ipn" path="res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf" id="3_f16"]
+[ext_resource type="Texture2D" uid="uid://br1m4rgcn5xy8" path="res://assets/资源总库/03_图像_UI/关闭.png" id="4_34w81"]
 
-[node name="AbstractMapUI" type="CanvasLayer"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_25mqm"]
+texture = ExtResource("4_34w81")
+region_rect = Rect2(0, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vyggl"]
+texture = ExtResource("4_34w81")
+region_rect = Rect2(32, 0, 16, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wpgr7"]
+texture = ExtResource("4_34w81")
+region_rect = Rect2(16, 0, 16, 16)
+
+[node name="AbstractMapUI" type="CanvasLayer" unique_id=1536463996]
 layer = 115
 script = ExtResource("1_ui")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=2003992474]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=1548705954]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,7 +38,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.05, 0.05, 0.06, 0.88)
 
-[node name="MarginContainer" type="MarginContainer" parent="Root"]
+[node name="MarginContainer" type="MarginContainer" parent="Root" unique_id=206233430]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -38,20 +50,19 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 16
 
-[node name="MainHBox" type="HBoxContainer" parent="Root/MarginContainer"]
+[node name="MainHBox" type="HBoxContainer" parent="Root/MarginContainer" unique_id=1156406052]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
-[node name="LeftVBox" type="VBoxContainer" parent="Root/MarginContainer/MainHBox"]
+[node name="LeftVBox" type="VBoxContainer" parent="Root/MarginContainer/MainHBox" unique_id=1000911723]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.0
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="Root/MarginContainer/MainHBox/LeftVBox"]
+[node name="TitleLabel" type="Label" parent="Root/MarginContainer/MainHBox/LeftVBox" unique_id=601017259]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_f16")
@@ -59,40 +70,38 @@ theme_override_font_sizes/font_size = 22
 text = "地图"
 horizontal_alignment = 1
 
-[node name="MapDraw" type="Control" parent="Root/MarginContainer/MainHBox/LeftVBox"]
+[node name="MapDraw" type="Control" parent="Root/MarginContainer/MainHBox/LeftVBox" unique_id=700955961]
 custom_minimum_size = Vector2(480, 280)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("2_draw")
 
-[node name="ZoomSlider" type="VSlider" parent="Root/MarginContainer/MainHBox"]
+[node name="ZoomSlider" type="VSlider" parent="Root/MarginContainer/MainHBox" unique_id=455446173]
 custom_minimum_size = Vector2(44, 120)
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 0
-min_value = 0.0
 max_value = 1.0
 step = 0.02
 value = 0.5
 
-[node name="CloseButton" type="Button" parent="Root"]
+[node name="CloseButton" type="Button" parent="Root" unique_id=1487865043]
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 1
-anchors_preset = 0
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -52.0
 offset_top = 12.0
-offset_right = -12.0
-offset_bottom = 52.0
+offset_right = -52.0
+offset_bottom = 12.0
 grow_horizontal = 0
-grow_vertical = 0
 focus_mode = 0
-flat = true
-text = "×"
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 0.82, 0.82, 1)
 theme_override_colors/font_pressed_color = Color(0.82, 0.82, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 0.82, 0.82, 1)
 theme_override_fonts/font = ExtResource("3_f16")
 theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxTexture_25mqm")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_vyggl")
+theme_override_styles/hover = SubResource("StyleBoxTexture_wpgr7")

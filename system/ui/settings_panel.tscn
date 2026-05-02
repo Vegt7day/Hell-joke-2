@@ -1,22 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtaxlknll50e3"]
+[gd_scene format=3 uid="uid://dtaxlknll50e3"]
 
-[ext_resource type="Script" path="res://system/ui/settings_panel.gd" id="1_sp"]
-[ext_resource type="PackedScene" uid="uid://bwsettingsbody01" path="res://system/ui/settings_body.tscn" id="2_sb"]
+[ext_resource type="Script" uid="uid://b8hot3vhvdqqy" path="res://system/ui/settings_panel.gd" id="1_sp"]
+[ext_resource type="PackedScene" uid="uid://ksq30htx5qmm" path="res://system/ui/settings_body.tscn" id="2_sb"]
 
-[node name="SettingsPanel" type="CanvasLayer"]
+[node name="SettingsPanel" type="CanvasLayer" unique_id=129958496]
 layer = 115
 script = ExtResource("1_sp")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1744201981]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=1860010225]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,7 +24,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.102, 0.102, 0.102, 0.85)
 
-[node name="Center" type="CenterContainer" parent="Root"]
+[node name="Center" type="CenterContainer" parent="Root" unique_id=316113026]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,5 +32,5 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsBody" parent="Root/Center" instance=ExtResource("2_sb")]
+[node name="SettingsBody" parent="Root/Center" unique_id=2067547684 instance=ExtResource("2_sb")]
 layout_mode = 2

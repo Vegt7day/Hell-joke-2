@@ -1,8 +1,8 @@
 extends Control
 
-@onready var new_game: Button = $V/new_game
+@onready var new_game: Button = $MenuBg/V/new_game
 
-@onready var v: VBoxContainer = $V
+@onready var v: VBoxContainer = $MenuBg/V
 
 func _ready() -> void:
 	# 根节点若不 IGNORE，全屏 Control 可能在某些层级下影响命中；让点击交给子控件
