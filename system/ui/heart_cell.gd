@@ -18,12 +18,18 @@ extends Control
 
 var state: int = 2
 @export var cell_size: Vector2 = Vector2(32.0, 32.0)
+var _speed_mult: float = 1.0
 
 
 func _ready() -> void:
 	custom_minimum_size = cell_size
 	if sprite != null:
 		sprite.position = cell_size * 0.5
+
+
+## 设置动画速度倍率（1.0=正常，2.0=两倍速）
+func set_animation_speed(mult: float) -> void:
+	_speed_mult = maxf(0.1, mult)
 
 
 func set_state_instant(next_state: int) -> void:
@@ -72,26 +78,25 @@ func _play_if_exists(anim_name: StringName) -> void:
 			return
 		return
 	if not sprite.sprite_frames.has_animation(anim_name):
-		# 没配置动画资源时也要让队列推进
 		if not await _await_next_frame_safe():
 			return
 		return
 	sprite.play(anim_name)
-	# AnimatedSprite2D 的 animation_finished 只在非 loop 动画触发；用兜底 timer 防止资源配置为 loop 时卡住
+	sprite.speed_scale = _speed_mult
 	var done := false
 	var on_done := func() -> void:
 		done = true
 	if not sprite.animation_finished.is_connected(on_done):
 		sprite.animation_finished.connect(on_done, CONNECT_ONE_SHOT)
-	var len: float = 0.12
+	var len: float = 0.12 / _speed_mult
 	if sprite.sprite_frames != null:
-		len = _estimate_animation_seconds(sprite.sprite_frames, anim_name, 0.12)
+		len = _estimate_animation_seconds(sprite.sprite_frames, anim_name, 0.12) / _speed_mult
 	if not is_inside_tree():
 		return
 	var tree := get_tree()
 	if tree == null:
 		return
-	var t: SceneTreeTimer = tree.create_timer(maxf(0.03, len))
+	var t: SceneTreeTimer = tree.create_timer(maxf(0.01, len))
 	while not done and is_instance_valid(sprite) and is_inside_tree():
 		if not await _await_next_frame_safe():
 			return

@@ -109,6 +109,32 @@ texture_margin_right = 5.0
 texture_margin_bottom = 5.0
 region_rect = Rect2(1, 1, 14, 14)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_e6sfe"]
+atlas = ExtResource("3_jlw4a")
+region = Rect2(64, 2, 6, 6)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6f2og"]
+atlas = ExtResource("3_jlw4a")
+region = Rect2(64, 17, 6, 6)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2ukcn"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_woqqa"]
+texture = ExtResource("3_jlw4a")
+texture_margin_left = 4.0
+texture_margin_top = 3.0
+texture_margin_right = 4.0
+texture_margin_bottom = 3.0
+region_rect = Rect2(70, 21, 58, 8)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n7n53"]
+texture = ExtResource("3_jlw4a")
+texture_margin_left = 4.0
+texture_margin_top = 3.0
+texture_margin_right = 4.0
+texture_margin_bottom = 3.0
+region_rect = Rect2(70, 8, 58, 8)
+
 [resource]
 Button/font_sizes/font_size = 12
 Button/fonts/font = ExtResource("1_iycyt")
@@ -127,3 +153,8 @@ PopupMenu/icons/radio_checked_disabled = SubResource("AtlasTexture_qvjw5")
 PopupMenu/icons/radio_unchecked = SubResource("AtlasTexture_ktxsq")
 PopupMenu/styles/hover = SubResource("StyleBoxTexture_e6sfe")
 PopupMenu/styles/panel = SubResource("StyleBoxTexture_6f2og")
+VSlider/icons/grabber = SubResource("AtlasTexture_e6sfe")
+VSlider/icons/grabber_highlight = SubResource("AtlasTexture_6f2og")
+VSlider/styles/grabber_area = SubResource("StyleBoxTexture_2ukcn")
+VSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_woqqa")
+VSlider/styles/slider = SubResource("StyleBoxTexture_n7n53")

@@ -1,18 +1,21 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://dsejpq45fk4ea"]
 
-[ext_resource type="Script" path="res://system/ui/world3_death_retry_ui.gd" id="1_ui"]
-[ext_resource type="AudioStream" uid="uid://bsdtpixx8gxbp" path="res://assets/资源总库/10_音频/咔擦，门窗.mp3" id="2_ui_click"]
+[ext_resource type="Script" uid="uid://d3re0wdhak2dq" path="res://system/ui/world3_death_retry_ui.gd" id="1_ui"]
+[ext_resource type="AudioStream" uid="uid://c2i556d81h4c3" path="res://assets/资源总库/10_音频/咔擦，门窗.mp3" id="2_ui_click"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="3_menu"]
+[ext_resource type="FontFile" uid="uid://curhgal5n7wab" path="res://addons/dialogic/样式/字体/VonwaonBitmap-12px.ttf" id="4_7yb1l"]
+[ext_resource type="Theme" uid="uid://chtf1bqobban" path="res://system/ui/button_theme.tres" id="4_theme"]
 
-[node name="World3DeathRetryUI" type="CanvasLayer"]
+[node name="World3DeathRetryUI" type="CanvasLayer" unique_id=1700574477]
 layer = 128
 script = ExtResource("1_ui")
 
-[node name="UiSfx" type="AudioStreamPlayer" parent="."]
+[node name="UiSfx" type="AudioStreamPlayer" parent="." unique_id=600987983]
 stream = ExtResource("2_ui_click")
 volume_db = -6.0
 bus = &"UI"
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1658716582]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,49 +23,70 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DimBG" type="ColorRect" parent="Root"]
+[node name="DimBG" type="ColorRect" parent="Root" unique_id=801046547]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0.06666667)
 
-[node name="Center" type="CenterContainer" parent="Root"]
+[node name="MenuBack" type="NinePatchRect" parent="Root" unique_id=1058819504]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -122.5
+offset_top = -95.0
+offset_right = 122.5
+offset_bottom = 95.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_menu")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="Center" type="CenterContainer" parent="Root/MenuBack" unique_id=1101490884]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -208.0
+offset_top = -116.0
+offset_right = 208.0
+offset_bottom = 116.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Root/Center"]
+[node name="VBox" type="VBoxContainer" parent="Root/MenuBack/Center" unique_id=340954143]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="DeadTexture" type="TextureRect" parent="Root/Center/VBox"]
-custom_minimum_size = Vector2(180, 120)
-layout_mode = 2
-stretch_mode = 5
-
-[node name="DeadLabel" type="Label" parent="Root/Center/VBox"]
+[node name="DeadLabel" type="Label" parent="Root/MenuBack/Center/VBox" unique_id=1474716570]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 56
+theme_override_fonts/font = ExtResource("4_7yb1l")
+theme_override_font_sizes/font_size = 60
 text = "死"
 horizontal_alignment = 1
 
-[node name="Buttons" type="VBoxContainer" parent="Root/Center/VBox"]
+[node name="Buttons" type="VBoxContainer" parent="Root/MenuBack/Center/VBox" unique_id=964701739]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BtnHeart" type="Button" parent="Root/Center/VBox/Buttons"]
-custom_minimum_size = Vector2(320, 48)
+[node name="BtnHeart" type="Button" parent="Root/MenuBack/Center/VBox/Buttons" unique_id=187521045]
 layout_mode = 2
+theme = ExtResource("4_theme")
 text = "回到上一个心"
 
-[node name="BtnSavePoint" type="Button" parent="Root/Center/VBox/Buttons"]
-custom_minimum_size = Vector2(320, 48)
+[node name="BtnSavePoint" type="Button" parent="Root/MenuBack/Center/VBox/Buttons" unique_id=370182592]
 layout_mode = 2
-text = "读取上一个存档点"
+theme = ExtResource("4_theme")
+text = "读取存档"

@@ -1308,9 +1308,6 @@ func _on_player_stats_changed() -> void:
 		return
 	if player_stats.health > 0:
 		return
-	var scene := get_tree().current_scene
-	if not _is_world3_boss_scene(scene):
-		return
 	if _world3_death_ui_opened:
 		return
 	_world3_death_ui_opened = true
@@ -1351,6 +1348,11 @@ func _open_world3_death_retry_ui() -> void:
 	if tree == null:
 		_world3_death_ui_opened = false
 		return
+	# 停止血量动画，直接跳到目标值
+	if player_stats != null and is_instance_valid(player_stats):
+		var sp := get_tree().get_first_node_in_group("status_panel") as Node
+		if sp != null and sp.has_method("stop_health_animation"):
+			sp.call("stop_health_animation")
 	tree.paused = true
 	await _play_world3_death_fullscreen_flash()
 	var ui := WORLD3_DEATH_UI_SCENE.instantiate() as CanvasLayer

@@ -38,7 +38,7 @@ func _refresh_slot_buttons() -> void:
 	if not is_instance_valid(Game):
 		return
 	for i in range(3):
-		var id := Game.manual_save_slot_id(i)
+		var id: String = Game.manual_save_slot_id(i)
 		var btn := _slot_button(i)
 		var summ: Dictionary = Game.read_manual_save_slot_summary(id)
 		var empty: bool = bool(summ.get("empty", true))
@@ -75,7 +75,7 @@ func _close_sheet() -> void:
 func _on_slot_pressed(index: int) -> void:
 	if not is_instance_valid(Game):
 		return
-	var slot_id := Game.manual_save_slot_id(index)
+	var slot_id :String= Game.manual_save_slot_id(index)
 	if _mode == Game.SaveSlotsSheetMode.SAVE:
 		var summ: Dictionary = Game.read_manual_save_slot_summary(slot_id)
 		if not bool(summ.get("empty", true)):

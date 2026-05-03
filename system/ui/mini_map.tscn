@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://djomqy2l22y75"]
+
+[ext_resource type="Script" uid="uid://bx6y26oy3a6ie" path="res://system/ui/mini_map.gd" id="1_minimap"]
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="2_menu"]
+
+[node name="MiniMap" type="Control" unique_id=1832084922]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -112.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 112.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="MenuBack" type="NinePatchRect" parent="." unique_id=1932900582]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+offset_right = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_menu")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="MapDraw" type="Control" parent="MenuBack" unique_id=619684937]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_minimap")

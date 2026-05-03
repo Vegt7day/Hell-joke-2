@@ -44,34 +44,23 @@ func add_item(item: InventoryItem, quantity: int = 1) -> int:
 	if item == null or quantity <= 0:
 		return 0
 	var remaining := quantity
-	# 先尝试堆叠到已有同类可堆叠物品
-	if item.stackable:
-		for slot in slots:
-			if slot.item != null and slot.item.id == item.id and slot.quantity < item.max_stack:
-				var space := item.max_stack - slot.quantity
-				var add := mini(remaining, space)
-				slot.quantity += add
-				remaining -= add
-				if remaining <= 0:
-					inventory_changed.emit()
-					return quantity
-	# 剩余放入空格
+	# 先尝试堆叠到已有同类物品（无上限）
+	for slot in slots:
+		if slot.item != null and slot.item.id == item.id:
+			slot.quantity += remaining
+			inventory_changed.emit()
+			return quantity
+	# 没有同类物品，放入空格
 	for slot in slots:
 		if slot.item == null:
 			var new_slot := InventorySlot.new()
 			new_slot.item = item
-			if item.stackable:
-				new_slot.quantity = mini(remaining, item.max_stack)
-				remaining -= new_slot.quantity
-			else:
-				new_slot.quantity = 1
-				remaining -= 1
+			new_slot.quantity = remaining
 			_replace_slot(slots.find(slot), new_slot)
-			if remaining <= 0:
-				inventory_changed.emit()
-				return quantity
+			inventory_changed.emit()
+			return quantity
 	inventory_changed.emit()
-	return quantity - remaining
+	return 0
 
 
 ## 从指定格子移除数量

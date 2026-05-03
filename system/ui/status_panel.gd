@@ -2,6 +2,7 @@ extends Node2D
 
 const FONT_HOTBAR := preload("res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf")
 const FONT_16 := preload("res://assets/资源总库/11_字体/VonwaonBitmap-16px.ttf")
+const SLOT_TEX := preload("res://assets/资源总库/03_图像_UI/格子.png")
 
 @export var stats:Stats
 
@@ -27,8 +28,8 @@ var _hotbar_qtys: Array[Label] = []
 var _hotbar_qty_overlays: Array[Label] = []
 var _hotbar_static_masks: Array[ColorRect] = []
 var _hotbar_cd_bars: Array[ColorRect] = []
-var _hotbar_style_normal: StyleBoxFlat
-var _hotbar_style_selected: StyleBoxFlat
+var _hotbar_style_normal: StyleBoxTexture
+var _hotbar_style_selected: StyleBoxTexture
 
 var _cells: Array[HeartCell] = []
 var _display_health: int = 0
@@ -63,19 +64,26 @@ func _resolve_hotbar_row() -> HBoxContainer:
 
 
 func _ready() -> void:
+	add_to_group(&"status_panel")
 	hotbar_row = _resolve_hotbar_row()
-	_hotbar_style_normal = StyleBoxFlat.new()
-	_hotbar_style_normal.bg_color = Color(0.1, 0.1, 0.12, 0.72)
-	_hotbar_style_normal.set_border_width_all(1)
-	_hotbar_style_normal.border_color = Color(0.38, 0.38, 0.42, 1.0)
+	_hotbar_style_normal = StyleBoxTexture.new()
+	_hotbar_style_normal.texture = SLOT_TEX
+	_hotbar_style_normal.texture_margin_left = 2
+	_hotbar_style_normal.texture_margin_top = 2
+	_hotbar_style_normal.texture_margin_right = 2
+	_hotbar_style_normal.texture_margin_bottom = 2
+	_hotbar_style_normal.region_rect = Rect2(1, 1, 14, 14)
 	_hotbar_style_normal.content_margin_left = 0
 	_hotbar_style_normal.content_margin_right = 0
 	_hotbar_style_normal.content_margin_top = 0
 	_hotbar_style_normal.content_margin_bottom = 0
-	_hotbar_style_selected = StyleBoxFlat.new()
-	_hotbar_style_selected.bg_color = Color(0.14, 0.16, 0.2, 0.85)
-	_hotbar_style_selected.set_border_width_all(2)
-	_hotbar_style_selected.border_color = Color(0.92, 0.82, 0.28, 1.0)
+	_hotbar_style_selected = StyleBoxTexture.new()
+	_hotbar_style_selected.texture = SLOT_TEX
+	_hotbar_style_selected.texture_margin_left = 2
+	_hotbar_style_selected.texture_margin_top = 2
+	_hotbar_style_selected.texture_margin_right = 2
+	_hotbar_style_selected.texture_margin_bottom = 2
+	_hotbar_style_selected.region_rect = Rect2(17, 1, 14, 14)
 	_hotbar_style_selected.content_margin_left = 0
 	_hotbar_style_selected.content_margin_right = 0
 	_hotbar_style_selected.content_margin_top = 0
@@ -252,6 +260,44 @@ func _bind_inventory_ref() -> void:
 
 func _on_hotbar_selection_changed_inv(_idx: int) -> void:
 	_refresh_hotbar_ui()
+	_show_hotbar_tooltip(_idx)
+
+
+## 快捷栏切换时在鼠标旁显示物品图标+名称，0.5s渐隐消失
+func _show_hotbar_tooltip(idx: int) -> void:
+	if _inv_ref == null or idx < 0 or idx >= _inv_ref.hotbar.size():
+		return
+	var slot := _inv_ref.hotbar[idx]
+	if slot == null or slot.item == null:
+		return
+	if not is_inside_tree():
+		return
+	var root := get_tree().root
+	if root == null:
+		return
+	# 创建浮动标签
+	var label := Label.new()
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var item_name := slot.item.name
+	var qty := slot.quantity
+	if qty > 1:
+		item_name += " x" + str(qty)
+	label.text = item_name
+	label.add_theme_font_override(&"font", FONT_HOTBAR)
+	label.add_theme_font_size_override(&"font_size", 12)
+	label.add_theme_color_override(&"font_color", Color(1, 1, 1, 1))
+	# 放在光标右上角
+	var mp := get_viewport().get_mouse_position()
+	label.global_position = mp + Vector2(16, -28)
+	label.modulate = Color(1, 1, 1, 0)
+	label.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	root.add_child(label)
+	# 0.5s 渐隐动画
+	var tw := create_tween()
+	tw.tween_property(label, "modulate", Color(1, 1, 1, 1), 0.08)
+	tw.tween_interval(0.15)
+	tw.tween_property(label, "modulate", Color(1, 1, 1, 0), 0.4)
+	tw.finished.connect(label.queue_free)
 
 
 func _refresh_hotbar_ui() -> void:
@@ -413,6 +459,15 @@ func _run_health_animation_queue() -> void:
 	# 最终校正
 	_sync_cells_instant(_display_health, max_h)
 	_is_animating = false
+
+
+## 立即停止血量动画，将血量跳到目标值（用于死亡时）
+func stop_health_animation() -> void:
+	_is_animating = false
+	if _stats_valid():
+		var h := clampi(int(stats.health), 0, maxi(0, int(stats.max_health)))
+		_sync_cells_instant(h, maxi(0, int(stats.max_health)))
+		_display_health = h
 
 
 func _rightmost_cell_that_can_damage() -> HeartCell:

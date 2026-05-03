@@ -24,12 +24,16 @@ var _zoom_mul: float = 1.0
 var _cell_px: float = 8.0
 var _map_origin: Vector2 = Vector2.ZERO
 
+## 静态变量：保存上次关闭时的地图显示位置和缩放，用于跨实例恢复
+static var _saved_map_origin: Vector2 = Vector2.ZERO
+static var _saved_zoom_mul: float = -1.0
+
 var _dragging := false
 var _teleport_pick_mode: bool = false
 var _drag_pixel_accum: float = 0.0
 
 ## 详图外一环（Game 矩形扩张）：仅灰块无字，外形随地形更新
-const _CELL_DIM := Color(0.46, 0.46, 0.49, 0.93)
+const _CELL_DIM := Color(0.384, 0.333, 0.396, 1.0)
 
 var _scene_name: String = ""
 var _reveal_full: Dictionary = {}
@@ -340,7 +344,7 @@ func _grid_to_screen_top_left(g: Vector2i) -> Vector2:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.06, 0.06, 0.09, 1.0))
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.18, 0.133, 0.184, 1.0))
 
 	var cf: Dictionary = _scan.get(&"cells_floor", {}) as Dictionary
 	var cw: Dictionary = _scan.get(&"cells_wall", {}) as Dictionary

@@ -344,6 +344,15 @@ func _on_grid_panel_gui(local_on_page: int, ev: InputEvent) -> void:
 	if ev is InputEventMouseButton:
 		var mb := ev as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+			# 鼠标在快捷栏区域内时，跳过背包格子处理
+			var mouse_pos := get_viewport().get_mouse_position()
+			var on_hotbar := false
+			for hp in _hotbar_panels:
+				if hp.get_global_rect().has_point(mouse_pos):
+					on_hotbar = true
+					break
+			if on_hotbar:
+				return
 			var gi := _global_index_local(local_on_page)
 			if _drag_preview != null:
 				_place_item_at(gi, false)
@@ -503,7 +512,7 @@ func _refresh_grid_cells_only() -> void:
 			_slot_panels[local_i].add_theme_stylebox_override(&"panel", _style_normal)
 			continue
 		var slot: InventorySlot = _inv.slots[gi]
-		_paint_slot(tr, lb, slot, gi == _drag_source_slot)
+		_paint_slot(tr, lb, slot, not _drag_source_is_hotbar and gi == _drag_source_slot)
 		var sel := not _selected_is_hotbar and gi == _selected_slot
 		_slot_panels[local_i].add_theme_stylebox_override(&"panel", _style_selected if sel else _style_normal)
 

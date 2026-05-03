@@ -8,17 +8,17 @@ max_hearts_cap = 10
 
 [node name="Hearts" type="HBoxContainer" parent="." unique_id=1200000002]
 offset_left = 32.0
-offset_top = 32.0
+offset_top = 64.0
 offset_right = 352.0
-offset_bottom = 64.0
+offset_bottom = 96.0
 theme_override_constants/separation = 4
 metadata/_edit_use_anchors_ = true
 
 [node name="Inks" type="HBoxContainer" parent="." unique_id=1200000003]
 offset_left = 32.0
-offset_top = 64.0
+offset_top = 80.0
 offset_right = 352.0
-offset_bottom = 96.0
+offset_bottom = 112.0
 theme_override_constants/separation = 4
 metadata/_edit_use_anchors_ = true
 

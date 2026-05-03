@@ -14,59 +14,47 @@ func _ready() -> void:
 	input_event.connect(_on_input_event)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
-	print("[inspect_detector] _ready parent=", get_parent(), " input_event connected=", input_event.is_connected(_on_input_event))
 
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	print("[inspect_detector] event: ", event)
 	if not global_inspect_mode:
 		return
 	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		print("[inspect_detector] left release detected")
 		var desc: String = description
 		if desc.is_empty():
 			var mech := get_parent()
 			if mech == null:
-				print("[inspect_detector] parent is null")
 				return
 			if not mech.has_method("_get_inspect_description"):
-				print("[inspect_detector] no _get_inspect_description on ", mech.name)
 				return
 			desc = mech._get_inspect_description()
-		print("[inspect_detector] desc='", desc, "'")
 		if desc.is_empty():
-			print("[inspect_detector] empty desc")
 			return
-		print("[inspect_detector] calling _show_popup")
-		_show_popup(desc, event.global_position)
+		# 世界坐标 → 视口坐标（hud_root 在 CanvasLayer 110 上，共享视口坐标空间）
+		var viewport_pos: Vector2 = get_viewport().get_canvas_transform() * event.global_position
+		_show_popup(desc, viewport_pos)
 
 
 func _show_popup(desc: String, screen_pos: Vector2) -> void:
 	_close_popup()
-	print("[inspect_detector] panel instantiate start")
 	var panel := INSPECT_POPUP_SCENE.instantiate() as PanelContainer
-	print("[inspect_detector] panel=", panel)
 	if panel == null:
-		print("[inspect_detector] panel is null!")
 		return
 	var label := panel.get_child(0) as Label
-	print("[inspect_detector] label=", label)
 	if label == null:
-		print("[inspect_detector] label is null!")
 		return
 	label.text = desc
-	panel.global_position = screen_pos - Vector2(16, 16)
-	panel.mouse_exited.connect(_on_popup_mouse_exited)
-	print("[inspect_detector] add_child to hud_root, hud_root=", hud_root)
 	if hud_root == null:
-		print("[inspect_detector] hud_root is null, cannot show popup")
 		return
+	# 先添加到场景树以获取实际尺寸
 	hud_root.add_child(panel)
-	var margin: float = 8.0
+	# 左上角对齐问号位置偏移(-16,-16)，钳制到父节点区域内
+	var margin: float = 4.0
 	panel.position = Vector2(
-		clampf(screen_pos.x - 16, margin, hud_root.size.x - panel.size.x - margin),
-		clampf(screen_pos.y - 16, margin, hud_root.size.y - panel.size.y - margin)
+		clampf(screen_pos.x - 16.0, margin, hud_root.size.x - panel.size.x - margin),
+		clampf(screen_pos.y - 16.0, margin, hud_root.size.y - panel.size.y - margin)
 	)
+	panel.mouse_exited.connect(_on_popup_mouse_exited)
 	_inspect_popup = panel
 
 
