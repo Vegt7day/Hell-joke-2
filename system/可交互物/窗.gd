@@ -24,6 +24,7 @@ var _is_processing: bool = false
 
 
 func _ready() -> void:
+	add_to_group("inspectable")
 	if collision_shape.shape != null:
 		collision_shape.shape = collision_shape.shape.duplicate(true)
 	current_color = initial_color
@@ -59,6 +60,8 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 		is_open = target_open
 		_apply_instant_visual(target_open)
 		return
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("窗")
 	_is_processing = true
 	_play_trigger_sound()
 	if target_open:
@@ -214,3 +217,9 @@ func _play_trigger_sound() -> void:
 	if trigger_sfx == null:
 		return
 	MechanismSfxBus.request_once(&"switch_chain_trigger", trigger_sfx)
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("窗", false):
+		return "还未触发过该类型机关"
+	return "颜色" + current_color + "的窗户，被同色开关控制，当前：" + ("打开" if is_open else "关闭")

@@ -25,6 +25,7 @@ MechanismLinkBus="*uid://c3j3v12ffehqn"
 Game="*uid://cwnvqmdyl2j3i"
 DialogicRegistry="*uid://buxvgwfat3tfx"
 MechanismSfxBus="*res://system/globals/mechanism_sfx_bus.gd"
+CursorManager="*res://system/globals/cursor_manager.gd"
 
 [dialogic]
 

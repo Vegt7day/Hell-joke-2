@@ -786,3 +786,7 @@ func safe_destroy():
 # 5. 调用 switch_to_summoned_mode() 切换到召唤模式
 # 6. 调用 switch_to_story_mode() 切换到剧情模式
 # 7. 血量归零时，播放完切换动画后自动销毁
+
+
+func _get_inspect_description() -> String:
+	return "拥有五种珍贵能力的召唤师"

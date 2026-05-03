@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cd8wrq8dl8vqw"]
+
+[ext_resource type="Texture2D" uid="uid://d3f1x2h7lam0n" path="res://assets/资源总库/03_图像_UI/菜单背景.png" id="1_bg"]
+[ext_resource type="FontFile" uid="uid://bdxoffi0b461e" path="res://assets/资源总库/11_字体/VonwaonBitmap-12px.ttf" id="2_f12"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBox_bg"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+texture = ExtResource("1_bg")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[node name="InspectPopup" type="PanelContainer" unique_id=535231640]
+custom_minimum_size = Vector2(120, 0)
+offset_right = 176.0
+offset_bottom = 64.0
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBox_bg")
+
+[node name="DescLabel" type="Label" parent="." unique_id=1768784581]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f12")
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

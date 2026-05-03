@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://csdsjshtmy6pa" path="res://system/可交互物/洞.gd" id="1_71r04"]
 [ext_resource type="Texture2D" uid="uid://cqdvb2vdmxva8" path="res://assets/资源总库/08_图像_机关/洞.png" id="1_sgvyn"]
+[ext_resource type="Script" path="res://system/ui/inspect_detector.gd" id="2_inspect"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_71r04"]
 atlas = ExtResource("1_sgvyn")
@@ -95,6 +96,9 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_71r04"]
 size = Vector2(32, 32)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u3djh"]
+size = Vector2(32, 32)
+
 [node name="洞" type="StaticBody2D" unique_id=1602514809]
 collision_mask = 2
 script = ExtResource("1_71r04")
@@ -113,3 +117,13 @@ libraries/ = SubResource("AnimationLibrary_b65ad")
 position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_71r04")
 
+[node name="InspectDetector" type="Area2D" parent="." unique_id=126133388]
+collision_layer = 2
+collision_mask = 0
+monitoring = true
+monitorable = false
+script = ExtResource("2_inspect")
+
+[node name="InspectShape" type="CollisionShape2D" parent="InspectDetector" unique_id=138244612]
+position = Vector2(16, -16)
+shape = SubResource("RectangleShape2D_u3djh")

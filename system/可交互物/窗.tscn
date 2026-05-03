@@ -4,6 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://c2i556d81h4c3" path="res://assets/资源总库/10_音频/咔擦，门窗.mp3" id="2_blbh3"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="2_rp01u"]
 [ext_resource type="Script" uid="uid://ct1y7mrsh0rss" path="res://system/可交互物/窗.gd" id="3_win"]
+[ext_resource type="Script" path="res://system/ui/inspect_detector.gd" id="5_inspect"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rp01u"]
 size = Vector2(32, 5)
@@ -139,6 +140,9 @@ _data = {
 &"open": SubResource("Animation_sxbo1")
 }
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_blbh3"]
+size = Vector2(32, 32)
+
 [node name="Windows" type="StaticBody2D" unique_id=1643735838]
 collision_mask = 0
 collision_priority = 0.4
@@ -168,3 +172,14 @@ libraries/ = SubResource("AnimationLibrary_1ff2v")
 
 [node name="SwitchChannelListener" type="Node" parent="." unique_id=444957683]
 script = ExtResource("2_rp01u")
+
+[node name="InspectDetector" type="Area2D" parent="." unique_id=126133390]
+collision_layer = 2
+collision_mask = 0
+monitoring = true
+monitorable = false
+script = ExtResource("5_inspect")
+
+[node name="InspectShape" type="CollisionShape2D" parent="InspectDetector" unique_id=138244614]
+position = Vector2(16, -16)
+shape = SubResource("RectangleShape2D_blbh3")

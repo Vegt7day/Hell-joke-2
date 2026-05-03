@@ -26,13 +26,49 @@ height = 30.000004
 atlas = ExtResource("13_0nbk3")
 region = Rect2(82, 18, 28, 28)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_0nbk3"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(466, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qg42"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(274, 18, 28, 28)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_hsurb"]
 atlas = ExtResource("13_0nbk3")
-region = Rect2(18, 16, 28, 32)
+region = Rect2(18, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2cbti"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(210, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jtuec"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(402, 18, 28, 28)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7o7fj"]
 atlas = ExtResource("13_0nbk3")
-region = Rect2(147, 19, 26, 26)
+region = Rect2(146, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l0btv"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(338, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h5dc1"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(530, 18, 28, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_he53q"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(194, 18, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b511d"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(706, 18, 29, 29)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ojktw"]
+atlas = ExtResource("13_0nbk3")
+region = Rect2(450, 18, 29, 29)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2xjcy"]
 atlas = ExtResource("6_avp68")
@@ -450,10 +486,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -296.0
-offset_top = -110.0
-offset_right = -176.0
-offset_bottom = -46.0
+offset_left = -320.0
+offset_top = -144.0
+offset_right = -220.0
+offset_bottom = -96.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 8
@@ -462,11 +498,14 @@ alignment = 1
 [node name="BtnGroup_Menu" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=942895847]
 layout_mode = 2
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="BtnMenu" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Menu" unique_id=2073003919]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_oih4h")
+texture_pressed = SubResource("AtlasTexture_0nbk3")
+texture_hover = SubResource("AtlasTexture_8qg42")
 stretch_mode = 5
 
 [node name="LblMenu" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Menu" unique_id=320270210]
@@ -479,11 +518,13 @@ horizontal_alignment = 1
 [node name="BtnGroup_Pack" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=871960179]
 layout_mode = 2
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="BtnPack" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Pack" unique_id=1455676299]
-custom_minimum_size = Vector2(28, 32)
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_hsurb")
+texture_pressed = SubResource("AtlasTexture_2cbti")
+texture_hover = SubResource("AtlasTexture_jtuec")
 stretch_mode = 5
 
 [node name="LblPack" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Pack" unique_id=1294921746]
@@ -496,11 +537,14 @@ horizontal_alignment = 1
 [node name="BtnGroup_Map" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=217011221]
 layout_mode = 2
 theme_override_constants/separation = 2
+alignment = 1
 
 [node name="BtnMap" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Map" unique_id=319365982]
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_7o7fj")
+texture_pressed = SubResource("AtlasTexture_l0btv")
+texture_hover = SubResource("AtlasTexture_h5dc1")
 stretch_mode = 5
 
 [node name="LblMap" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Map" unique_id=411810403]
@@ -509,6 +553,24 @@ theme_override_fonts/font = ExtResource("15_f12")
 theme_override_font_sizes/font_size = 12
 text = "地图"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="BtnGroup_Inspect" type="VBoxContainer" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup" unique_id=318895641]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="BtnInspect" type="TextureButton" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Inspect" unique_id=612447624]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_he53q")
+texture_pressed = SubResource("AtlasTexture_b511d")
+texture_hover = SubResource("AtlasTexture_ojktw")
+
+[node name="LblInspect" type="Label" parent="ViewportHotbarHud/HotbarRoot/MenuBtnGroup/BtnGroup_Inspect" unique_id=181876352]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("15_f12")
+theme_override_font_sizes/font_size = 12
+text = "详细"
 
 [node name="HotbarRow" type="HBoxContainer" parent="ViewportHotbarHud/HotbarRoot" unique_id=1354368424]
 layout_mode = 1

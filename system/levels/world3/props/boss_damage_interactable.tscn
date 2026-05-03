@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://duwxwuxt6mfb2" path="res://system/levels/world3/props/boss_damage_interactable.gd" id="1_interact"]
 [ext_resource type="Texture2D" uid="uid://dexyefc3w2o6w" path="res://assets/资源总库/06_图像_World3/props/心剑.png" id="2_80d6q"]
+[ext_resource type="PackedScene" path="res://system/ui/inspectable_area.tscn" id="3_c2gmx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pick"]
 size = Vector2(126, 109)
@@ -157,6 +158,9 @@ _data = {
 [sub_resource type="AtlasTexture" id="AtlasTexture_dpjxh"]
 atlas = ExtResource("2_80d6q")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ci336"]
+size = Vector2(38, 80)
+
 [node name="BossDamageInteractable" type="Area2D" unique_id=417998075]
 collision_layer = 128
 collision_mask = 2
@@ -175,3 +179,9 @@ texture = SubResource("AtlasTexture_dpjxh")
 hframes = 21
 region_enabled = true
 region_rect = Rect2(0, 0, 798, 128)
+
+[node name="InspectableArea" parent="." unique_id=27735065 instance=ExtResource("3_c2gmx")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InspectableArea" unique_id=1608328997]
+position = Vector2(19, -69)
+shape = SubResource("RectangleShape2D_ci336")

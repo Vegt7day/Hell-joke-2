@@ -21,6 +21,7 @@ var _channel_id: StringName = StringName()
 var is_processing: bool = false  # 防止连续触发
 
 func _ready():
+	add_to_group("inspectable")
 	# 初始化颜色
 	current_color = initial_color
 	_channel_id = MechanismChannelIds.color_to_channel_id(current_color)
@@ -94,6 +95,8 @@ func _trigger_switch():
 		return
 	if is_processing:
 		return
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("开关")
 	var target_on := not is_on
 	# 按需求：先播放本开关切换动作，动作完成后再发送总线指令
 	await apply_switch_bus_state(target_on, true)
@@ -147,3 +150,9 @@ func _play_trigger_sound() -> void:
 	if trigger_sfx == null:
 		return
 	MechanismSfxBus.request_once(&"switch_chain_trigger", trigger_sfx)
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("开关", false):
+		return "还未触发过该类型机关"
+	return "颜色" + current_color + "的开关，当前：" + ("开" if is_on else "关")

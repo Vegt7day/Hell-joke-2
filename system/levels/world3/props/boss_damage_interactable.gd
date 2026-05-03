@@ -142,3 +142,7 @@ func apply_save_state(state: Dictionary) -> void:
 		call_deferred("_play_if_exists", post_hurt_idle_anim_name)
 	else:
 		call_deferred("_play_if_exists", idle_anim_name)
+
+
+func _get_inspect_description() -> String:
+	return "用心剑对 Boss 造成百分比伤害的交互物"

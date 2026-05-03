@@ -4,14 +4,16 @@
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="2_toj2w"]
 
 [node name="Game" type="CanvasLayer" unique_id=1668650706]
-layer = 99
+layer = 9999
 script = ExtResource("1_llum1")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1063501712]
-z_index = 4096
-offset_right = 72.39819
-offset_bottom = 720.0
-scale = Vector2(17.68, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 

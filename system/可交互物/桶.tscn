@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://crcjrb213eibh" path="res://assets/资源总库/08_图像_机关/桶.png" id="1_om5tm"]
 [ext_resource type="Script" uid="uid://wc33s3teuqb" path="res://system/可交互物/桶.gd" id="2_barrel"]
 [ext_resource type="AudioStream" uid="uid://x4lk3twgwury" path="res://assets/资源总库/10_音频/充水.mp3" id="2_m65kv"]
+[ext_resource type="Script" path="res://system/ui/inspect_detector.gd" id="3_inspect"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m5nc4"]
 atlas = ExtResource("1_om5tm")
@@ -181,6 +182,9 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m65kv"]
 size = Vector2(64, 64)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4mt13"]
+size = Vector2(64, 64)
+
 [node name="bucket" type="StaticBody2D" unique_id=669743261]
 collision_layer = 16
 collision_mask = 8
@@ -200,3 +204,14 @@ libraries/ = SubResource("AnimationLibrary_lkbo5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1436692806]
 position = Vector2(64, -64)
 shape = SubResource("RectangleShape2D_m65kv")
+
+[node name="InspectDetector" type="Area2D" parent="." unique_id=126133391]
+collision_layer = 2
+collision_mask = 0
+monitoring = true
+monitorable = false
+script = ExtResource("3_inspect")
+
+[node name="InspectShape" type="CollisionShape2D" parent="InspectDetector" unique_id=138244615]
+position = Vector2(64, -64)
+shape = SubResource("RectangleShape2D_4mt13")

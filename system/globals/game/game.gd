@@ -6,6 +6,8 @@ var world_states := {}
 var map_exploration: Dictionary = {}
 ## 已在存档点选择「存档」或「传送」并登记的存档点，键："scene_bn::save_point_id"（地图上「存」显示红色）
 var save_points_known: Dictionary = {}
+var observed_mechanisms: Dictionary = {}
+var observed_boss_skills: Dictionary = {}
 ## 地图详图：相对足迹的轴对齐矩形（逻辑格）。左/右各 10，上 7（y 减小），下 3（y 增大）
 const MAP_DETAIL_HALF_W := 10
 const MAP_DETAIL_UP := 7
@@ -47,6 +49,7 @@ const _STREAM_DEFAULT_BGM := preload("res://assets/资源总库/10_音频/场景
 var _world3_death_ui_opened: bool = false
 var _continuous_bgm_player: AudioStreamPlayer
 var _continuous_bgm_player_b: AudioStreamPlayer
+var _continuous_bgm_is_default_stream: bool = true
 var _continuous_bgm_crossfade_active_is_a: bool = true
 var _continuous_bgm_crossfade_tween: Tween
 const _BOSS_BGM_SILENT_DB := -60.0
@@ -126,7 +129,9 @@ func _normalize_continuous_bgm_after_leaving_boss_arena() -> void:
 		_continuous_bgm_player_b.stop()
 	if _continuous_bgm_player != null and is_instance_valid(_continuous_bgm_player):
 		_continuous_bgm_player.volume_db = 0.0
-		_AUDIO_UTILS.assign_looping_stream_to_player(_continuous_bgm_player, _STREAM_DEFAULT_BGM)
+		if not _continuous_bgm_is_default_stream:
+			_AUDIO_UTILS.assign_looping_stream_to_player(_continuous_bgm_player, _STREAM_DEFAULT_BGM)
+			_continuous_bgm_is_default_stream = true
 		if not _continuous_bgm_player.playing:
 			_continuous_bgm_player.play()
 	_continuous_bgm_crossfade_active_is_a = true
@@ -177,6 +182,7 @@ func boss_bgm_crossfade_start(initial_stream: AudioStream, volume_db: float) -> 
 		_continuous_bgm_player = _AUDIO_UTILS.ensure_looping_bgm(self, null, initial_stream, &"BGM", &"ContinuousBgm")
 	else:
 		_AUDIO_UTILS.assign_looping_stream_to_player(_continuous_bgm_player, initial_stream)
+	_continuous_bgm_is_default_stream = false
 	_continuous_bgm_player.volume_db = volume_db
 	_continuous_bgm_player.play()
 	_ensure_continuous_bgm_player_b()
@@ -196,6 +202,7 @@ func boss_bgm_crossfade_to(target_stream: AudioStream, duration_seconds: float, 
 	if outgoing == null or incoming == null:
 		return
 	_AUDIO_UTILS.assign_looping_stream_to_player(incoming, target_stream)
+	_continuous_bgm_is_default_stream = false
 	incoming.volume_db = _BOSS_BGM_SILENT_DB
 	if not incoming.playing:
 		incoming.play(0.0)
@@ -539,6 +546,8 @@ func save_game(slot: String = SAVE_SLOT_SAVEPOINT, skip_pause: bool = false) -> 
 		"mechanism_bus": MechanismLinkBus.export_state(),
 		"bucket_states": _export_bucket_states(scene),
 		"camera_cue_states": _export_camera_cue_states(scene),
+		"observed_mechanisms": observed_mechanisms,
+		"observed_boss_skills": observed_boss_skills,
 		"player_inventory": player_inventory_dict,
 		"scene": scene.scene_file_path,
 		"player": {
@@ -654,6 +663,8 @@ func load_game(reset_current_scene: bool = false, slot: String = SAVE_SLOT_SAVEP
 	world_states = data.get("world_states", {})
 	map_exploration = data.get("map_exploration", {})
 	save_points_known = data.get("save_points_known", {})
+	observed_mechanisms = data.get("observed_mechanisms", {})
+	observed_boss_skills = data.get("observed_boss_skills", {})
 	
 	# 恢复玩家状态
 	player_stats.from_dict(data.stats)
@@ -780,6 +791,8 @@ func _reset_session_for_new_run() -> void:
 	world_states.clear()
 	map_exploration.clear()
 	save_points_known.clear()
+	observed_mechanisms.clear()
+	observed_boss_skills.clear()
 	_rebind_player_stats_to_embedded()
 	if player_stats != null and is_instance_valid(player_stats):
 		player_stats.from_dict(default_player_stats)
@@ -787,6 +800,17 @@ func _reset_session_for_new_run() -> void:
 	if registry and registry.has_method("clear_all"):
 		registry.clear_all()
 	_world3_death_ui_opened = false
+
+
+func mark_mechanism_observed(path: String) -> void:
+	observed_mechanisms[path] = true
+
+
+func mark_boss_skill_observed(horse_id: int, skill_id: int) -> void:
+	if not observed_boss_skills.has(horse_id):
+		observed_boss_skills[horse_id] = []
+	if skill_id not in observed_boss_skills[horse_id]:
+		observed_boss_skills[horse_id].append(skill_id)
 
 
 func new_game() -> void:
@@ -829,6 +853,8 @@ func open_inventory_ui() -> void:
 		tree.paused = false
 		return
 	tree.root.add_child(ui)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func close_inventory_ui() -> void:
@@ -838,6 +864,7 @@ func close_inventory_ui() -> void:
 	for n in tree.get_nodes_in_group(&"inventory_ui"):
 		if is_instance_valid(n):
 			n.queue_free()
+	CursorManager.set_cursor_type(CursorManager.CursorType.ATTACK)
 
 
 func abstract_map_ui_is_open() -> bool:
@@ -869,6 +896,8 @@ func open_abstract_map_ui(for_teleport_pick: bool = false) -> void:
 		return
 	ui.set_meta(&"abstract_map_teleport_pick", for_teleport_pick)
 	tree.root.add_child(ui)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func close_abstract_map_ui() -> void:
@@ -878,6 +907,7 @@ func close_abstract_map_ui() -> void:
 	for n in tree.get_nodes_in_group(&"abstract_map_ui"):
 		if is_instance_valid(n):
 			n.queue_free()
+	CursorManager.set_cursor_type(CursorManager.CursorType.ATTACK)
 
 
 func settings_ui_is_open() -> bool:
@@ -984,6 +1014,8 @@ func open_settings_ui() -> void:
 	if ui == null:
 		return
 	tree.root.add_child(ui)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func save_slots_sheet_is_open() -> bool:
@@ -998,6 +1030,7 @@ func close_save_point_choice_ui() -> void:
 	var n := tree.get_first_node_in_group(&"save_point_choice_ui")
 	if n != null and is_instance_valid(n):
 		n.queue_free()
+	CursorManager.set_cursor_type(CursorManager.CursorType.ATTACK)
 
 
 ## 存档点交互打开菜单时：先把当前场景快照写入 world_states，选槽写入文件时数据已就绪
@@ -1046,6 +1079,8 @@ func open_save_slots_sheet(mode: SaveSlotsSheetMode, pause_menu: Node = null, sa
 	if sheet.has_method(&"setup"):
 		sheet.call(&"setup", mode, pause_menu, save_point_after_save)
 	tree.root.add_child(sheet)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func get_current_scene_basename() -> String:
@@ -1100,6 +1135,8 @@ func open_save_point_choice_ui(save_point: SavePointInteractable) -> void:
 	if ui.has_method(&"setup"):
 		ui.call(&"setup", save_point)
 	tree.root.add_child(ui)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func teleport_player_to_world(global_pos: Vector2, direction: int = -999) -> void:
@@ -1258,6 +1295,8 @@ func open_pause_menu() -> void:
 		tree.paused = false
 		return
 	tree.root.add_child(menu)
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 
 
 func _is_world3_boss_scene(scene: Node) -> bool:

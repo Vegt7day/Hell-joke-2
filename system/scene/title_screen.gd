@@ -7,9 +7,15 @@ extends Control
 func _ready() -> void:
 	# 根节点若不 IGNORE，全屏 Control 可能在某些层级下影响命中；让点击交给子控件
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	CursorManager.set_cursor_type(CursorManager.CursorType.HUD)
+	CursorManager.show_cursor()
 	call_deferred("_grab_initial_focus")
 	for button: Button in v.get_children():
 		button.mouse_entered.connect(button.grab_focus)
+		button.mouse_entered.connect(func(): CursorManager.set_frame_key("hud_hover"))
+		button.mouse_exited.connect(func(): CursorManager.set_frame_key("hud_normal"))
+		button.button_down.connect(func(): CursorManager.set_frame_key("hud_press"))
+		button.button_up.connect(func(): CursorManager.set_frame_key("hud_hover"))
 
 
 func _grab_initial_focus() -> void:

@@ -4,6 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://c2i556d81h4c3" path="res://assets/资源总库/10_音频/咔擦，门窗.mp3" id="2_hyt57"]
 [ext_resource type="Texture2D" uid="uid://qmerhi1eunid" path="res://assets/资源总库/08_图像_机关/门.png" id="2_vs45f"]
 [ext_resource type="Script" uid="uid://le834vn2g2kh" path="res://system/mechanisms/switch_channel_listener.gd" id="3_swch"]
+[ext_resource type="PackedScene" path="res://system/ui/inspectable_area.tscn" id="5_j6hqg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2r42g"]
 size = Vector2(3, 43)
@@ -139,8 +140,8 @@ _data = {
 [sub_resource type="AtlasTexture" id="AtlasTexture_iimot"]
 atlas = ExtResource("2_vs45f")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vs45f"]
-size = Vector2(42, 42)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0xcpo"]
+size = Vector2(32, 31)
 
 [node name="door" type="StaticBody2D" unique_id=1915584955]
 collision_mask = 0
@@ -172,8 +173,8 @@ offset_right = 10.0
 offset_bottom = -22.0
 metadata/_edit_use_anchors_ = true
 
-[node name="PushArea" type="Area2D" parent="." unique_id=1174246916]
+[node name="InspectableArea" parent="." unique_id=680627755 instance=ExtResource("5_j6hqg")]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PushArea" unique_id=1850196385]
-position = Vector2(16, -16)
-shape = SubResource("RectangleShape2D_vs45f")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InspectableArea" unique_id=183171894]
+position = Vector2(16, -15.5)
+shape = SubResource("RectangleShape2D_0xcpo")

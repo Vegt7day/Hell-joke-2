@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dbglv8k87x5ci" path="res://assets/资源总库/03_图像_UI/马boss名字ui.png" id="5_ry0xf"]
 [ext_resource type="AudioStream" uid="uid://bbgapw320v6wq" path="res://assets/资源总库/10_音频/灰马冲刺.mp3" id="6_iydt5"]
 [ext_resource type="AudioStream" uid="uid://dk3tasf5bmyb8" path="res://assets/资源总库/10_音频/黑马召唤.mp3" id="7_mpst7"]
+[ext_resource type="PackedScene" path="res://system/ui/inspectable_area.tscn" id="8_mpst7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ry0xf"]
 size = Vector2(91.000015, 69.00001)
@@ -893,6 +894,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e3wtd"]
+size = Vector2(52, 65)
+
 [node name="BossHorseMain" type="CharacterBody2D" unique_id=574789870]
 collision_layer = 0
 collision_mask = 0
@@ -948,3 +952,9 @@ bus = &"SFX_Enemy"
 [node name="BlackCloneSfx" type="AudioStreamPlayer" parent="." unique_id=271964504]
 stream = ExtResource("7_mpst7")
 bus = &"SFX_Enemy"
+
+[node name="InspectableArea" parent="." unique_id=464007149 instance=ExtResource("8_mpst7")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InspectableArea" unique_id=862410953]
+position = Vector2(28, -32.5)
+shape = SubResource("RectangleShape2D_e3wtd")

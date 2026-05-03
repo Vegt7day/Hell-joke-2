@@ -506,3 +506,16 @@ func _get_player_position_or_fallback(fallback: Vector2) -> Vector2:
 	if player:
 		return player.global_position
 	return fallback
+
+
+func _get_inspect_description() -> String:
+	match horse_id:
+		BossHorseTypes.HorseId.GREY:
+			return "灰马：快速冲刺撞击"
+		BossHorseTypes.HorseId.WHITE:
+			return "白马：召唤飞剑攻击"
+		BossHorseTypes.HorseId.BLACK:
+			return "黑马：召唤分身协助作战"
+		BossHorseTypes.HorseId.RED:
+			return "红马：召唤炸弹轰炸"
+	return "未知类型的小马"

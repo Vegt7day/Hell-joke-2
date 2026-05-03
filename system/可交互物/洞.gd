@@ -18,6 +18,7 @@ var is_collision_disabled: bool = false
 var is_resetting: bool = false
 
 func _ready():
+	add_to_group("inspectable")
 	# 确保Sprite2D使用正确的纹理
 	if sprite:
 		# 设置Sprite2D属性
@@ -52,7 +53,8 @@ func trigger_trap():
 	print("触发陷阱: ", name, " (组别: ", trap_group, ")")
 	
 	is_triggered = true
-	
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("洞")
 	# 播放触发动画
 	if animation_player and animation_player.has_animation("触发"):
 		_play_trigger_sound()
@@ -110,3 +112,9 @@ func _play_trigger_sound() -> void:
 	if trigger_sfx == null:
 		return
 	MechanismSfxBus.request_once(&"trap_trigger", trigger_sfx)
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("洞", false):
+		return "还未触发过该类型机关"
+	return "可疑的土地" + ("（尚未触发）" if not is_triggered else "（已触发）")

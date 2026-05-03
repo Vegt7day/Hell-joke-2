@@ -22,6 +22,7 @@ var bodies_in_area: Array = []
 var cached_traps: Array = []  # 缓存的陷阱节点
 
 func _ready():
+	add_to_group("inspectable")
 	# 连接信号
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -158,7 +159,9 @@ func _trigger_traps():
 	
 	print("触发器开始触发陷阱: ", name, " (组别: ", trigger_group, ")")
 	is_triggered = true
-	
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("触发器")
+
 	# 如果有触发延迟，等待
 	if trigger_delay > 0:
 		print("等待 ", trigger_delay, " 秒后触发陷阱")
@@ -287,3 +290,9 @@ func is_activated() -> bool:
 func get_target_trap_count() -> int:
 	"""获取目标陷阱数量"""
 	return cached_traps.size()
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("触发器", false):
+		return "还未触发过该类型机关"
+	return "踩上去会触发陷阱的机关" + ("（尚未触发）" if not is_triggered else "（已触发）")

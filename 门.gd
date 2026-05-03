@@ -69,6 +69,8 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 			sprite_2d.frame = 0
 			collision_shape.disabled = true
 		return
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("门")
 	door_is_processing = true
 	_play_trigger_sound()
 	if target_open:
@@ -87,7 +89,10 @@ func apply_switch_bus_state(target_open: bool, play_anim: bool = true) -> void:
 
 
 func push_players_out():
-	var overlapping_bodies = $PushArea.get_overlapping_bodies()
+	var push_area := $PushArea as Area2D
+	if push_area == null:
+		return
+	var overlapping_bodies = push_area.get_overlapping_bodies()
 	for body in overlapping_bodies:
 		if body.is_in_group("player"):
 			var push_direction = (body.global_position - global_position).normalized()
@@ -98,3 +103,9 @@ func _play_trigger_sound() -> void:
 	if trigger_sfx == null:
 		return
 	MechanismSfxBus.request_once(&"switch_chain_trigger", trigger_sfx)
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("门", false):
+		return "还未触发过该类型机关"
+	return "一扇%s色的门，目前%s" % [current_color, "打开着" if is_open else "关闭着"]

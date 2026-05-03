@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b84oghaoaxwpg" path="res://system/可交互物/开关.gd" id="1_7bjq7"]
 [ext_resource type="Texture2D" uid="uid://6rl2ivpb87gt" path="res://assets/资源总库/08_图像_机关/开关.png" id="2_7bjq7"]
+[ext_resource type="Script" path="res://system/ui/inspect_detector.gd" id="3_inspect"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jmglv"]
 
@@ -140,6 +141,9 @@ _data = {
 [sub_resource type="CircleShape2D" id="CircleShape2D_7bjq7"]
 radius = 25.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_jmglv"]
+radius = 24.0
+
 [node name="开关" type="StaticBody2D" unique_id=1076644298]
 collision_layer = 16
 collision_mask = 8
@@ -167,3 +171,14 @@ libraries/ = SubResource("AnimationLibrary_5um43")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=865360964]
 position = Vector2(15, -15.5)
 shape = SubResource("CircleShape2D_7bjq7")
+
+[node name="InspectDetector" type="Area2D" parent="." unique_id=126133389]
+collision_layer = 2
+collision_mask = 0
+monitoring = true
+monitorable = false
+script = ExtResource("3_inspect")
+
+[node name="InspectShape" type="CollisionShape2D" parent="InspectDetector" unique_id=138244613]
+position = Vector2(16, -16)
+shape = SubResource("CircleShape2D_jmglv")

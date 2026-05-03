@@ -63,6 +63,7 @@ var _is_casting_skill: bool = false
 var _cast_accumulator: float = 0.0
 var _cooldown_left: float = 0.0
 var _shared_skill_cooldown: float = 10.0
+var _skills_observed: Array = []
 var _unlocked_skills: Array[BossHorseTypes.HorseId] = [BossHorseTypes.HorseId.GREY]
 var _movement_enabled: bool = true
 var _offscreen_elapsed: float = 0.0
@@ -269,6 +270,8 @@ func _try_cast_random_skill() -> void:
 
 
 func _cast_grey_skill() -> void:
+	if BossHorseTypes.HorseId.GREY not in _skills_observed:
+		_skills_observed.append(BossHorseTypes.HorseId.GREY)
 	await _play_optional(&"to grey")
 	await _play_optional(&"grey_ready")
 	_show_skill_broadcast(BossHorseTypes.HorseId.GREY, true)
@@ -293,6 +296,8 @@ func _cast_grey_skill() -> void:
 
 
 func _cast_white_skill() -> void:
+	if BossHorseTypes.HorseId.WHITE not in _skills_observed:
+		_skills_observed.append(BossHorseTypes.HorseId.WHITE)
 	await _play_optional(&"to white")
 	var repeat_count := clampi(white_cast_repeat, 1, 2)
 	for i in repeat_count:
@@ -307,6 +312,8 @@ func _cast_white_skill() -> void:
 
 
 func _cast_black_skill() -> void:
+	if BossHorseTypes.HorseId.BLACK not in _skills_observed:
+		_skills_observed.append(BossHorseTypes.HorseId.BLACK)
 	await _play_optional(&"to_black")
 	await _play_optional(&"black_ready")
 	_show_skill_broadcast(BossHorseTypes.HorseId.BLACK, true)
@@ -325,6 +332,8 @@ func _cast_black_skill() -> void:
 
 
 func _cast_red_skill() -> void:
+	if BossHorseTypes.HorseId.RED not in _skills_observed:
+		_skills_observed.append(BossHorseTypes.HorseId.RED)
 	await _play_optional(&"to red")
 	await _play_optional(&"red_ready")
 	_show_skill_broadcast(BossHorseTypes.HorseId.RED, true)
@@ -918,3 +927,17 @@ func _is_danmaku_fully_inside_right_boundary(container: Control, lane_right_x: f
 	var content_w := maxf(container.size.x, row.get_content_width())
 	var right_x := container.position.x + maxf(skill_feed_text_width, content_w)
 	return right_x <= (lane_right_x - skill_feed_lane_enter_margin)
+
+
+func _get_inspect_description() -> String:
+	var lines: Array[String] = ["主马"]
+	for skill_id in [BossHorseTypes.HorseId.GREY, BossHorseTypes.HorseId.WHITE, BossHorseTypes.HorseId.BLACK, BossHorseTypes.HorseId.RED]:
+		var unlocked: bool = skill_id in _unlocked_skills
+		var observed: bool = skill_id in _skills_observed
+		if not unlocked:
+			lines.append("  未知")
+		elif observed:
+			lines.append("  " + _skill_display_name(skill_id) + "：已解锁")
+		else:
+			lines.append("  " + _skill_display_name(skill_id) + "：还未观测到该技能")
+	return "\n".join(lines)

@@ -20,6 +20,7 @@ var _stop_after_current_cycle: bool = false
 
 
 func _ready() -> void:
+	add_to_group("inspectable")
 	add_to_group("save_bucket")
 	animation_player.animation_finished.connect(_on_animation_finished)
 	_enter_idle()
@@ -35,6 +36,8 @@ func take_damage(damage_amount: float, attacker = null) -> void:
 
 func _on_hit() -> void:
 	_play_trigger_sound()
+	if is_instance_valid(Game):
+		Game.mark_mechanism_observed("桶")
 	match _state:
 		BarrelState.WITH_WATER_IDLE:
 			_is_auto_cycle_running = true
@@ -132,3 +135,17 @@ func apply_save_state(state: Dictionary) -> void:
 			animation_player.play("lose_water", -1.0, 1.0, false)
 		BarrelState.ADDING_WATER:
 			animation_player.play("add_water", -1.0, 1.0, false)
+
+
+func _get_inspect_description() -> String:
+	if not is_instance_valid(Game) or not Game.observed_mechanisms.get("桶", false):
+		return "还未触发过该类型机关"
+	var state_str: String = ""
+	match _state:
+		BarrelState.WITH_WATER_IDLE:
+			state_str = "静止"
+		BarrelState.LOSING_WATER:
+			state_str = "漏水中"
+		BarrelState.ADDING_WATER:
+			state_str = "加水中"
+	return "被打中后会漏水的旧桶（" + state_str + "）"

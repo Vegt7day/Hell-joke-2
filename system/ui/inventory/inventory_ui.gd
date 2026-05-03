@@ -36,7 +36,7 @@ var _hotbar_panels: Array[PanelContainer] = []
 var _drag_source_slot: int = -1
 var _drag_source_is_hotbar: bool = false
 var _selected_is_hotbar: bool = false
-var _drag_preview: PanelContainer = null
+var _drag_preview: Control = null
 var _may_drag: bool = false
 var _last_click_slot: int = -1
 var _last_click_is_hotbar: bool = false
@@ -130,6 +130,10 @@ func _panel_parts(panel: PanelContainer) -> Array:
 	return [tr, lb]
 
 
+func _hotkey_panel_label(panel: PanelContainer) -> Label:
+	return panel.get_child(1) as Label
+
+
 func _build_hotbar_cells() -> void:
 	var hotbar_n := 8
 	if _inv != null:
@@ -138,6 +142,15 @@ func _build_hotbar_cells() -> void:
 		var panel := _make_slot_panel()
 		var hi := i
 		panel.gui_input.connect(func(ev: InputEvent): _on_item_slot_gui(hi, ev))
+		var hl := Label.new()
+		hl.name = "HotkeyLabel"
+		hl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hl.text = str(i + 1)
+		hl.add_theme_font_override(&"font", FONT_12)
+		hl.add_theme_font_size_override(&"font_size", 9)
+		hl.add_theme_color_override(&"font_color", Color(0.6, 0.6, 0.6))
+		hl.position = Vector2(1, -1)
+		panel.add_child(hl)
 		_hotbar_row.add_child(panel)
 		_hotbar_panels.append(panel)
 
@@ -159,20 +172,24 @@ func _on_item_slot_gui(hotbar_idx: int, ev: InputEvent) -> void:
 	if ev is InputEventMouseButton:
 		var mb := ev as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
-			_selected_slot = hotbar_idx
-			_selected_is_hotbar = true
-			_sync_page_to_selection()
-			_refresh_selection_and_detail()
-			if _inv.hotbar[hotbar_idx].item != null:
-				_drag_source_slot = hotbar_idx
-				_drag_source_is_hotbar = true
-				_may_drag = true
-			var now := Time.get_ticks_msec()
-			if hotbar_idx == _last_click_slot and _last_click_is_hotbar and now - _last_click_time < 300 and _inv.hotbar[hotbar_idx].item != null:
-				_apply_use()
-			_last_click_slot = hotbar_idx
-			_last_click_is_hotbar = true
-			_last_click_time = now
+			if _drag_preview != null:
+				_place_item_at(hotbar_idx, true)
+			else:
+				_selected_slot = hotbar_idx
+				_selected_is_hotbar = true
+				_sync_page_to_selection()
+				_refresh_selection_and_detail()
+				if _inv.hotbar[hotbar_idx].item != null:
+					_drag_source_slot = hotbar_idx
+					_drag_source_is_hotbar = true
+					_create_drag_preview(_inv.hotbar[hotbar_idx])
+					_refresh_all()
+				var now := Time.get_ticks_msec()
+				if hotbar_idx == _last_click_slot and _last_click_is_hotbar and now - _last_click_time < 300 and _inv.hotbar[hotbar_idx].item != null:
+					_apply_use()
+				_last_click_slot = hotbar_idx
+				_last_click_is_hotbar = true
+				_last_click_time = now
 		if mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
 			if _inv.hotbar[hotbar_idx].item != null:
 				_selected_slot = hotbar_idx
@@ -267,21 +284,29 @@ func _input(event: InputEvent) -> void:
 	if _handle_grid_navigation(event):
 		get_viewport().set_input_as_handled()
 
-	# 物品拖拽启动与跟随
-	if event is InputEventMouseMotion:
-		if _may_drag and event.button_mask & MOUSE_BUTTON_MASK_LEFT and _drag_source_slot >= 0 and _inv != null:
-			_may_drag = false
-			var slot: InventorySlot = _inv.hotbar[_drag_source_slot] if _drag_source_is_hotbar else _inv.slots[_drag_source_slot]
-			if slot.item != null:
-				_create_drag_preview(slot)
-				_refresh_all()
-		if _drag_preview != null:
-			_drag_preview.global_position = event.global_position - SLOT_PANEL_SZ * 0.4
+	# 物品拖拽预览跟随
+	if event is InputEventMouseMotion and _drag_preview != null:
+		_drag_preview.global_position = event.global_position
 
-	# 物品拖拽结束
-	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_finish_grid_drag()
-		return
+	# 物品拖拽取消（点击空白区域）
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and _drag_preview != null:
+		var on_slot := false
+		for panel in _hotbar_panels:
+			if panel.get_global_rect().has_point(event.global_position):
+				on_slot = true
+				break
+		if not on_slot:
+			for panel in _slot_panels:
+				if panel.get_global_rect().has_point(event.global_position):
+					on_slot = true
+					break
+		if not on_slot:
+			_clear_drag_preview()
+			_drag_source_slot = -1
+			_drag_source_is_hotbar = false
+			_refresh_all()
+			get_viewport().set_input_as_handled()
+			return
 
 
 
@@ -320,19 +345,23 @@ func _on_grid_panel_gui(local_on_page: int, ev: InputEvent) -> void:
 		var mb := ev as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
 			var gi := _global_index_local(local_on_page)
-			_selected_slot = gi
-			_selected_is_hotbar = false
-			_refresh_selection_and_detail()
-			if _inv != null and gi < _inv.slots.size() and _inv.slots[gi].item != null:
-				_drag_source_slot = gi
-				_drag_source_is_hotbar = false
-				_may_drag = true
-			var now := Time.get_ticks_msec()
-			if _inv != null and gi < _inv.slots.size() and gi == _last_click_slot and not _last_click_is_hotbar and now - _last_click_time < 300 and _inv.slots[gi].item != null:
-				_apply_use()
-			_last_click_slot = gi
-			_last_click_is_hotbar = false
-			_last_click_time = now
+			if _drag_preview != null:
+				_place_item_at(gi, false)
+			else:
+				_selected_slot = gi
+				_selected_is_hotbar = false
+				_refresh_selection_and_detail()
+				if _inv != null and gi < _inv.slots.size() and _inv.slots[gi].item != null:
+					_drag_source_slot = gi
+					_drag_source_is_hotbar = false
+					_create_drag_preview(_inv.slots[gi])
+					_refresh_all()
+				var now := Time.get_ticks_msec()
+				if _inv != null and gi < _inv.slots.size() and gi == _last_click_slot and not _last_click_is_hotbar and now - _last_click_time < 300 and _inv.slots[gi].item != null:
+					_apply_use()
+				_last_click_slot = gi
+				_last_click_is_hotbar = false
+				_last_click_time = now
 		if mb.button_index == MOUSE_BUTTON_RIGHT and mb.pressed:
 			var gi := _global_index_local(local_on_page)
 			if _inv != null and gi < _inv.slots.size() and _inv.slots[gi].item != null:
@@ -343,7 +372,6 @@ func _on_grid_panel_gui(local_on_page: int, ev: InputEvent) -> void:
 
 
 func _finish_grid_drag() -> void:
-	_may_drag = false
 	if _drag_source_slot < 0 or _inv == null:
 		return
 	var mouse_pos := get_viewport().get_mouse_position()
@@ -365,6 +393,12 @@ func _finish_grid_drag() -> void:
 				target_gi = hi
 				target_is_hotbar = true
 				break
+	_place_item_at(target_gi, target_is_hotbar)
+
+
+func _place_item_at(target_gi: int, target_is_hotbar: bool) -> void:
+	if _drag_source_slot < 0 or _inv == null:
+		return
 	if target_gi >= 0:
 		if _drag_source_is_hotbar and target_is_hotbar:
 			if target_gi != _drag_source_slot:
@@ -377,12 +411,11 @@ func _finish_grid_drag() -> void:
 				_inv.swap_grid_hotbar(target_gi, _drag_source_slot)
 			else:
 				_inv.swap_grid_hotbar(_drag_source_slot, target_gi)
+		_selected_slot = target_gi
+		_selected_is_hotbar = target_is_hotbar
 	_clear_drag_preview()
 	_drag_source_slot = -1
 	_drag_source_is_hotbar = false
-	if target_gi >= 0:
-		_selected_slot = target_gi
-		_selected_is_hotbar = target_is_hotbar
 	_refresh_all()
 
 
@@ -451,6 +484,9 @@ func _refresh_hotbar_cells_only() -> void:
 		_hotbar_panels[i].add_theme_stylebox_override(&"panel", _style_selected if sel else _style_normal)
 		if _drag_source_is_hotbar and i == _drag_source_slot:
 			_paint_slot(tr, lb, slot, true)
+		var hl := _hotkey_panel_label(_hotbar_panels[i])
+		var hl_sel := _inv.hotbar_selection == i and _drag_preview == null
+		hl.add_theme_color_override(&"font_color", Color.WHITE if hl_sel else Color(0.6, 0.6, 0.6))
 
 
 func _refresh_grid_cells_only() -> void:
@@ -505,26 +541,26 @@ func _slot_char(item: InventoryItem) -> String:
 func _create_drag_preview(slot: InventorySlot) -> void:
 	if _drag_preview != null:
 		_clear_drag_preview()
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = SLOT_PANEL_SZ
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override(&"panel", _style_selected)
-	panel.scale = Vector2(0.8, 0.8)
-	var lb := Label.new()
-	lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lb.custom_minimum_size = SLOT_PANEL_SZ
-	lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lb.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# 只拿图标或文字，不拿格子背景
 	if slot.item.icon != null:
-		lb.text = ""
+		var tr := TextureRect.new()
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tr.texture = slot.item.icon
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.custom_minimum_size = SLOT_ICON_SZ
+		tr.global_position = get_viewport().get_mouse_position()
+		add_child(tr)
+		_drag_preview = tr
 	else:
+		var lb := Label.new()
+		lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lb.text = _slot_char(slot.item)
 		lb.add_theme_font_override(&"font", FONT_16)
 		lb.add_theme_font_size_override(&"font_size", 19)
-	panel.add_child(lb)
-	panel.global_position = get_viewport().get_mouse_position() - SLOT_PANEL_SZ * 0.4
-	add_child(panel)
-	_drag_preview = panel
+		lb.global_position = get_viewport().get_mouse_position()
+		add_child(lb)
+		_drag_preview = lb
 
 
 func _clear_drag_preview() -> void:

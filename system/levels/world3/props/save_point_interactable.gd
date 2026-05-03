@@ -75,3 +75,7 @@ func run_save_sequence_and_heal() -> void:
 func _play_if_exists(anim_name: StringName) -> void:
 	if animation_player != null and animation_player.has_animation(anim_name):
 		animation_player.play(anim_name)
+
+
+func _get_inspect_description() -> String:
+	return "可以存放心灵的节点"

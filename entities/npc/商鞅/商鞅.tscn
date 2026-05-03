@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cp6nrnsk35267" path="res://system/class/stats.tscn" id="3_bob5k"]
 [ext_resource type="Script" uid="uid://dh5d2t0x4sqpp" path="res://entities/npc/商鞅/shang_yang_story_interact.gd" id="4_story"]
 [ext_resource type="AudioStream" uid="uid://c4v5p2e0cvrb6" path="res://assets/资源总库/10_音频/商鞅被拉扯音效.mp3" id="5_mmhi5"]
+[ext_resource type="PackedScene" path="res://system/ui/inspectable_area.tscn" id="6_bg5pc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wa22q"]
 size = Vector2(94, 126)
@@ -837,6 +838,9 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_story_ix"]
 size = Vector2(631, 154)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dssm2"]
+size = Vector2(94, 125)
+
 [node name="商鞅" type="CharacterBody2D" unique_id=516840921]
 position = Vector2(-1, 0)
 disable_mode = 2
@@ -897,3 +901,9 @@ position = Vector2(18, -46)
 
 [node name="RightFootMarker" type="Marker2D" parent="LimbMarkers" unique_id=174280514]
 position = Vector2(83, -46)
+
+[node name="InspectableArea" parent="." unique_id=811607448 instance=ExtResource("6_bg5pc")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InspectableArea" unique_id=970668547]
+position = Vector2(50, -63.5)
+shape = SubResource("RectangleShape2D_dssm2")

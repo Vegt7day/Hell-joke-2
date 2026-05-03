@@ -1,7 +1,11 @@
 [gd_scene format=3 uid="uid://dai5yhdyjeq8s"]
 
 [ext_resource type="Script" uid="uid://ccgbxlwps0vp0" path="res://system/levels/world3/props/save_point_interactable.gd" id="1_savepoint"]
+[ext_resource type="PackedScene" path="res://system/ui/inspectable_area.tscn" id="2_6yfd8"]
 [ext_resource type="Texture2D" uid="uid://c5h2dpbg8imqb" path="res://assets/资源总库/06_图像_World3/props/存档点.png" id="2_ifq4s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1rh1c"]
+size = Vector2(48, 54)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pick"]
 size = Vector2(88, 112)
@@ -184,11 +188,16 @@ collision_layer = 128
 collision_mask = 2
 script = ExtResource("1_savepoint")
 
+[node name="InspectableArea" parent="." unique_id=265036502 instance=ExtResource("2_6yfd8")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InspectableArea" unique_id=1023687517]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_1rh1c")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=88617408]
 shape = SubResource("RectangleShape2D_pick")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=18485867]
-modulate = Color(0.55, 0.85, 1, 1)
 texture = SubResource("AtlasTexture_6yfd8")
 hframes = 21
 region_enabled = true
